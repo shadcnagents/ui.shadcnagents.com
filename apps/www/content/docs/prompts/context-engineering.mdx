@@ -1,0 +1,117 @@
+---
+title: Context Engineering
+description: Structure the information you feed to AI models to get better, more reliable outputs.
+---
+
+Context engineering is the practice of carefully structuring what information goes into your AI model's context window — and in what order. It's the difference between a model that hallucinates and one that gives precise, grounded answers.
+
+## The Context Window
+
+Every AI model has a finite context window (the total tokens it can process at once). What you put in that window determines the quality of the output.
+
+```
+┌─────────────────────────────┐
+│  System Prompt              │  ← Instructions, persona, rules
+│  Retrieved Context          │  ← RAG results, documents, data
+│  Conversation History       │  ← Previous messages
+│  Current User Message       │  ← What the user just asked
+└─────────────────────────────┘
+```
+
+## Principles
+
+### 1. Put the Most Important Context First
+
+Models pay the most attention to the beginning and end of the context window. Put critical instructions and the most relevant retrieved documents at the top.
+
+```ts
+const systemPrompt = `You are a technical support agent for Acme Corp.
+
+## Critical Rules (ALWAYS follow)
+- Never share internal pricing
+- Always verify customer identity before account changes
+
+## Product Knowledge
+${relevantDocs.join("\n\n")}
+
+## Conversation Style
+Professional but friendly. Use the customer's name.`
+```
+
+### 2. Be Explicit About What to Ignore
+
+Models can't distinguish between context you want them to use and context that's just noise. Tell them explicitly.
+
+```ts
+const prompt = `Based ONLY on the following documents, answer the user's question.
+If the documents don't contain the answer, say "I don't have that information."
+
+Documents:
+${documents}
+
+Question: ${userQuestion}`
+```
+
+### 3. Separate Instructions from Data
+
+Don't mix instructions with the data the model should process. Use clear delimiters.
+
+```ts
+const prompt = `## Instructions
+Summarize the following article in 3 bullet points.
+
+## Article
+---
+${articleText}
+---
+
+## Output Format
+- Bullet point 1
+- Bullet point 2
+- Bullet point 3`
+```
+
+### 4. Manage Conversation History
+
+Don't send the entire conversation history every time. For long conversations:
+
+- **Summarize** older messages into a context summary
+- **Trim** to the last N messages plus the summary
+- **Filter** out tool calls and system messages that aren't relevant
+
+```ts
+const messages = [
+  { role: "system", content: systemPrompt },
+  { role: "system", content: `Previous conversation summary: ${summary}` },
+  ...recentMessages.slice(-10), // Last 10 messages
+  { role: "user", content: currentMessage },
+]
+```
+
+## RAG (Retrieval-Augmented Generation)
+
+The most common context engineering pattern. Retrieve relevant documents from a vector database and inject them into the prompt.
+
+```ts
+import { generateText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+
+// 1. Embed the user's query
+const queryEmbedding = await embed(userQuery)
+
+// 2. Search vector database
+const relevantDocs = await vectorDb.search(queryEmbedding, { limit: 5 })
+
+// 3. Inject into prompt
+const { text } = await generateText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  system: `Answer based on these documents:\n\n${relevantDocs.map(d => d.content).join("\n\n")}`,
+  prompt: userQuery,
+})
+```
+
+## Related Patterns
+
+- [Sources & Citations](/stacks/ai-elements-sources-chat) — display retrieved sources alongside AI responses
+- [PDF Analysis](/stacks/ai-pdf-ingest) — extract and process document context
+- [Context Builder](/stacks/ai-human-in-the-loop-agentic-context-builder) — agent-guided context gathering (Pro)

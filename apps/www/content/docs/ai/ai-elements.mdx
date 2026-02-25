@@ -1,0 +1,116 @@
+---
+title: AI Elements
+description: Chat UI building blocks for displaying AI responses — reasoning, sources, plans, tool approvals, and queues.
+---
+
+AI Elements are the display components that make up a chat interface. Instead of rendering plain text, they give structure to AI responses — showing reasoning steps, citations, action plans, and tool confirmations.
+
+## What Are AI Elements?
+
+When an AI responds, the output is rarely just text. Modern AI applications show:
+
+- **Reasoning** — the model's chain of thought before an answer
+- **Sources** — citations and references backing the response
+- **Plans** — step-by-step task breakdowns
+- **Tool calls** — actions the model wants to take (with user approval)
+- **Queues** — background tasks running in parallel
+
+Each of these needs a dedicated UI component. That's what AI Elements are.
+
+## Available Elements
+
+### Reasoning Display
+
+Shows the model's thinking process in a collapsible panel. Built for models that support extended thinking (Claude with `thinking` enabled, o1-style reasoning).
+
+```tsx
+// Renders a collapsible "Thinking..." section
+<ReasoningDisplay thinking={message.thinking} />
+```
+
+[View Pattern →](/stacks/ai-elements-reasoning-chat)
+
+### Sources & Citations
+
+Displays reference cards below an AI response. Each source shows a title, URL, and relevance indicator.
+
+```tsx
+<SourcesDisplay sources={message.sources} />
+```
+
+[View Pattern →](/stacks/ai-elements-sources-chat)
+
+### Plan Display
+
+Renders an interactive checklist that the AI populates as it works through a multi-step task. Users can see progress in real time.
+
+```tsx
+<PlanDisplay steps={message.plan} />
+```
+
+[View Pattern →](/stacks/ai-elements-plan)
+
+### Tool Approval
+
+Inline confirmation UI for when the model wants to execute a tool. Shows what the tool will do and lets the user approve or reject.
+
+```tsx
+<ToolApproval
+  tool={message.toolCall}
+  onApprove={handleApprove}
+  onReject={handleReject}
+/>
+```
+
+[View Pattern →](/stacks/ai-elements-confirmation)
+
+### Queue Display
+
+Animated progress visualization for background tasks. Shows task name, status, and completion percentage.
+
+```tsx
+<QueueDisplay tasks={message.queue} />
+```
+
+[View Pattern →](/stacks/ai-elements-queue)
+
+## Using Elements in Chat
+
+AI Elements are designed to compose inside a chat message renderer. A typical pattern:
+
+```tsx
+function ChatMessage({ message }) {
+  return (
+    <div>
+      {message.thinking && (
+        <ReasoningDisplay thinking={message.thinking} />
+      )}
+
+      <Markdown content={message.content} />
+
+      {message.sources && (
+        <SourcesDisplay sources={message.sources} />
+      )}
+
+      {message.toolCall && (
+        <ToolApproval tool={message.toolCall} />
+      )}
+    </div>
+  )
+}
+```
+
+Each element handles its own layout, animations, and interactions. You compose them together based on what the AI response contains.
+
+## Integration with AI SDK
+
+All elements work with the Vercel AI SDK's `useChat` hook. The hook returns structured message objects that map directly to element props:
+
+```tsx
+const { messages } = useChat({
+  api: "/api/chat",
+  maxSteps: 5, // Enable multi-step tool calls
+})
+```
+
+The AI SDK handles streaming, tool execution, and state management. AI Elements handle rendering.

@@ -1,0 +1,187 @@
+---
+title: Patterns Overview
+description: Production-ready AI patterns built with the Vercel AI SDK. Understand the pattern system, categories, and how to use them.
+---
+
+Patterns are production-ready AI implementations you can copy into your Next.js project. Each pattern solves a specific problem — generating text, building chat UIs, orchestrating agents, integrating tools.
+
+## How Patterns Work
+
+Every pattern is a self-contained implementation with:
+
+- **Preview** — live interactive demo in the browser
+- **Source code** — all files needed (components, API routes, utilities)
+- **CLI install** — one command to scaffold it into your project
+
+### Install via CLI
+
+```bash
+npx shadcn add https://shadcncloud.com/r/{pattern-slug}
+```
+
+For example:
+
+```bash
+# Add a basic chat interface
+npx shadcn add https://shadcncloud.com/r/ai-elements-chat
+
+# Add text streaming
+npx shadcn add https://shadcncloud.com/r/basics-stream-text
+
+# Add web search tool
+npx shadcn add https://shadcncloud.com/r/tool-websearch-claude
+```
+
+### Manual Installation
+
+1. Visit any pattern page at [/patterns](/patterns)
+2. Switch to the **Code** tab
+3. Copy the source files into your project
+4. Install dependencies listed in the pattern
+
+## Categories
+
+Patterns are organized into 9 categories based on what you're building.
+
+### Getting Started
+
+The fundamentals. Text generation, streaming, image generation, speech, transcription, tool calling, and agent setup.
+
+| Pattern | Description |
+|---------|-------------|
+| [Generate Text](/stacks/basics-generate-text) | Basic text generation with AI models |
+| [Stream Text](/stacks/basics-stream-text) | Real-time token streaming |
+| [Generate Image](/stacks/basics-generate-image) | AI image creation |
+| [Generate Speech](/stacks/basics-generate-speech) | Text to speech synthesis |
+| [Transcribe Audio](/stacks/basics-transcribe) | Speech to text transcription |
+| [Tool Calling](/stacks/basics-tool) | Function and tool invocation |
+| [Agent Setup](/stacks/basics-agent) | Create an AI agent |
+
+### Chat & Conversations
+
+Chat interfaces and display elements for building conversational AI products.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [Basic Chat](/stacks/ai-elements-chat) | Simple chat interface | Free |
+| [ChatGPT Clone](/stacks/chat-gpt) | OpenAI-style chat UI | Pro |
+| [Claude Clone](/stacks/chat-claude) | Anthropic-style chat UI | Pro |
+| [Grok Clone](/stacks/chat-grok) | xAI-style chat UI | Pro |
+| [Reasoning Display](/stacks/ai-elements-reasoning-chat) | Show model thinking process | Free |
+| [Sources & Citations](/stacks/ai-elements-sources-chat) | Reference and source display | Free |
+| [Plan Display](/stacks/ai-elements-plan) | Step-by-step plan rendering | Free |
+| [Tool Approval](/stacks/ai-elements-confirmation) | Confirm tool actions inline | Free |
+| [Queue Display](/stacks/ai-elements-queue) | Task queue visualization | Free |
+
+### Agents & Orchestration
+
+Multi-agent patterns for routing, orchestration, and parallel execution.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [Routing Pattern](/stacks/ai-agents-routing) | Route requests to specialized agents | Free |
+| [Parallel Processing](/stacks/ai-agents-parallel-processing) | Concurrent agent execution | Free |
+| [Orchestrator-Worker](/stacks/ai-chat-agent-orchestrator-pattern) | Delegate subtasks to workers | Pro |
+| [Evaluator-Optimizer](/stacks/ai-chat-agent-evaluator-optimizer-pattern) | Self-improving feedback loops | Pro |
+
+### Human in the Loop
+
+Patterns for human oversight, approval flows, and user input gathering.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [Tool Approval Basic](/stacks/ai-human-in-the-loop) | Simple approval flow | Free |
+| [Context Builder](/stacks/ai-human-in-the-loop-agentic-context-builder) | Agent-guided context gathering | Pro |
+| [Needs Approval](/stacks/ai-chat-agent-tool-approval) | Gated tool execution | Pro |
+
+### Tools & Integrations
+
+Web search, scraping, and file processing integrations.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [Claude Web Search](/stacks/tool-websearch-claude) | Anthropic search integration | Free |
+| [Exa Web Search](/stacks/tool-websearch-exa) | Exa neural search | Free |
+| [Cheerio Scraper](/stacks/cheerio-scraper) | HTML DOM parsing | Free |
+| [Jina AI Scraper](/stacks/jina-scraper) | AI-powered web scraping | Free |
+| [Markdown Scraper](/stacks/markdown-new-scraper) | URL to markdown conversion | Free |
+| [PDF Analysis](/stacks/ai-pdf-ingest) | PDF file processing | Free |
+
+### Workflows & Pipelines
+
+Sequential, parallel, and durable workflow patterns.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [URL Analysis](/stacks/ai-workflow-basic) | Basic URL analysis workflow | Free |
+| [Sequential Workflow](/stacks/wdk-workflows-sequential) | Step-by-step execution flow | Pro |
+| [Evaluator Workflow](/stacks/wdk-workflows-evaluator) | Quality assessment pipeline | Pro |
+| [Orchestrator Workflow](/stacks/wdk-workflows-orchestrator) | Managed task delegation | Pro |
+
+### Artifacts & Generation
+
+Structured output generation — tables, charts, JSON rendering.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [Table Editor](/stacks/ai-artifact-table) | Editable data tables | Free |
+| [Chart Generation](/stacks/ai-artifact-chart) | Data visualization | Free |
+| [JSON Render Shadcn](/stacks/json-render-shadcn) | UI generation from JSON | Pro |
+
+### Marketing & Landing
+
+Pre-built sections for AI product landing pages.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [Code Block 1](/stacks/marketing-feature-code-block-1) | Code feature showcase | Free |
+| [Code Block 2](/stacks/marketing-feature-code-block-2) | Alternative code showcase | Free |
+| [Code Block 3](/stacks/marketing-feature-code-block-3) | Dark code showcase | Free |
+| [Feature Grid](/stacks/marketing-feature-grid-1) | Grid feature layout | Free |
+| [Bento Layout](/stacks/marketing-bento-1) | Bento grid composition | Free |
+| [Model Comparison](/stacks/marketing-model-comparison) | Side-by-side model compare | Pro |
+
+### Full Examples
+
+Complete applications combining multiple patterns.
+
+| Pattern | Description | Tier |
+|---------|-------------|------|
+| [Chat-Base Clone](/stacks/examples-chat-base-clone) | Full-stack chat application | Pro |
+| [Form Generator](/stacks/examples-form-generator) | Dynamic form builder | Pro |
+| [Data Analysis Agent](/stacks/example-agent-data-analysis) | Data insight extraction | Pro |
+
+## Architecture
+
+Every AI pattern follows the same structure:
+
+```
+components/stacks/{pattern-name}/
+├── {pattern-name}.tsx     # Main component (client-side)
+├── actions.ts             # Server actions (AI SDK calls)
+└── types.ts               # TypeScript types (optional)
+```
+
+**Client component** — handles UI, state, user interaction. Uses `useChat`, `useCompletion`, or custom hooks from the AI SDK.
+
+**Server actions** — makes the actual AI API calls using `generateText`, `streamText`, `tool`, or `agent` from the Vercel AI SDK. Runs server-side, keeps API keys secure.
+
+## Switching Providers
+
+All patterns use the Vercel AI SDK's provider abstraction. Swap models in one line:
+
+```ts
+// Anthropic
+import { anthropic } from "@ai-sdk/anthropic"
+const model = anthropic("claude-sonnet-4-20250514")
+
+// OpenAI
+import { openai } from "@ai-sdk/openai"
+const model = openai("gpt-4o")
+
+// Google
+import { google } from "@ai-sdk/google"
+const model = google("gemini-2.0-flash")
+```
+
+Every pattern that calls an AI model accepts a `model` parameter. Change the import and model string — everything else stays the same.

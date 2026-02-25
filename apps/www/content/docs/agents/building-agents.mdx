@@ -1,0 +1,158 @@
+---
+title: Building Agents
+description: How to build AI agents with the Vercel AI SDK — from simple tool-calling loops to multi-step autonomous workflows.
+---
+
+An AI agent is a model that can take actions. Instead of just generating text, it can call tools, evaluate results, and decide what to do next — in a loop until the task is complete.
+
+## Simple Agent
+
+The simplest agent is `generateText` with tools and `maxSteps`:
+
+```ts
+import { generateText, tool } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+import { z } from "zod"
+
+const { text, steps } = await generateText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  tools: {
+    searchWeb: tool({
+      description: "Search the web for information",
+      parameters: z.object({
+        query: z.string(),
+      }),
+      execute: async ({ query }) => {
+        // Your search implementation
+        return { results: ["..."] }
+      },
+    }),
+    getWeather: tool({
+      description: "Get current weather for a city",
+      parameters: z.object({
+        city: z.string(),
+      }),
+      execute: async ({ city }) => {
+        return { temp: 72, condition: "sunny" }
+      },
+    }),
+  },
+  maxSteps: 10,
+  prompt: "What's the weather in Tokyo? Also find recent news about Japan.",
+})
+```
+
+The model will:
+1. Decide which tool(s) to call
+2. Execute the tool(s)
+3. Read the results
+4. Decide if it needs more information (call more tools) or can respond
+5. Repeat until done or `maxSteps` is reached
+
+## Agent Architecture
+
+```
+User Prompt
+    │
+    ▼
+┌─────────┐
+│  Model   │◄──── System prompt + tools
+└─────────┘
+    │
+    ├── Tool Call → Execute → Result ──┐
+    │                                   │
+    ├── Tool Call → Execute → Result ──┤
+    │                                   │
+    ▼                                   │
+┌─────────┐                            │
+│  Model   │◄──────────────────────────┘
+└─────────┘
+    │
+    ▼
+  Response
+```
+
+## System Prompt Design
+
+The system prompt is the most important part of an agent. It defines the agent's personality, capabilities, and constraints.
+
+```ts
+const systemPrompt = `You are a research assistant. Your job is to answer questions
+by searching the web and analyzing the results.
+
+## Rules
+- Always search before answering factual questions
+- Cite your sources
+- If you can't find reliable information, say so
+- Never make up facts
+
+## Available Tools
+- searchWeb: Search the internet for information
+- readUrl: Read the full content of a URL
+
+## Process
+1. Break the question into sub-questions if needed
+2. Search for each sub-question
+3. Read the most relevant results
+4. Synthesize an answer with citations`
+```
+
+## Streaming Agents
+
+For user-facing agents, stream the response so users see progress:
+
+```ts
+import { streamText, tool } from "ai"
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const result = streamText({
+    model: anthropic("claude-sonnet-4-20250514"),
+    system: systemPrompt,
+    tools: { searchWeb, readUrl },
+    maxSteps: 5,
+    messages,
+  })
+
+  return result.toDataStreamResponse()
+}
+```
+
+On the client, `useChat` handles streaming automatically:
+
+```tsx
+const { messages, input, handleSubmit } = useChat({
+  api: "/api/agent",
+  maxSteps: 5,
+})
+```
+
+## Error Handling
+
+Tools can fail. Handle errors gracefully so the agent can recover:
+
+```ts
+const searchTool = tool({
+  description: "Search the web",
+  parameters: z.object({ query: z.string() }),
+  execute: async ({ query }) => {
+    try {
+      const results = await searchApi(query)
+      return { success: true, results }
+    } catch (error) {
+      return { success: false, error: "Search failed. Try a different query." }
+    }
+  },
+})
+```
+
+Returning the error as a tool result (instead of throwing) lets the model decide how to proceed — it might retry with different parameters or use a different approach.
+
+## Related Patterns
+
+- [Agent Setup](/stacks/basics-agent) — basic agent configuration
+- [Routing Pattern](/stacks/ai-agents-routing) — route to specialized agents
+- [Parallel Processing](/stacks/ai-agents-parallel-processing) — run multiple agents concurrently
+- [Orchestrator-Worker](/stacks/ai-chat-agent-orchestrator-pattern) — delegate subtasks (Pro)
+- [Tool Calling](/stacks/basics-tool) — tool fundamentals

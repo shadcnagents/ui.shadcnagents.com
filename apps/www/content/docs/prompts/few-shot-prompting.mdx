@@ -1,0 +1,58 @@
+---
+title: Few-Shot Prompting
+description: Guide the model's output format and behavior by providing example input-output pairs in the prompt.
+---
+
+Few-shot prompting is the technique of including example input-output pairs in your prompt to guide the model's behavior. Instead of describing what you want, you show it.
+
+## Why Few-Shot?
+
+Zero-shot (just instructions) works for simple tasks. But when you need:
+- **Consistent output format** — JSON schemas, specific markdown structures
+- **Domain-specific tone** — matching your brand voice, technical writing style
+- **Complex transformations** — input → output mappings that are hard to describe
+
+Few-shot prompting gives the model concrete examples to pattern-match against.
+
+## Basic Pattern
+
+```ts
+import { generateText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+
+const { text } = await generateText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  system: `You extract structured data from product descriptions.
+
+Here are examples:
+
+Input: "Nike Air Max 90, men's running shoe, $129.99, available in black and white"
+Output: {"name": "Nike Air Max 90", "category": "running", "price": 129.99, "colors": ["black", "white"]}
+
+Input: "Adidas Ultraboost 22, women's training shoe, $189.00, comes in pink"
+Output: {"name": "Adidas Ultraboost 22", "category": "training", "price": 189.00, "colors": ["pink"]}`,
+  prompt: `Input: "New Balance 574, unisex lifestyle shoe, $79.99, grey and navy"`,
+})
+```
+
+## How Many Examples?
+
+- **2-3 examples** — enough for most formatting tasks
+- **5-8 examples** — for nuanced behavior (tone, edge cases)
+- **10+** — rarely needed; if you need this many, consider fine-tuning instead
+
+Quality matters more than quantity. Pick examples that cover the edge cases you care about.
+
+## Tips
+
+**Include edge cases.** If empty fields are possible, show an example with an empty field. If the input can be ambiguous, show how to handle it.
+
+**Keep examples diverse.** Don't repeat the same pattern — show the range of inputs the model will see.
+
+**Match the real distribution.** If 80% of inputs are short and 20% are long, your examples should reflect that ratio.
+
+**Order matters slightly.** Put the most representative example first and the trickiest edge case last (recency bias helps).
+
+## Related Pattern
+
+The [Few-Shot Editor](/stacks/ai-sdk-prompt-few-shot) pattern (Pro) provides a full interactive UI for building and testing few-shot prompts with live AI feedback.

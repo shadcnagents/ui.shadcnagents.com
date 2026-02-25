@@ -1,0 +1,124 @@
+---
+title: Agent Patterns
+description: Common architectural patterns for building AI agents — routing, orchestration, evaluation, and parallel execution.
+---
+
+Beyond simple tool-calling agents, there are established patterns for building more capable AI systems. Each pattern solves a different scaling problem.
+
+## Routing Pattern
+
+A router agent analyzes the user's request and delegates to a specialized sub-agent. Each sub-agent has its own tools and system prompt optimized for its domain.
+
+```
+User Request
+    │
+    ▼
+┌──────────┐
+│  Router   │
+└──────────┘
+    │
+    ├──→ Code Agent (tools: runCode, lintCode)
+    ├──→ Research Agent (tools: search, readUrl)
+    └──→ Writing Agent (tools: generateDraft, editText)
+```
+
+**When to use:** Your application handles multiple distinct task types. A single agent with all tools performs worse than specialized agents with focused tool sets.
+
+```ts
+const routerResult = await generateText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  system: `Classify the user's request into one of: code, research, writing.
+    Respond with ONLY the category name.`,
+  prompt: userMessage,
+})
+
+const agents = {
+  code: { system: codePrompt, tools: codeTools },
+  research: { system: researchPrompt, tools: researchTools },
+  writing: { system: writingPrompt, tools: writingTools },
+}
+
+const agent = agents[routerResult.text.trim()]
+const { text } = await generateText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  ...agent,
+  prompt: userMessage,
+})
+```
+
+[View Pattern →](/stacks/ai-agents-routing)
+
+## Orchestrator-Worker
+
+A central orchestrator breaks a complex task into subtasks and delegates each to a worker agent. The orchestrator manages state and combines results.
+
+```
+┌──────────────┐
+│ Orchestrator  │
+└──────────────┘
+    │
+    ├──→ Worker 1: "Research competitors"
+    ├──→ Worker 2: "Analyze pricing"
+    └──→ Worker 3: "Draft recommendations"
+         │
+         ▼
+    Orchestrator combines results
+```
+
+**When to use:** Complex tasks that can be decomposed into independent subtasks. The orchestrator provides higher quality than a single agent attempting everything.
+
+[View Pattern →](/stacks/ai-chat-agent-orchestrator-pattern) (Pro)
+
+## Evaluator-Optimizer
+
+The model generates output, then a separate evaluation step scores it. If the score is below threshold, the model revises. Repeat until quality is met.
+
+```
+Generate → Evaluate → Score < threshold? → Revise → Evaluate → Done
+```
+
+**When to use:** Tasks where quality matters more than speed — writing, code generation, data extraction. The evaluation step catches errors the generation step misses.
+
+[View Pattern →](/stacks/ai-chat-agent-evaluator-optimizer-pattern) (Pro)
+
+## Parallel Processing
+
+Run multiple agents simultaneously on different aspects of the same task. Combine results when all agents complete.
+
+```ts
+const [research, analysis, summary] = await Promise.all([
+  generateText({ ...researchAgent, prompt: task }),
+  generateText({ ...analysisAgent, prompt: task }),
+  generateText({ ...summaryAgent, prompt: task }),
+])
+```
+
+**When to use:** Independent subtasks that don't depend on each other. Cuts total execution time to the length of the slowest agent instead of the sum of all agents.
+
+[View Pattern →](/stacks/ai-agents-parallel-processing)
+
+## Human in the Loop
+
+Add approval gates before the agent executes sensitive tools. The agent proposes an action, the user approves or rejects, and execution continues.
+
+```
+Agent → "I want to delete file X" → User approves → Execute
+                                   → User rejects → Agent tries different approach
+```
+
+**When to use:** Any agent that takes real-world actions — sending emails, modifying data, making purchases. Critical for production safety.
+
+[View Pattern →](/stacks/ai-human-in-the-loop)
+
+## Choosing a Pattern
+
+| Pattern | Latency | Complexity | Best For |
+|---------|---------|------------|----------|
+| Single Agent | Low | Low | Simple tasks, few tools |
+| Router | Medium | Medium | Multi-domain applications |
+| Orchestrator-Worker | High | High | Complex decomposable tasks |
+| Evaluator-Optimizer | High | Medium | Quality-critical outputs |
+| Parallel | Medium | Medium | Independent subtasks |
+| Human in the Loop | Depends | Medium | Safety-critical actions |
+
+Start with the simplest pattern that works. Add complexity only when the simpler pattern demonstrably fails.

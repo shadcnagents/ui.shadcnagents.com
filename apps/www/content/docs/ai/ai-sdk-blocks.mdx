@@ -1,0 +1,192 @@
+---
+title: AI SDK Blocks
+description: Overview of the Vercel AI SDK building blocks used across all patterns — generateText, streamText, useChat, tool, and agent.
+---
+
+Every pattern in shadcncloud is built on the Vercel AI SDK. This page covers the core building blocks and how they map to patterns.
+
+## Core Functions
+
+### generateText
+
+Non-streaming text generation. Returns the complete response at once. Use for background processing, data extraction, or when you don't need real-time output.
+
+```ts
+import { generateText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+
+const { text } = await generateText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  prompt: "Summarize this document...",
+})
+```
+
+**Used in:** [Generate Text](/stacks/basics-generate-text), [Generate Image](/stacks/basics-generate-image), agent orchestration patterns
+
+### streamText
+
+Real-time token streaming. Returns tokens as they're generated. Use for chat interfaces and any user-facing text generation.
+
+```ts
+import { streamText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+
+const result = streamText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  prompt: "Write a blog post about...",
+})
+
+for await (const chunk of result.textStream) {
+  process.stdout.write(chunk)
+}
+```
+
+**Used in:** [Stream Text](/stacks/basics-stream-text), all chat patterns, reasoning display
+
+### useChat (Client Hook)
+
+React hook for building chat interfaces. Manages message state, streaming, and tool calls on the client side.
+
+```tsx
+"use client"
+import { useChat } from "@ai-sdk/react"
+
+export function Chat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: "/api/chat",
+  })
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {messages.map((m) => (
+        <div key={m.id}>{m.content}</div>
+      ))}
+      <input value={input} onChange={handleInputChange} />
+    </form>
+  )
+}
+```
+
+**Used in:** [Basic Chat](/stacks/ai-elements-chat), [ChatGPT Clone](/stacks/chat-gpt), [Claude Clone](/stacks/chat-claude), all chat-based patterns
+
+### tool
+
+Define tools (functions) that the AI model can call. Tools have a description, parameters schema, and an execute function.
+
+```ts
+import { tool } from "ai"
+import { z } from "zod"
+
+const weatherTool = tool({
+  description: "Get weather for a location",
+  parameters: z.object({
+    city: z.string().describe("The city name"),
+  }),
+  execute: async ({ city }) => {
+    // Call weather API
+    return { temperature: 72, condition: "sunny" }
+  },
+})
+```
+
+**Used in:** [Tool Calling](/stacks/basics-tool), [Web Search](/stacks/tool-websearch-claude), all tool integration patterns
+
+### agent
+
+Create an autonomous agent that can use tools in a loop until it completes a task. The agent decides when to call tools and when to respond.
+
+```ts
+import { generateText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+
+const { text } = await generateText({
+  model: anthropic("claude-sonnet-4-20250514"),
+  tools: { weather: weatherTool, search: searchTool },
+  maxSteps: 10,
+  prompt: "Research the weather in Tokyo and recommend what to pack.",
+})
+```
+
+**Used in:** [Agent Setup](/stacks/basics-agent), [Routing Pattern](/stacks/ai-agents-routing), [Parallel Processing](/stacks/ai-agents-parallel-processing)
+
+## Server Actions Pattern
+
+All patterns use Next.js server actions for AI calls. This keeps API keys server-side and enables streaming to the client.
+
+```ts
+// app/actions.ts
+"use server"
+
+import { streamText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+import { createStreamableValue } from "ai/rsc"
+
+export async function chat(messages: Message[]) {
+  const stream = createStreamableValue("")
+
+  ;(async () => {
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      messages,
+    })
+
+    for await (const chunk of result.textStream) {
+      stream.update(chunk)
+    }
+
+    stream.done()
+  })()
+
+  return { output: stream.value }
+}
+```
+
+## API Route Pattern
+
+For `useChat`, patterns use Next.js API routes:
+
+```ts
+// app/api/chat/route.ts
+import { streamText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const result = streamText({
+    model: anthropic("claude-sonnet-4-20250514"),
+    messages,
+  })
+
+  return result.toDataStreamResponse()
+}
+```
+
+The `useChat` hook on the client sends messages to this endpoint and handles the streaming response automatically.
+
+## Provider Setup
+
+Install your preferred AI provider:
+
+```bash
+# Anthropic (Claude)
+npm install @ai-sdk/anthropic
+
+# OpenAI (GPT)
+npm install @ai-sdk/openai
+
+# Google (Gemini)
+npm install @ai-sdk/google
+```
+
+Set the API key in `.env.local`:
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+# or
+OPENAI_API_KEY=sk-...
+# or
+GOOGLE_GENERATIVE_AI_API_KEY=...
+```
+
+The AI SDK reads these environment variables automatically. No additional configuration needed.

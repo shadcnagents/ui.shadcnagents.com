@@ -1,0 +1,113 @@
+---
+title: Introduction
+description: Copy-paste UI components and production-ready AI patterns for building modern applications with the Vercel AI SDK.
+---
+
+shadcncloud gives you two things:
+
+1. **UI Components** — beautifully designed, accessible React components you copy into your project
+2. **AI Patterns** — production-ready implementations built with the Vercel AI SDK that you can drop into any Next.js app
+
+This is not an npm package. You own the code. Copy what you need, customize it, ship it.
+
+## UI Components
+
+60+ React components built with Tailwind CSS and Framer Motion. Each component is self-contained — no dependency on shadcncloud itself.
+
+```bash
+npx shadcn add https://shadcncloud.com/r/texture-button
+```
+
+Browse all components in the [component docs](/docs/components/button-group-input-group) or the [registry](/directory).
+
+## AI Patterns
+
+70 production-ready AI implementations organized by what you're building — chat interfaces, agents, tool integrations, workflows, and more.
+
+Each pattern includes:
+- **Live preview** — see the pattern running in the browser
+- **Full source code** — every file needed to implement it
+- **CLI install** — one command to add it to your project
+
+```bash
+npx shadcn add https://shadcncloud.com/r/basics-generate-text
+```
+
+Browse all patterns at [/patterns](/patterns) or read the [patterns overview](/docs/stacks/overview).
+
+## Quick Start
+
+<Steps>
+
+### Install dependencies
+
+```bash
+npm install ai @ai-sdk/anthropic
+```
+
+### Add a pattern
+
+```bash
+npx shadcn add https://shadcncloud.com/r/ai-elements-chat
+```
+
+### Use it
+
+```tsx
+import { Chat } from "@/components/stacks/chat"
+
+export default function Page() {
+  return <Chat />
+}
+```
+
+</Steps>
+
+## Free vs Pro
+
+Every pattern is marked as **Free** or **Pro**.
+
+- **Free** — 31 patterns with full source code and live previews, no account needed
+- **Pro** — 39 additional patterns including chat clones (ChatGPT, Claude, Grok), orchestration patterns, durable workflows, and full example applications
+
+## FAQ
+
+<Accordion type="multiple">
+
+<AccordionItem value="faq-1">
+  <AccordionTrigger>
+    Why copy/paste and not packaged as a dependency?
+  </AccordionTrigger>
+  <AccordionContent>
+    You own the code. You can customize every line — the styling, the logic, the API calls. No version conflicts, no dependency bloat, no waiting for upstream fixes.
+  </AccordionContent>
+</AccordionItem>
+
+<AccordionItem value="faq-2">
+  <AccordionTrigger>
+    Which frameworks are supported?
+  </AccordionTrigger>
+  <AccordionContent>
+    UI components work with any React framework — Next.js, Astro, Remix, Vite. AI patterns are built for Next.js with the Vercel AI SDK, but the core logic works anywhere that supports React server components or API routes.
+  </AccordionContent>
+</AccordionItem>
+
+<AccordionItem value="faq-3">
+  <AccordionTrigger>
+    Can I use this in commercial projects?
+  </AccordionTrigger>
+  <AccordionContent>
+    Yes. Free to use for personal and commercial projects. No attribution required.
+  </AccordionContent>
+</AccordionItem>
+
+<AccordionItem value="faq-4">
+  <AccordionTrigger>
+    What AI providers are supported?
+  </AccordionTrigger>
+  <AccordionContent>
+    All patterns use the Vercel AI SDK, which supports Anthropic (Claude), OpenAI (GPT), Google (Gemini), Mistral, Cohere, and more. Swap the provider in one line.
+  </AccordionContent>
+</AccordionItem>
+
+</Accordion>

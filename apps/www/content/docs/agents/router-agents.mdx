@@ -1,0 +1,150 @@
+---
+title: Router Agents
+description: Build agents that classify incoming requests and route them to specialized sub-agents with focused tool sets.
+---
+
+A router agent is a two-stage pattern: first classify what the user needs, then delegate to a specialized agent. This outperforms a single agent with many tools because each sub-agent has a focused system prompt and toolset.
+
+## Architecture
+
+```
+┌─────────────────────────────────────┐
+│           Router Agent              │
+│  "What kind of task is this?"       │
+└─────────────────────────────────────┘
+         │         │          │
+    ┌────┘    ┌────┘     ┌────┘
+    ▼         ▼          ▼
+┌────────┐ ┌────────┐ ┌────────┐
+│ Agent A │ │ Agent B │ │ Agent C │
+│ search  │ │ code   │ │ write  │
+│ tools   │ │ tools  │ │ tools  │
+└────────┘ └────────┘ └────────┘
+```
+
+## Implementation
+
+### Step 1: Define the Router
+
+```ts
+import { generateText } from "ai"
+import { anthropic } from "@ai-sdk/anthropic"
+
+type AgentType = "research" | "code" | "creative"
+
+async function routeRequest(message: string): Promise<AgentType> {
+  const { text } = await generateText({
+    model: anthropic("claude-haiku-3-5-20241022"), // Fast, cheap model for routing
+    system: `Classify the user's message into exactly one category:
+- research: questions about facts, current events, or topics requiring web search
+- code: writing, debugging, or explaining code
+- creative: writing stories, marketing copy, emails, or other creative text
+
+Respond with ONLY the category name, nothing else.`,
+    prompt: message,
+  })
+
+  return text.trim() as AgentType
+}
+```
+
+### Step 2: Define Specialized Agents
+
+```ts
+const agents: Record<AgentType, { system: string; tools: Record<string, Tool> }> = {
+  research: {
+    system: `You are a research assistant. Search the web to answer questions.
+Always cite sources. If uncertain, say so.`,
+    tools: {
+      searchWeb: webSearchTool,
+      readUrl: urlReaderTool,
+    },
+  },
+  code: {
+    system: `You are a senior developer. Write clean, well-tested code.
+Explain your reasoning. Follow best practices.`,
+    tools: {
+      runCode: codeExecutionTool,
+      searchDocs: docSearchTool,
+    },
+  },
+  creative: {
+    system: `You are a skilled writer. Match the user's desired tone and format.
+Be concise. Avoid clichés.`,
+    tools: {}, // No tools needed
+  },
+}
+```
+
+### Step 3: Route and Execute
+
+```ts
+async function handleMessage(message: string) {
+  const agentType = await routeRequest(message)
+  const agent = agents[agentType]
+
+  const { text } = await generateText({
+    model: anthropic("claude-sonnet-4-20250514"), // Full model for execution
+    system: agent.system,
+    tools: agent.tools,
+    maxSteps: 8,
+    prompt: message,
+  })
+
+  return text
+}
+```
+
+## Cost Optimization
+
+Use a fast, cheap model for routing (Haiku) and the full model for execution (Sonnet). Routing is a simple classification task — it doesn't need the most capable model.
+
+```ts
+// Router: fast and cheap
+const routerModel = anthropic("claude-haiku-3-5-20241022")
+
+// Execution: full capability
+const executionModel = anthropic("claude-sonnet-4-20250514")
+```
+
+This typically costs 5-10x less than routing with the full model.
+
+## Streaming
+
+For chat interfaces, stream the execution agent's response:
+
+```ts
+// API route
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+  const lastMessage = messages[messages.length - 1].content
+
+  const agentType = await routeRequest(lastMessage)
+  const agent = agents[agentType]
+
+  const result = streamText({
+    model: anthropic("claude-sonnet-4-20250514"),
+    system: agent.system,
+    tools: agent.tools,
+    maxSteps: 8,
+    messages,
+  })
+
+  return result.toDataStreamResponse()
+}
+```
+
+## When to Add More Agents
+
+Start with 2-3 agents. Add more when:
+- A single agent's tool set exceeds 8-10 tools (models struggle with too many options)
+- Different tasks need fundamentally different system prompts
+- You need different models for different tasks (e.g., vision model for image tasks)
+
+Don't over-segment. Three well-designed agents outperform ten narrow ones.
+
+## Related Patterns
+
+- [Routing Pattern](/stacks/ai-agents-routing) — live implementation of router agents
+- [Agent Patterns](/docs/agents/agent-patterns) — all agent architecture patterns
+- [Building Agents](/docs/agents/building-agents) — agent fundamentals

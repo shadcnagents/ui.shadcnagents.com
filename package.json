@@ -1,0 +1,55 @@
+{
+  "name": "shadcncloud",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "author": {
+    "name": "shadcncloud",
+    "url": "https://shadcncloud.com"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "templates/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "build:registry": "pnpm --filter=www build:registry",
+    "dev": "turbo run dev --parallel",
+    "www:dev": "pnpm --filter=www dev",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "preview": "turbo run preview",
+    "typecheck": "turbo run typecheck",
+    "format:write": "turbo run format:write",
+    "format:check": "turbo run format:check",
+    "check": "turbo lint typecheck format:check",
+    "registry:build": "pnpm --filter=www registry:build"
+  },
+  "packageManager": "pnpm@9.0.4",
+  "dependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@typescript-eslint/parser": "^5.59.7",
+    "eslint": "^8.41.0",
+    "eslint-config-next": "16.1.6",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-config-turbo": "^2.5.6",
+    "eslint-plugin-react": "^7.37.5",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.1.13",
+    "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.20.5",
+    "turbo": "^2.5.6"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.27.1",
+    "@types/node": "^20.11.27",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "eslint-plugin-tailwindcss": "^3.18.2",
+    "typescript": "^5.9.2"
+  }
+}
