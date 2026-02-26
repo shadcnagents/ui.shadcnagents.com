@@ -310,6 +310,36 @@ export const stacksConfig: StackCategory[] = [
           },
         ],
       },
+      {
+        text: "Streaming Markdown",
+        description: "Streaming markdown renderer with syntax-highlighted code blocks",
+        link: "/stacks/streaming-markdown-renderer",
+        tier: "free",
+      },
+      {
+        text: "Artifact Canvas",
+        description: "ChatGPT Canvas / Claude Artifacts split-pane chat and live preview",
+        link: "/stacks/artifact-canvas",
+        tier: "pro",
+      },
+      {
+        text: "AI Image Output",
+        description: "Image generation card with shimmer loading and download button",
+        link: "/stacks/ai-image-output",
+        tier: "free",
+      },
+      {
+        text: "Structured Output",
+        description: "Collapsible JSON tree viewer for generateObject responses",
+        link: "/stacks/structured-output-viewer",
+        tier: "free",
+      },
+      {
+        text: "Web Preview",
+        description: "Sandboxed iframe for AI-generated HTML and React artifacts",
+        link: "/stacks/web-preview-sandbox",
+        tier: "pro",
+      },
     ],
   },
   {
@@ -514,6 +544,81 @@ export const stacksConfig: StackCategory[] = [
             text: "Queue Display",
             description: "Task queue visualization",
             link: "/stacks/ai-elements-queue",
+            tier: "free",
+          },
+        ],
+      },
+      {
+        text: "Input & Controls",
+        children: [
+          {
+            text: "AI Prompt Input",
+            description: "Auto-growing textarea with attachment and keyboard shortcuts",
+            link: "/stacks/ai-prompt-input",
+            tier: "free",
+          },
+          {
+            text: "Voice Input Button",
+            description: "Mic button with recording states and waveform",
+            link: "/stacks/voice-input-button",
+            tier: "free",
+          },
+          {
+            text: "Model Selector",
+            description: "Command-palette model picker grouped by provider",
+            link: "/stacks/model-selector",
+            tier: "free",
+          },
+          {
+            text: "Token Counter",
+            description: "Context window meter with circular progress ring",
+            link: "/stacks/token-counter",
+            tier: "free",
+          },
+        ],
+      },
+      {
+        text: "Conversation",
+        children: [
+          {
+            text: "Prompt Suggestions",
+            description: "Chat empty state with clickable suggestion chips",
+            link: "/stacks/prompt-suggestion-pills",
+            tier: "free",
+          },
+          {
+            text: "Multimodal Upload",
+            description: "File and image attachment tray for AI chat",
+            link: "/stacks/multimodal-file-upload",
+            tier: "pro",
+          },
+          {
+            text: "History Sidebar",
+            description: "Conversation list with date grouping and search",
+            link: "/stacks/conversation-history-sidebar",
+            tier: "pro",
+          },
+          {
+            text: "Message Branch",
+            description: "Navigate between regenerated AI responses",
+            link: "/stacks/message-branch-navigator",
+            tier: "pro",
+          },
+        ],
+      },
+      {
+        text: "Loading & Streaming",
+        children: [
+          {
+            text: "AI Loading States",
+            description: "Wave dots, shimmer, pulsing orb loading animations",
+            link: "/stacks/ai-loading-states",
+            tier: "free",
+          },
+          {
+            text: "Token Stream Effect",
+            description: "Smooth token-by-token text animation for LLM output",
+            link: "/stacks/ai-token-stream",
             tier: "free",
           },
         ],
