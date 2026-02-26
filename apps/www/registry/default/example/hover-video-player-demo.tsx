@@ -39,7 +39,7 @@ export default function HoverVideoPlayerDemo() {
         />
       </motion.div>
 
-      <a href="https://www.shadcncloud.com" target="_blank">
+      <a href="https://www.shadcnagents.com" target="_blank">
         newcopy.ai
       </a>
     </div>

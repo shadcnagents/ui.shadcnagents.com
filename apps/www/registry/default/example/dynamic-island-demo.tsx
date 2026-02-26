@@ -60,7 +60,7 @@ const DynamicAction = () => {
         </DynamicDescription>
 
         <DynamicDescription className="absolute text-white right-4  my-auto text-lg font-bold tracking-tighter ">
-          shadcncloud.com
+          shadcnagents.com
         </DynamicDescription>
       </div>
     </DynamicContainer>

@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "cult/ui",
-  "homepage": "https://shadcncloud.com",
+  "homepage": "https://shadcnagents.com",
   "items": [
     {
       "name": "text-animate",
