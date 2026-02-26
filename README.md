@@ -1,4 +1,4 @@
-# shadcncloud
+# shadcnagents
 
 AI SDK agent pattern registry — full-stack Vercel AI SDK patterns for workflows, tool calling, and agent orchestration. Built with AI SDK v6 and shadcn/ui.
 
@@ -25,7 +25,7 @@ The site runs at [http://localhost:3003](http://localhost:3003).
 
 ```
 apps/
-  www/          — The main Next.js app (shadcncloud.com)
+  www/          — The main Next.js app (shadcnagents.com)
     app/        — Next.js App Router pages
     components/ — React components
     config/     — Site, docs, and pattern configuration
