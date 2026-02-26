@@ -696,6 +696,16 @@
 		animation-delay: 4s;
 	}
 
+	/* Stacks workspace — hides site footer and locks page scroll
+	   Set via useEffect in apps/www/app/(app)/stacks/layout.tsx
+	   Uses html-level overflow so position:sticky on the header still works */
+	html[data-stacks] {
+		overflow: hidden;
+	}
+	html[data-stacks] footer {
+		display: none !important;
+	}
+
 	.scrollbar-hide {
 		-ms-overflow-style: none;
 		scrollbar-width: none;

@@ -118,10 +118,10 @@ function CategorySection({
   forceOpen: boolean
 }) {
   return (
-    <div className="mb-5">
-      {/* Category header — increased opacity for legibility */}
-      <div className="px-2 pb-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/55">
+    <div className="mb-6">
+      {/* Category header */}
+      <div className="px-2 pb-2 pt-1">
+        <span className="text-[12px] font-bold uppercase tracking-wide text-foreground/70">
           {category.name}
         </span>
       </div>
@@ -166,7 +166,7 @@ function SubCategorySection({
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-foreground/85 transition-colors hover:text-foreground"
+        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-2 text-[13.5px] text-foreground/85 transition-colors hover:text-foreground"
       >
         <ChevronDown
           className={cn(
@@ -202,10 +202,10 @@ function ItemLink({
       href={item.link}
       scroll={false}
       className={cn(
-        "group flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors",
+        "group flex w-full items-center justify-between rounded-md px-2 py-2 text-[13.5px] transition-colors",
         isActive
           ? "bg-foreground/[0.1] font-semibold text-foreground"
-          : "text-foreground/75 hover:bg-foreground/[0.06] hover:text-foreground"
+          : "text-foreground/80 hover:bg-foreground/[0.06] hover:text-foreground"
       )}
     >
       <span className="truncate">{item.text}</span>
