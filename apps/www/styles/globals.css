@@ -41,6 +41,9 @@
 
 	--radius: 0.625rem;
 
+	/* App shell chrome — header + sidebar background */
+	--chrome: oklch(0.97 0 0);
+
 	/* Sidebar */
 	--sidebar: oklch(0.985 0 0);
 	--sidebar-foreground: oklch(0.145 0 0);
@@ -204,6 +207,8 @@
 	--chart-4: oklch(0.627 0.265 303.9);
 	--chart-5: oklch(0.645 0.246 16.439);
 
+	--chrome: oklch(0.185 0 0);
+
 	--sidebar: oklch(0.205 0 0);
 	--sidebar-foreground: oklch(0.985 0 0);
 	--sidebar-primary: oklch(0.488 0.243 264.376);
@@ -223,6 +228,9 @@
 	--font-pixel-circle: var(--font-geist-pixel-circle);
 	--font-pixel-triangle: var(--font-geist-pixel-triangle);
 	--font-pixel-line: var(--font-geist-pixel-line);
+
+	/* App shell chrome color — use bg-chrome / bg-chrome/90 in components */
+	--color-chrome: var(--chrome);
 
 	/* Map tokens directly (OKLCH-ready) */
 	--color-background: var(--background);

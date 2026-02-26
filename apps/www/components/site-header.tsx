@@ -15,7 +15,7 @@ export function SiteHeader() {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-chrome/90 backdrop-blur-sm">
       <div className="flex h-14 items-center px-4">
         <MainNav />
         <div className="flex flex-1 items-center justify-end space-x-2">

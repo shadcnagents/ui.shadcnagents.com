@@ -350,7 +350,7 @@ export function StackPageClient({ params }: StackPageClientProps) {
       </div>
 
       {/* CLI Command bar */}
-      <div className="shrink-0 flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-1.5">
+      <div className="shrink-0 flex items-center gap-3 border-b border-border px-4 py-1.5">
         <Terminal className="size-3.5 shrink-0 text-muted-foreground/40" />
         <code className="flex-1 truncate font-mono text-xs text-muted-foreground">
           {cliCommand}
@@ -569,128 +569,129 @@ export function StackPageClient({ params }: StackPageClientProps) {
         </div>
       </div>
 
-      {/* Content area */}
-      <div className="min-h-0 flex-1">
-        {activeTab === "preview" && (
-          <div className="h-full overflow-y-scroll scrollbar-hide">
-            <div
-              ref={previewRef}
-              className={cn(
-                "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
-                deviceWidthClass
-              )}
-              style={previewThemeVars as React.CSSProperties}
-            >
-              {isPro && !userIsPro ? (
-                <div className="text-center">
-                  <Lock className="mx-auto mb-3 size-5 text-muted-foreground/25" />
-                  <p className="text-sm font-medium text-foreground">Pro Stack</p>
-                  <p className="mt-1 text-xs text-muted-foreground/50">
-                    {session?.user
-                      ? "Upgrade to Pro to unlock full preview and source code"
-                      : "Sign in or upgrade to Pro to access this stack"}
-                  </p>
-                  <div className="mt-4 flex items-center justify-center gap-2">
-                    {!session?.user && (
-                      <Button asChild variant="outline" size="sm">
-                        <Link href="/auth/login">Sign In</Link>
-                      </Button>
-                    )}
-                    <Button asChild size="sm">
-                      <Link href="/pricing">Unlock with Pro</Link>
-                    </Button>
-                  </div>
-                </div>
-              ) : PreviewComponent ? (
-                <div className="w-full" key={previewKey}>
-                  <PreviewComponent />
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
-              )}
-            </div>
-
-          </div>
-        )}
-
-        {activeTab === "code" && (
-          <div className="flex h-full">
-            {source && source.files.length > 0 && (
-              <div className="w-[180px] shrink-0 overflow-y-scroll border-r border-border bg-muted/30 p-3 scrollbar-hide">
-                <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">Files</p>
-                <div className="space-y-0.5">
-                  {source.files.map((file, i) => (
-                    <button
-                      key={file.name}
-                      onClick={() => setActiveFileIndex(i)}
-                      className={cn(
-                        "w-full rounded-md px-2 py-1 text-left text-xs transition-colors",
-                        activeFileIndex === i
-                          ? "bg-foreground/[0.06] font-medium text-foreground"
-                          : "text-muted-foreground hover:text-foreground"
+      {/* Content area — padded viewport frame with rounded border */}
+      <div className="flex min-h-0 flex-1 flex-col p-3">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background">
+          {activeTab === "preview" && (
+            <div className="h-full overflow-y-scroll scrollbar-hide">
+              <div
+                ref={previewRef}
+                className={cn(
+                  "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
+                  deviceWidthClass
+                )}
+                style={previewThemeVars as React.CSSProperties}
+              >
+                {isPro && !userIsPro ? (
+                  <div className="text-center">
+                    <Lock className="mx-auto mb-3 size-5 text-muted-foreground/25" />
+                    <p className="text-sm font-medium text-foreground">Pro Stack</p>
+                    <p className="mt-1 text-xs text-muted-foreground/50">
+                      {session?.user
+                        ? "Upgrade to Pro to unlock full preview and source code"
+                        : "Sign in or upgrade to Pro to access this stack"}
+                    </p>
+                    <div className="mt-4 flex items-center justify-center gap-2">
+                      {!session?.user && (
+                        <Button asChild variant="outline" size="sm">
+                          <Link href="/auth/login">Sign In</Link>
+                        </Button>
                       )}
-                    >
-                      {file.name}
-                    </button>
-                  ))}
-                </div>
+                      <Button asChild size="sm">
+                        <Link href="/pricing">Unlock with Pro</Link>
+                      </Button>
+                    </div>
+                  </div>
+                ) : PreviewComponent ? (
+                  <div className="w-full" key={previewKey}>
+                    <PreviewComponent />
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
+                )}
               </div>
-            )}
-            <div className="relative flex min-w-0 flex-1 flex-col">
-              {source && activeFile ? (
-                <>
-                  <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-1.5">
-                    <span className="text-[11px] text-muted-foreground">{activeFile.name}</span>
-                    <button
-                      onClick={handleCopyCode}
-                      className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      <ClipboardCopy className="size-3" />
-                      {codeCopied ? "Copied" : "Copy"}
-                    </button>
-                  </div>
-                  <div className="min-h-0 flex-1 overflow-scroll p-4 scrollbar-hide">
-                    <pre className="text-[13px] leading-relaxed">
-                      <code className="text-foreground/80">{activeFile.code}</code>
-                    </pre>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-1 items-center justify-center">
-                  <p className="text-sm text-muted-foreground/40">Source code coming soon</p>
-                </div>
-              )}
-              {isPro && !userIsPro && (
-                <div className="absolute inset-0 top-[140px]">
-                  <div className="h-16 bg-gradient-to-b from-transparent to-background/80" />
-                  <div className="flex h-full flex-col items-center bg-background/80 pt-8 backdrop-blur-sm">
-                    {proLoading ? (
-                      <p className="text-xs text-muted-foreground animate-pulse">Loading source…</p>
-                    ) : (
-                      <>
-                        <Lock className="mb-3 size-5 text-muted-foreground/25" />
-                        <p className="text-sm font-medium">Pro Stack</p>
-                        <p className="mt-1 text-xs text-muted-foreground/50">
-                          {session?.user ? "Upgrade to Pro" : "Sign in or upgrade to Pro"}
-                        </p>
-                        <div className="mt-4 flex gap-2">
-                          {!session?.user && (
-                            <Button asChild variant="outline" size="sm">
-                              <Link href="/auth/login">Sign In</Link>
-                            </Button>
-                          )}
-                          <Button asChild size="sm">
-                            <Link href="/pricing">Unlock with Pro</Link>
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
-        )}
+          )}
+
+          {activeTab === "code" && (
+            <div className="flex h-full">
+              {source && source.files.length > 0 && (
+                <div className="w-[180px] shrink-0 overflow-y-scroll border-r border-border bg-muted/20 p-3 scrollbar-hide">
+                  <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">Files</p>
+                  <div className="space-y-0.5">
+                    {source.files.map((file, i) => (
+                      <button
+                        key={file.name}
+                        onClick={() => setActiveFileIndex(i)}
+                        className={cn(
+                          "w-full rounded-md px-2 py-1 text-left text-xs transition-colors",
+                          activeFileIndex === i
+                            ? "bg-foreground/[0.06] font-medium text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        {file.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="relative flex min-w-0 flex-1 flex-col">
+                {source && activeFile ? (
+                  <>
+                    <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-1.5">
+                      <span className="text-[11px] text-muted-foreground">{activeFile.name}</span>
+                      <button
+                        onClick={handleCopyCode}
+                        className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <ClipboardCopy className="size-3" />
+                        {codeCopied ? "Copied" : "Copy"}
+                      </button>
+                    </div>
+                    <div className="min-h-0 flex-1 overflow-scroll p-4 scrollbar-hide">
+                      <pre className="text-[13px] leading-relaxed">
+                        <code className="text-foreground/80">{activeFile.code}</code>
+                      </pre>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-1 items-center justify-center">
+                    <p className="text-sm text-muted-foreground/40">Source code coming soon</p>
+                  </div>
+                )}
+                {isPro && !userIsPro && (
+                  <div className="absolute inset-0 top-[140px]">
+                    <div className="h-16 bg-gradient-to-b from-transparent to-background/80" />
+                    <div className="flex h-full flex-col items-center bg-background/80 pt-8 backdrop-blur-sm">
+                      {proLoading ? (
+                        <p className="text-xs text-muted-foreground animate-pulse">Loading source…</p>
+                      ) : (
+                        <>
+                          <Lock className="mb-3 size-5 text-muted-foreground/25" />
+                          <p className="text-sm font-medium">Pro Stack</p>
+                          <p className="mt-1 text-xs text-muted-foreground/50">
+                            {session?.user ? "Upgrade to Pro" : "Sign in or upgrade to Pro"}
+                          </p>
+                          <div className="mt-4 flex gap-2">
+                            {!session?.user && (
+                              <Button asChild variant="outline" size="sm">
+                                <Link href="/auth/login">Sign In</Link>
+                              </Button>
+                            )}
+                            <Button asChild size="sm">
+                              <Link href="/pricing">Unlock with Pro</Link>
+                            </Button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

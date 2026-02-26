@@ -55,9 +55,9 @@ export function StacksSidebar() {
   return (
     <div className="flex h-full flex-col">
       {/* Search */}
-      <div className="px-4 pb-2">
+      <div className="px-3 pb-2">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground/50" />
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground/60" />
           <input
             ref={searchRef}
             type="text"
@@ -70,16 +70,16 @@ export function StacksSidebar() {
               }
             }}
             placeholder="Search stacks..."
-            className="h-8 w-full rounded-md border border-border/50 bg-muted/30 pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground/40 focus:border-border focus:bg-muted/50"
+            className="h-8 w-full rounded-md border border-border/60 bg-background/60 pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground/55 focus:border-border focus:bg-background"
           />
         </div>
       </div>
 
       {/* Collapse All toggle */}
-      <div className="flex items-center px-4 pb-3">
+      <div className="flex items-center px-3 pb-3">
         <button
           onClick={() => setExpandAll(!expandAll)}
-          className="text-xs text-muted-foreground/50 hover:text-foreground/70"
+          className="text-xs text-muted-foreground/65 hover:text-foreground/80 transition-colors"
         >
           {expandAll ? "Collapse All" : "Expand All"}
         </button>
@@ -98,7 +98,7 @@ export function StacksSidebar() {
 
         {filtered.length === 0 && (
           <div className="px-2 py-8 text-center">
-            <p className="text-sm text-muted-foreground/50">
+            <p className="text-sm text-muted-foreground/60">
               No stacks found.
             </p>
           </div>
@@ -119,9 +119,9 @@ function CategorySection({
 }) {
   return (
     <div className="mb-5">
-      {/* Category header */}
-      <div className="px-2 pb-2">
-        <span className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
+      {/* Category header — increased opacity for legibility */}
+      <div className="px-2 pb-1.5">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/55">
           {category.name}
         </span>
       </div>
@@ -166,11 +166,11 @@ function SubCategorySection({
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:text-foreground"
+        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-foreground/85 transition-colors hover:text-foreground"
       >
         <ChevronDown
           className={cn(
-            "size-3.5 shrink-0 text-foreground/30 transition-transform duration-150",
+            "size-3.5 shrink-0 text-foreground/45 transition-transform duration-150",
             !isOpen && "-rotate-90"
           )}
         />
@@ -178,7 +178,7 @@ function SubCategorySection({
       </button>
 
       {isOpen && (
-        <div className="ml-[15px] border-l border-border/50 pl-2">
+        <div className="ml-[15px] border-l border-border/60 pl-2">
           {sub.children.map((child) => (
             <ItemLink key={child.link} item={child} pathname={pathname} />
           ))}
@@ -204,13 +204,13 @@ function ItemLink({
       className={cn(
         "group flex w-full items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors",
         isActive
-          ? "bg-foreground/[0.07] font-medium text-foreground"
-          : "text-foreground/60 hover:bg-muted/50 hover:text-foreground"
+          ? "bg-foreground/[0.1] font-semibold text-foreground"
+          : "text-foreground/75 hover:bg-foreground/[0.06] hover:text-foreground"
       )}
     >
       <span className="truncate">{item.text}</span>
       {item.tier === "pro" && (
-        <Lock className="ml-1.5 size-3 shrink-0 text-muted-foreground/30" />
+        <Lock className="ml-1.5 size-3 shrink-0 text-muted-foreground/50" />
       )}
     </Link>
   )
