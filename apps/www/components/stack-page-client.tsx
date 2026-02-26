@@ -13,9 +13,9 @@ import {
   Copy,
   ExternalLink,
   Eye,
-  File,
-  FileCode2,
-  Folder,
+  FileIcon,
+  FolderIcon,
+  FolderOpenIcon,
   Lock,
   Monitor,
   RefreshCw,
@@ -178,53 +178,59 @@ function FileTreeNode({
   onSelect: (i: number) => void
 }) {
   const [open, setOpen] = useState(true)
-  const indent = depth * 14
+  const indent = depth * 16
 
   if (node.type === "folder") {
     return (
       <div>
         <button
           onClick={() => setOpen((v) => !v)}
-          style={{ paddingLeft: `${4 + indent}px` }}
-          className="flex w-full items-center gap-2 rounded-md py-[5px] pr-2 text-[12.5px] text-muted-foreground/70 transition-colors hover:text-foreground"
+          style={{ paddingLeft: `${6 + indent}px` }}
+          className="flex w-full items-center gap-1.5 rounded-sm py-[5px] pr-2 text-[13px] text-muted-foreground/70 transition-colors hover:bg-muted/60 hover:text-foreground"
         >
-          <Folder className="size-5 shrink-0 text-amber-400/80" />
+          {open ? (
+            <FolderOpenIcon className="size-4 shrink-0 text-amber-400/90" />
+          ) : (
+            <FolderIcon className="size-4 shrink-0 text-amber-400/90" />
+          )}
           <span className="truncate font-medium">{node.name}</span>
         </button>
-        {open &&
-          node.children.map((child, i) => (
-            <FileTreeNode
-              key={`${child.name}-${i}`}
-              node={child}
-              depth={depth + 1}
-              activeIndex={activeIndex}
-              onSelect={onSelect}
+        {open && (
+          <div className="relative">
+            {/* Vertical connector line — matches shadcn file-tree design */}
+            <div
+              className="pointer-events-none absolute bottom-1 top-0 w-px rounded-full bg-border"
+              style={{ left: `${13 + indent}px` }}
             />
-          ))}
+            {node.children.map((child, i) => (
+              <FileTreeNode
+                key={`${child.name}-${i}`}
+                node={child}
+                depth={depth + 1}
+                activeIndex={activeIndex}
+                onSelect={onSelect}
+              />
+            ))}
+          </div>
+        )}
       </div>
     )
   }
 
-  const ext = node.name.split(".").pop() ?? ""
-  const isCode = ["tsx", "ts", "jsx", "js"].includes(ext)
   const isActive = node.fileIndex === activeIndex
 
   return (
     <button
       onClick={() => onSelect(node.fileIndex)}
-      style={{ paddingLeft: `${4 + indent}px` }}
+      style={{ paddingLeft: `${6 + indent}px` }}
       className={cn(
-        "flex w-full items-center gap-2 rounded-md py-[5px] pr-2 text-[12.5px] transition-colors",
+        "flex w-full items-center gap-1.5 rounded-sm py-[5px] pr-2 text-[13px] transition-colors",
         isActive
-          ? "bg-foreground/[0.07] font-medium text-foreground"
-          : "text-muted-foreground/70 hover:text-foreground"
+          ? "bg-muted font-medium text-foreground"
+          : "text-muted-foreground/70 hover:bg-muted/60 hover:text-foreground"
       )}
     >
-      {isCode ? (
-        <FileCode2 className="size-[18px] shrink-0 text-sky-400/80" />
-      ) : (
-        <File className="size-[18px] shrink-0 text-muted-foreground/50" />
-      )}
+      <FileIcon className="size-4 shrink-0 text-muted-foreground/50" />
       <span className="truncate">{node.name}</span>
     </button>
   )
@@ -750,10 +756,23 @@ export function StackPageClient({ params }: StackPageClientProps) {
                         {codeCopied ? "Copied" : "Copy"}
                       </button>
                     </div>
-                    <div className="min-h-0 flex-1 overflow-scroll p-4 scrollbar-hide">
-                      <pre className="text-[13px] leading-relaxed">
-                        <code className="text-foreground/80">{activeFile.code}</code>
-                      </pre>
+                    {/* Code with line numbers — same font-size + leading so rows stay aligned */}
+                    <div className="min-h-0 flex-1 overflow-auto scrollbar-hide">
+                      <div className="flex min-w-full font-mono text-[13px] leading-relaxed">
+                        {/* Gutter: line numbers */}
+                        <div
+                          aria-hidden
+                          className="sticky left-0 z-10 shrink-0 select-none border-r border-border/30 bg-muted/10 px-3 py-4 text-right text-muted-foreground/30"
+                        >
+                          {activeFile.code.split("\n").map((_, i) => (
+                            <div key={i}>{i + 1}</div>
+                          ))}
+                        </div>
+                        {/* Code content */}
+                        <pre className="flex-1 overflow-x-auto py-4 pl-5 pr-8 text-foreground/80">
+                          <code>{activeFile.code}</code>
+                        </pre>
+                      </div>
                     </div>
                   </>
                 ) : (
