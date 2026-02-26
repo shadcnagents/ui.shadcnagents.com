@@ -5,14 +5,14 @@ description: Use the shadcn MCP server to browse, search, and install components
 
 The shadcn MCP Server allows AI assistants to interact with items from registries. You can browse available components, search for specific ones, and install them directly into your project using natural language.
 
-For example, you can ask an AI assistant to "Build a landing page using components from the shadcncloud registry" or "Find me a login form from the shadcn registry".
+For example, you can ask an AI assistant to "Build a landing page using components from the shadcnagents registry" or "Find me a login form from the shadcn registry".
 
 Registries are configured in your project's `components.json` file.
 
 ```json title="components.json" showLineNumbers
 {
   "registries": {
-    "@shadcncloud": "https://shadcncloud.com/r/{name}.json"
+    "@shadcnagents": "https://shadcnagents.com/r/{name}.json"
   }
 }
 ```
@@ -180,7 +180,7 @@ Configure additional registries in your `components.json`:
 ```json title="components.json" showLineNumbers
 {
   "registries": {
-    "@shadcncloud": "https://shadcncloud.com/r/{name}.json",
+    "@shadcnagents": "https://shadcnagents.com/r/{name}.json",
     "@internal": {
       "url": "https://internal.company.com/{name}.json",
       "headers": {
@@ -224,13 +224,13 @@ Once the MCP server is configured, you can use natural language to interact with
 
 - Add the button component to my project
 - Create a login form using shadcn components
-- Install the Cursor rules from the shadcncloud registry
+- Install the Cursor rules from the shadcnagents registry
 
 ### Work with Namespaces
 
-- Show me components from shadcncloud registry
+- Show me components from shadcnagents registry
 - Install @internal/auth-form
-- Build me a landing page using hero, features and testimonials sections from the shadcncloud registry
+- Build me a landing page using hero, features and testimonials sections from the shadcnagents registry
 
 ---
 
