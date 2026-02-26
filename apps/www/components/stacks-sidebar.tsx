@@ -14,16 +14,6 @@ import {
 } from "@/config/stacks"
 import { cn } from "@/lib/utils"
 
-const docsLinks = [
-  { text: "Introduction", href: "/stacks/docs" },
-  { text: "Installation", href: "/stacks/docs/installation" },
-  { text: "Stacks Overview", href: "/stacks/docs/patterns/overview" },
-  { text: "AI SDK Blocks", href: "/stacks/docs/ai/ai-sdk-blocks" },
-  { text: "AI Elements", href: "/stacks/docs/ai/ai-elements" },
-  { text: "Building Agents", href: "/stacks/docs/agents/building-agents" },
-  { text: "Agent Patterns", href: "/stacks/docs/agents/agent-patterns" },
-]
-
 export function StacksSidebar() {
   const pathname = usePathname()
   const [query, setQuery] = useState("")
@@ -58,12 +48,6 @@ export function StacksSidebar() {
           .filter(Boolean) as (StackItem | StackSubCategory)[],
       }))
       .filter((cat) => cat.items.length > 0)
-  }, [query])
-
-  const filteredDocs = useMemo(() => {
-    const q = query.toLowerCase().trim()
-    if (!q) return docsLinks
-    return docsLinks.filter((d) => d.text.toLowerCase().includes(q))
   }, [query])
 
   const isSearching = query.length > 0
@@ -103,36 +87,6 @@ export function StacksSidebar() {
 
       {/* Tree */}
       <nav className="min-h-0 flex-1 overflow-y-scroll px-2 pb-8 scrollbar-hide">
-        {/* Documentation section */}
-        {filteredDocs.length > 0 && (
-          <div className="mb-5">
-            <div className="px-2 pb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
-                Documentation
-              </span>
-            </div>
-            <div>
-              {filteredDocs.map((doc) => (
-                <Link
-                  key={doc.href}
-                  href={doc.href}
-                  scroll={false}
-                  className={cn(
-                    "flex w-full items-center rounded-md px-2 py-1.5 text-sm transition-colors",
-                    pathname === doc.href ||
-                      (doc.href !== "/stacks/docs" &&
-                        pathname.startsWith(doc.href))
-                      ? "bg-foreground/[0.07] font-medium text-foreground"
-                      : "text-foreground/60 hover:bg-muted/50 hover:text-foreground"
-                  )}
-                >
-                  <span className="truncate">{doc.text}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
         {filtered.map((category) => (
           <CategorySection
             key={category.id}
@@ -142,7 +96,7 @@ export function StacksSidebar() {
           />
         ))}
 
-        {filtered.length === 0 && filteredDocs.length === 0 && (
+        {filtered.length === 0 && (
           <div className="px-2 py-8 text-center">
             <p className="text-sm text-muted-foreground/50">
               No stacks found.
