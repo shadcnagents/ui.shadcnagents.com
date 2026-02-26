@@ -13,6 +13,9 @@ import {
   Copy,
   ExternalLink,
   Eye,
+  File,
+  FileCode2,
+  Folder,
   Lock,
   Monitor,
   RefreshCw,
@@ -127,6 +130,107 @@ const radiusOptions = [
 ]
 
 type DeviceSize = "desktop" | "tablet" | "mobile"
+
+// ─── File tree for code tab ──────────────────────────────────────────────────
+
+interface TreeFile {
+  type: "file"
+  name: string
+  fileIndex: number
+}
+interface TreeFolder {
+  type: "folder"
+  name: string
+  children: (TreeFile | TreeFolder)[]
+}
+type TreeNode = TreeFile | TreeFolder
+
+function buildFileTree(files: { name: string; code: string }[]): TreeNode[] {
+  const root: TreeNode[] = []
+  files.forEach((file, fileIndex) => {
+    const parts = file.name.split("/")
+    let level = root
+    for (let i = 0; i < parts.length - 1; i++) {
+      const folderName = parts[i]
+      let folder = level.find(
+        (n): n is TreeFolder => n.type === "folder" && n.name === folderName
+      )
+      if (!folder) {
+        folder = { type: "folder", name: folderName, children: [] }
+        level.push(folder)
+      }
+      level = folder.children
+    }
+    level.push({ type: "file", name: parts[parts.length - 1], fileIndex })
+  })
+  return root
+}
+
+function FileTreeNode({
+  node,
+  depth,
+  activeIndex,
+  onSelect,
+}: {
+  node: TreeNode
+  depth: number
+  activeIndex: number
+  onSelect: (i: number) => void
+}) {
+  const [open, setOpen] = useState(true)
+  const indent = depth * 14
+
+  if (node.type === "folder") {
+    return (
+      <div>
+        <button
+          onClick={() => setOpen((v) => !v)}
+          style={{ paddingLeft: `${4 + indent}px` }}
+          className="flex w-full items-center gap-2 rounded-md py-[5px] pr-2 text-[12.5px] text-muted-foreground/70 transition-colors hover:text-foreground"
+        >
+          <Folder className="size-[15px] shrink-0 text-amber-400/70" />
+          <span className="truncate font-medium">{node.name}</span>
+        </button>
+        {open &&
+          node.children.map((child, i) => (
+            <FileTreeNode
+              key={`${child.name}-${i}`}
+              node={child}
+              depth={depth + 1}
+              activeIndex={activeIndex}
+              onSelect={onSelect}
+            />
+          ))}
+      </div>
+    )
+  }
+
+  const ext = node.name.split(".").pop() ?? ""
+  const isCode = ["tsx", "ts", "jsx", "js"].includes(ext)
+  const isActive = node.fileIndex === activeIndex
+
+  return (
+    <button
+      onClick={() => onSelect(node.fileIndex)}
+      style={{ paddingLeft: `${4 + indent}px` }}
+      className={cn(
+        "flex w-full items-center gap-2 rounded-md py-[5px] pr-2 text-[12.5px] transition-colors",
+        isActive
+          ? "bg-foreground/[0.07] font-medium text-foreground"
+          : "text-muted-foreground/70 hover:text-foreground"
+      )}
+    >
+      {isCode ? (
+        <FileCode2 className="size-[15px] shrink-0 text-sky-400/80" />
+      ) : (
+        <File className="size-[15px] shrink-0 text-muted-foreground/40" />
+      )}
+      <span className="truncate">{node.name}</span>
+    </button>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface StackPageClientProps {
   params: Promise<{ slug: string }>
@@ -616,22 +720,19 @@ export function StackPageClient({ params }: StackPageClientProps) {
           {activeTab === "code" && (
             <div className="flex h-full">
               {source && source.files.length > 0 && (
-                <div className="w-[180px] shrink-0 overflow-y-scroll border-r border-border bg-muted/20 p-3 scrollbar-hide">
-                  <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">Files</p>
-                  <div className="space-y-0.5">
-                    {source.files.map((file, i) => (
-                      <button
-                        key={file.name}
-                        onClick={() => setActiveFileIndex(i)}
-                        className={cn(
-                          "w-full rounded-md px-2 py-1 text-left text-xs transition-colors",
-                          activeFileIndex === i
-                            ? "bg-foreground/[0.06] font-medium text-foreground"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        {file.name}
-                      </button>
+                <div className="w-[200px] shrink-0 overflow-y-scroll border-r border-border bg-muted/10 py-3 scrollbar-hide">
+                  <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+                    Files
+                  </p>
+                  <div className="px-1.5">
+                    {buildFileTree(source.files).map((node, i) => (
+                      <FileTreeNode
+                        key={`${node.name}-${i}`}
+                        node={node}
+                        depth={0}
+                        activeIndex={activeFileIndex}
+                        onSelect={setActiveFileIndex}
+                      />
                     ))}
                   </div>
                 </div>

@@ -75,7 +75,7 @@ export function StacksSidebar() {
         </div>
       </div>
 
-      {/* Collapse All toggle */}
+      {/* Expand All toggle */}
       <div className="flex items-center px-3 pb-3">
         <button
           onClick={() => setExpandAll(!expandAll)}
@@ -120,8 +120,8 @@ function CategorySection({
   return (
     <div className="mb-6">
       {/* Category header */}
-      <div className="px-2 pb-2 pt-1">
-        <span className="text-[12px] font-bold uppercase tracking-wide text-foreground/70">
+      <div className="px-2 pb-1.5 pt-1">
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
           {category.name}
         </span>
       </div>
@@ -166,19 +166,19 @@ function SubCategorySection({
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-2 text-[13.5px] text-foreground/85 transition-colors hover:text-foreground"
+        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-[7px] text-[14px] font-medium text-foreground/80 transition-colors hover:text-foreground"
       >
         <ChevronDown
           className={cn(
-            "size-3.5 shrink-0 text-foreground/45 transition-transform duration-150",
+            "size-3.5 shrink-0 text-foreground/40 transition-transform duration-150",
             !isOpen && "-rotate-90"
           )}
         />
-        <span className="font-medium">{sub.text}</span>
+        <span>{sub.text}</span>
       </button>
 
       {isOpen && (
-        <div className="ml-[15px] border-l border-border/60 pl-2">
+        <div className="ml-[15px] border-l border-border/50 pl-2">
           {sub.children.map((child) => (
             <ItemLink key={child.link} item={child} pathname={pathname} />
           ))}
@@ -202,15 +202,24 @@ function ItemLink({
       href={item.link}
       scroll={false}
       className={cn(
-        "group flex w-full items-center justify-between rounded-md px-2 py-2 text-[13.5px] transition-colors",
+        "group flex w-full items-center gap-2 rounded-md px-2 py-[7px] text-[14px] transition-colors",
         isActive
-          ? "bg-foreground/[0.1] font-semibold text-foreground"
-          : "text-foreground/80 hover:bg-foreground/[0.06] hover:text-foreground"
+          ? "text-foreground font-medium"
+          : "text-foreground/70 hover:text-foreground"
       )}
     >
+      {/* Left accent bar for active state — 2px strip */}
+      <span
+        className={cn(
+          "shrink-0 rounded-full transition-all duration-150",
+          isActive
+            ? "h-4 w-[3px] bg-foreground/70"
+            : "h-[3px] w-[3px] bg-foreground/20"
+        )}
+      />
       <span className="truncate">{item.text}</span>
       {item.tier === "pro" && (
-        <Lock className="ml-1.5 size-3 shrink-0 text-muted-foreground/50" />
+        <Lock className="ml-auto size-3 shrink-0 text-muted-foreground/40" />
       )}
     </Link>
   )
