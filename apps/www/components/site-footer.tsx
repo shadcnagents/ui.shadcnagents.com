@@ -4,8 +4,9 @@ import { siteConfig } from "@/config/site"
 
 const docsLinks = [
   { title: "Get Started", href: "/docs" },
-  { title: "About", href: "/docs/about" },
+  { title: "Installation", href: "/docs/installation" },
   { title: "Theming", href: "/docs/theming" },
+  { title: "MCP Server", href: "/docs/mcp-server" },
   { title: "Changelog", href: "/docs/changelog" },
   { title: "AI SDK Blocks", href: "/docs/ai/ai-sdk-blocks" },
   { title: "AI Elements", href: "/docs/ai/ai-elements" },
@@ -14,51 +15,34 @@ const docsLinks = [
   { title: "Router Agents", href: "/docs/agents/router-agents" },
   { title: "Context Engineering", href: "/docs/prompts/context-engineering" },
   { title: "Few-shot Prompting", href: "/docs/prompts/few-shot-prompting" },
-  {
-    title: "Button Group & Input Group",
-    href: "/docs/components/button-group-input-group",
-  },
 ]
 
 const blocksLinks = [
-  { title: "generateText", href: "/blocks/generateText" },
-  { title: "streamText", href: "/blocks/streamText" },
-  { title: "generateImage", href: "/blocks/generateImage" },
-  { title: "generateSpeech", href: "/blocks/generateSpeech" },
-  { title: "transcribe", href: "/blocks/transcribe" },
-  { title: "tool", href: "/blocks/tool" },
-  { title: "Agent", href: "/blocks/agent" },
-  { title: "Routing Pattern", href: "/blocks/routing-pattern" },
-  { title: "Orchestrator-Worker", href: "/blocks/orchestrator-worker" },
-  {
-    title: "Sub-Agent Orchestrator",
-    href: "/blocks/sub-agent-orchestrator",
-  },
-  { title: "HIL Tool Approval", href: "/blocks/hil-tool-approval" },
-  { title: "HIL Context Builder", href: "/blocks/hil-context-builder" },
-  { title: "HIL Needs Approval", href: "/blocks/hil-needs-approval" },
-  { title: "Evaluator-Optimizer", href: "/blocks/evaluator-optimizer" },
-  { title: "Multi-Step Tool", href: "/blocks/multi-step-tool" },
-  { title: "Parallel Processing", href: "/blocks/parallel-processing" },
-  { title: "Chat-Base Clone", href: "/blocks/chat-base-clone" },
-  { title: "Form Generator", href: "/blocks/form-generator" },
-  {
-    title: "Table Editor Artifact",
-    href: "/blocks/table-editor-artifact",
-  },
-  {
-    title: "Chart Generation Artifact",
-    href: "/blocks/chart-generation-artifact",
-  },
-  {
-    title: "Basic Chat Interface",
-    href: "/blocks/basic-chat-interface",
-  },
-  { title: "Reasoning Display", href: "/blocks/reasoning-display" },
-  { title: "Sources & Citations", href: "/blocks/sources-and-citations" },
-  { title: "Plan Display", href: "/blocks/plan-display" },
-  { title: "Tool Approval", href: "/blocks/tool-approval" },
-  { title: "Queue Display", href: "/blocks/queue-display" },
+  { title: "generateText", href: "/stacks/basics-generate-text" },
+  { title: "streamText", href: "/stacks/basics-stream-text" },
+  { title: "generateImage", href: "/stacks/basics-generate-image" },
+  { title: "generateSpeech", href: "/stacks/basics-generate-speech" },
+  { title: "transcribe", href: "/stacks/basics-transcribe" },
+  { title: "tool( )", href: "/stacks/basics-tool" },
+  { title: "Agent( )", href: "/stacks/basics-agent" },
+  { title: "Routing Pattern", href: "/stacks/ai-agents-routing" },
+  { title: "Orchestrator-Worker", href: "/stacks/ai-chat-agent-orchestrator-pattern" },
+  { title: "Sub-Agent Orchestrator", href: "/stacks/sub-agent-orchestrator" },
+  { title: "HIL Tool Approval", href: "/stacks/ai-human-in-the-loop" },
+  { title: "HIL Needs Approval", href: "/stacks/ai-chat-agent-tool-approval" },
+  { title: "Evaluator-Optimizer", href: "/stacks/ai-chat-agent-evaluator-optimizer-pattern" },
+  { title: "Multi-Step Tools", href: "/stacks/ai-chat-agent-multi-step-tool-pattern" },
+  { title: "Parallel Processing", href: "/stacks/ai-agents-parallel-processing" },
+  { title: "Basic Chat", href: "/stacks/ai-elements-chat" },
+  { title: "Reasoning Display", href: "/stacks/ai-elements-reasoning-chat" },
+  { title: "Sources & Citations", href: "/stacks/ai-elements-sources-chat" },
+  { title: "Plan Display", href: "/stacks/ai-elements-plan" },
+  { title: "Tool Approval UI", href: "/stacks/ai-elements-confirmation" },
+  { title: "Queue Display", href: "/stacks/ai-elements-queue" },
+  { title: "Table Editor", href: "/stacks/ai-artifact-table" },
+  { title: "Chart Generation", href: "/stacks/ai-artifact-chart" },
+  { title: "Claude Web Search", href: "/stacks/tool-websearch-claude" },
+  { title: "PDF Analysis", href: "/stacks/ai-pdf-ingest" },
 ]
 
 const categoriesLinks = [
@@ -140,7 +124,7 @@ export function SiteFooter() {
         {/* 4-column link grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <FooterColumn heading="Docs" links={docsLinks} />
-          <FooterColumn heading="Blocks" links={blocksLinks} />
+          <FooterColumn heading="Stacks" links={blocksLinks} />
           <FooterColumn heading="Categories" links={categoriesLinks} />
           <FooterColumn heading="Explore" links={exploreLinks} />
         </div>

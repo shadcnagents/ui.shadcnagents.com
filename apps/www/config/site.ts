@@ -1,8 +1,8 @@
 export const siteConfig = {
   /* ───────────────── Brand & positioning ───────────────── */
-  name: "shadcncloud – AI SDK Agent Patterns",
+  name: "shadcncloud – Vercel AI SDK Components, Blocks & Agent Patterns",
   description:
-    "Full-stack Vercel AI SDK patterns for workflows, tool calling, and agent orchestration. Built with AI SDK v6 and shadcn/ui. Headless, themable, practical.",
+    "Copy-paste Vercel AI SDK components and agent patterns for Next.js. generateText, streamText, tool calling, AI agents, orchestration, and more. Built with AI SDK v6, shadcn/ui, and TypeScript.",
   url: "https://shadcncloud.com",
   ogImage: "https://shadcncloud.com/og.png",
 

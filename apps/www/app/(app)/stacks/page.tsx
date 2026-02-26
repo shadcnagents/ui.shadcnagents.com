@@ -1,55 +1,129 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { Lock } from "lucide-react"
 
-import { stacksConfig, isSubCategory } from "@/config/stacks"
+import { stacksConfig, isSubCategory, getAllStacks } from "@/config/stacks"
+import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 
-export default function StacksPage() {
-  return (
-    <div className="mx-auto max-w-3xl px-8 py-16">
-      <div className="mb-16 space-y-3">
-        <h1 className="text-2xl font-medium tracking-tight">Stacks</h1>
-        <p className="text-[15px] leading-relaxed text-muted-foreground">
-          Production-ready AI stacks built with the Vercel AI SDK. Each
-          stack is a self-contained implementation you can copy into your
-          project.
-        </p>
-      </div>
+export const metadata: Metadata = {
+  title: "Vercel AI SDK Components & Blocks | shadcncloud",
+  description:
+    "60+ production-ready Vercel AI SDK components and agent patterns for Next.js. generateText, streamText, tool calling, AI agents, orchestration, RAG, and more. Copy-paste with shadcn/ui and TypeScript.",
+  keywords: [
+    "vercel ai sdk components",
+    "ai sdk blocks",
+    "shadcn ai components",
+    "ai sdk examples",
+    "next.js ai components",
+    "ai sdk tool calling",
+    "ai agent patterns",
+    "generateText example",
+    "streamText example",
+    "ai sdk ui",
+    "ai sdk v6",
+    "vercel ai sdk nextjs",
+  ],
+  openGraph: {
+    title: "Vercel AI SDK Components & Blocks | shadcncloud",
+    description:
+      "60+ production-ready Vercel AI SDK components and agent patterns. Copy-paste with shadcn/ui, Next.js, and TypeScript.",
+    type: "website",
+    url: `${siteConfig.url}/stacks`,
+    siteName: "shadcncloud",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vercel AI SDK Components & Blocks | shadcncloud",
+    description:
+      "60+ production-ready Vercel AI SDK components and agent patterns for Next.js.",
+  },
+  alternates: {
+    canonical: `${siteConfig.url}/stacks`,
+  },
+}
 
-      <div className="space-y-12">
-        {stacksConfig.map((category) => (
-          <section key={category.id}>
-            <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
-              {category.name}
-            </h2>
-            <div className="divide-y divide-border/50">
-              {category.items.map((item) => {
-                if (isSubCategory(item)) {
-                  return item.children.map((child) => (
+export default function StacksPage() {
+  const allStacks = getAllStacks()
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Vercel AI SDK Components & Blocks",
+    description:
+      "60+ production-ready Vercel AI SDK components and agent patterns for Next.js.",
+    url: `${siteConfig.url}/stacks`,
+    publisher: {
+      "@type": "Organization",
+      name: "shadcncloud",
+      url: siteConfig.url,
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: allStacks.slice(0, 20).map((s, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: s.text,
+        description: s.description,
+        url: `${siteConfig.url}${s.link}`,
+      })),
+    },
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="mx-auto max-w-3xl px-8 py-16">
+        <div className="mb-16 space-y-3">
+          <h1 className="text-2xl font-medium tracking-tight">
+            Vercel AI SDK Components & Blocks
+          </h1>
+          <p className="text-[15px] leading-relaxed text-muted-foreground">
+            Production-ready Vercel AI SDK components and agent patterns for
+            Next.js. Each stack is a copy-paste implementation of generateText,
+            streamText, tool calling, AI agents, orchestration, and more — built
+            with AI SDK v6, shadcn/ui, and TypeScript.
+          </p>
+        </div>
+
+        <div className="space-y-12">
+          {stacksConfig.map((category) => (
+            <section key={category.id}>
+              <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                {category.name}
+              </h2>
+              <div className="divide-y divide-border/50">
+                {category.items.map((item) => {
+                  if (isSubCategory(item)) {
+                    return item.children.map((child) => (
+                      <StackRow
+                        key={child.link}
+                        text={child.text}
+                        description={child.description}
+                        link={child.link}
+                        tier={child.tier}
+                      />
+                    ))
+                  }
+                  return (
                     <StackRow
-                      key={child.link}
-                      text={child.text}
-                      description={child.description}
-                      link={child.link}
-                      tier={child.tier}
+                      key={item.link}
+                      text={item.text}
+                      description={item.description}
+                      link={item.link}
+                      tier={item.tier}
                     />
-                  ))
-                }
-                return (
-                  <StackRow
-                    key={item.link}
-                    text={item.text}
-                    description={item.description}
-                    link={item.link}
-                    tier={item.tier}
-                  />
-                )
-              })}
-            </div>
-          </section>
-        ))}
+                  )
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
