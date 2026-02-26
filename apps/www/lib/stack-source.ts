@@ -20,22 +20,99 @@ export const stackSourceRegistry: Record<string, PatternSource> = {
   "basics-generate-text": {
     files: [
       {
-        name: "page.tsx",
+        name: "app/page.tsx",
+        code: `import { GenerateTextForm } from "@/components/generate-text-form"
+
+export default function Page() {
+  return (
+    <main className="min-h-screen bg-background">
+      <GenerateTextForm />
+    </main>
+  )
+}`,
+      },
+      {
+        name: "app/layout.tsx",
+        code: `export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}`,
+      },
+      {
+        name: "app/api/generate-text/route.ts",
         code: `import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
 
-export default async function Page() {
+export async function POST(req: Request) {
+  const { prompt } = await req.json()
+
   const { text } = await generateText({
     model: openai("gpt-4o"),
-    prompt: "Explain quantum computing in simple terms.",
+    prompt,
   })
+
+  return Response.json({ text })
+}`,
+      },
+      {
+        name: "components/generate-text-form.tsx",
+        code: `"use client"
+
+import { useState } from "react"
+
+export function GenerateTextForm() {
+  const [prompt, setPrompt] = useState("")
+  const [result, setResult] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!prompt.trim()) return
+    setLoading(true)
+    setResult("")
+    try {
+      const res = await fetch("/api/generate-text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      })
+      const data = await res.json()
+      setResult(data.text)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="mx-auto max-w-xl p-8">
       <h1 className="text-lg font-semibold">Generate Text</h1>
-      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        {text}
-      </p>
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        <input
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Enter a prompt..."
+          className="w-full rounded-md border px-3 py-2 text-sm"
+        />
+        <button
+          type="submit"
+          disabled={loading || !prompt.trim()}
+          className="rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-50"
+        >
+          {loading ? "Generating..." : "Generate"}
+        </button>
+      </form>
+      {result && (
+        <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
+          {result}
+        </p>
+      )}
     </div>
   )
 }`,
@@ -46,41 +123,33 @@ export default async function Page() {
   "basics-stream-text": {
     files: [
       {
-        name: "page.tsx",
-        code: `"use client"
-
-import { useCompletion } from "@ai-sdk/react"
+        name: "app/page.tsx",
+        code: `import { StreamTextForm } from "@/components/stream-text-form"
 
 export default function Page() {
-  const { completion, input, handleInputChange, handleSubmit, isLoading } =
-    useCompletion({ api: "/api/completion" })
-
   return (
-    <div className="mx-auto max-w-xl p-8">
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <input
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Ask something..."
-          className="flex-1 rounded-md border px-3 py-2 text-sm"
-        />
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="rounded-md bg-foreground px-4 py-2 text-sm text-background"
-        >
-          {isLoading ? "Streaming..." : "Send"}
-        </button>
-      </form>
-      {completion && (
-        <p className="mt-4 text-sm leading-relaxed">{completion}</p>
-      )}
-    </div>
+    <main className="min-h-screen bg-background">
+      <StreamTextForm />
+    </main>
   )
 }`,
       },
       {
-        name: "api/completion/route.ts",
+        name: "app/layout.tsx",
+        code: `export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}`,
+      },
+      {
+        name: "app/api/completion/route.ts",
         code: `import { streamText } from "ai"
 import { openai } from "@ai-sdk/openai"
 
@@ -95,42 +164,133 @@ export async function POST(req: Request) {
   return result.toDataStreamResponse()
 }`,
       },
+      {
+        name: "components/stream-text-form.tsx",
+        code: `"use client"
+
+import { useCompletion } from "@ai-sdk/react"
+
+export function StreamTextForm() {
+  const { completion, input, handleInputChange, handleSubmit, isLoading } =
+    useCompletion({ api: "/api/completion" })
+
+  return (
+    <div className="mx-auto max-w-xl p-8">
+      <h1 className="text-lg font-semibold">Stream Text</h1>
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
+        <input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Ask something..."
+          className="flex-1 rounded-md border px-3 py-2 text-sm"
+        />
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-50"
+        >
+          {isLoading ? "Streaming..." : "Send"}
+        </button>
+      </form>
+      {completion && (
+        <p className="mt-4 text-sm leading-relaxed">{completion}</p>
+      )}
+    </div>
+  )
+}`,
+      },
     ],
   },
 
   "basics-generate-image": {
     files: [
       {
-        name: "page.tsx",
+        name: "app/page.tsx",
+        code: `import { GenerateImageForm } from "@/components/generate-image-form"
+
+export default function Page() {
+  return (
+    <main className="min-h-screen bg-background">
+      <GenerateImageForm />
+    </main>
+  )
+}`,
+      },
+      {
+        name: "app/layout.tsx",
+        code: `export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}`,
+      },
+      {
+        name: "app/api/generate-image/route.ts",
+        code: `import { experimental_generateImage as generateImage } from "ai"
+import { openai } from "@ai-sdk/openai"
+
+export async function POST(req: Request) {
+  const { prompt } = await req.json()
+
+  const { image } = await generateImage({
+    model: openai.image("dall-e-3"),
+    prompt,
+    size: "1024x1024",
+  })
+
+  return Response.json({ base64: image.base64 })
+}`,
+      },
+      {
+        name: "components/generate-image-form.tsx",
         code: `"use client"
 
 import { useState } from "react"
-import { experimental_generateImage as generateImage } from "ai"
-import { openai } from "@ai-sdk/openai"
 
-export default function Page() {
+export function GenerateImageForm() {
   const [images, setImages] = useState<string[]>([])
+  const [prompt, setPrompt] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  async function handleGenerate(formData: FormData) {
-    const prompt = formData.get("prompt") as string
-    const { image } = await generateImage({
-      model: openai.image("dall-e-3"),
-      prompt,
-      size: "1024x1024",
-    })
-    setImages((prev) => [...prev, image.base64])
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!prompt.trim()) return
+    setLoading(true)
+    try {
+      const res = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      })
+      const { base64 } = await res.json()
+      setImages((prev) => [...prev, base64])
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="mx-auto max-w-xl p-8">
-      <form action={handleGenerate} className="flex gap-2">
+      <h1 className="text-lg font-semibold">Generate Image</h1>
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
         <input
-          name="prompt"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
           placeholder="Describe an image..."
           className="flex-1 rounded-md border px-3 py-2 text-sm"
         />
-        <button className="rounded-md bg-foreground px-4 py-2 text-sm text-background">
-          Generate
+        <button
+          type="submit"
+          disabled={loading || !prompt.trim()}
+          className="rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-50"
+        >
+          {loading ? "Generating..." : "Generate"}
         </button>
       </form>
       <div className="mt-4 grid grid-cols-2 gap-3">
@@ -153,53 +313,33 @@ export default function Page() {
   "basics-generate-speech": {
     files: [
       {
-        name: "page.tsx",
-        code: `"use client"
-
-import { useState } from "react"
+        name: "app/page.tsx",
+        code: `import { GenerateSpeechForm } from "@/components/generate-speech-form"
 
 export default function Page() {
-  const [audioUrl, setAudioUrl] = useState<string | null>(null)
-
-  async function handleGenerate(formData: FormData) {
-    const text = formData.get("text") as string
-    const voice = formData.get("voice") as string
-    const res = await fetch("/api/speech", {
-      method: "POST",
-      body: JSON.stringify({ text, voice }),
-    })
-    const blob = await res.blob()
-    setAudioUrl(URL.createObjectURL(blob))
-  }
-
   return (
-    <div className="mx-auto max-w-xl p-8">
-      <form action={handleGenerate} className="space-y-3">
-        <textarea
-          name="text"
-          placeholder="Enter text to convert to speech..."
-          className="w-full rounded-md border px-3 py-2 text-sm"
-          rows={3}
-        />
-        <select name="voice" className="rounded-md border px-3 py-2 text-sm">
-          <option value="alloy">Alloy</option>
-          <option value="echo">Echo</option>
-          <option value="fable">Fable</option>
-          <option value="onyx">Onyx</option>
-          <option value="nova">Nova</option>
-          <option value="shimmer">Shimmer</option>
-        </select>
-        <button className="rounded-md bg-foreground px-4 py-2 text-sm text-background">
-          Generate Speech
-        </button>
-      </form>
-      {audioUrl && <audio src={audioUrl} controls className="mt-4 w-full" />}
-    </div>
+    <main className="min-h-screen bg-background">
+      <GenerateSpeechForm />
+    </main>
   )
 }`,
       },
       {
-        name: "api/speech/route.ts",
+        name: "app/layout.tsx",
+        code: `export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}`,
+      },
+      {
+        name: "app/api/speech/route.ts",
         code: `import { experimental_generateSpeech as generateSpeech } from "ai"
 import { openai } from "@ai-sdk/openai"
 
@@ -217,49 +357,103 @@ export async function POST(req: Request) {
   })
 }`,
       },
+      {
+        name: "components/generate-speech-form.tsx",
+        code: `"use client"
+
+import { useState } from "react"
+
+export function GenerateSpeechForm() {
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [text, setText] = useState("")
+  const [voice, setVoice] = useState("alloy")
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!text.trim()) return
+    setLoading(true)
+    try {
+      const res = await fetch("/api/speech", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, voice }),
+      })
+      const blob = await res.blob()
+      setAudioUrl(URL.createObjectURL(blob))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-xl p-8">
+      <h1 className="text-lg font-semibold">Generate Speech</h1>
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Enter text to convert to speech..."
+          className="w-full rounded-md border px-3 py-2 text-sm"
+          rows={3}
+        />
+        <select
+          value={voice}
+          onChange={(e) => setVoice(e.target.value)}
+          className="w-full rounded-md border px-3 py-2 text-sm"
+        >
+          {["alloy", "echo", "fable", "onyx", "nova", "shimmer"].map((v) => (
+            <option key={v} value={v}>
+              {v.charAt(0).toUpperCase() + v.slice(1)}
+            </option>
+          ))}
+        </select>
+        <button
+          type="submit"
+          disabled={loading || !text.trim()}
+          className="rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-50"
+        >
+          {loading ? "Generating..." : "Generate Speech"}
+        </button>
+      </form>
+      {audioUrl && <audio src={audioUrl} controls className="mt-4 w-full" />}
+    </div>
+  )
+}`,
+      },
     ],
   },
 
   "basics-transcribe": {
     files: [
       {
-        name: "page.tsx",
-        code: `"use client"
-
-import { useState } from "react"
+        name: "app/page.tsx",
+        code: `import { TranscribeForm } from "@/components/transcribe-form"
 
 export default function Page() {
-  const [transcript, setTranscript] = useState("")
-
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const formData = new FormData()
-    formData.append("audio", file)
-
-    const res = await fetch("/api/transcribe", {
-      method: "POST",
-      body: formData,
-    })
-    const { text } = await res.json()
-    setTranscript(text)
-  }
-
   return (
-    <div className="mx-auto max-w-xl p-8">
-      <input type="file" accept="audio/*" onChange={handleUpload} />
-      {transcript && (
-        <div className="mt-4 rounded-md border p-4">
-          <p className="text-sm">{transcript}</p>
-        </div>
-      )}
-    </div>
+    <main className="min-h-screen bg-background">
+      <TranscribeForm />
+    </main>
   )
 }`,
       },
       {
-        name: "api/transcribe/route.ts",
+        name: "app/layout.tsx",
+        code: `export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}`,
+      },
+      {
+        name: "app/api/transcribe/route.ts",
         code: `import { experimental_transcribe as transcribe } from "ai"
 import { openai } from "@ai-sdk/openai"
 
@@ -275,28 +469,112 @@ export async function POST(req: Request) {
   return Response.json({ text })
 }`,
       },
+      {
+        name: "components/transcribe-form.tsx",
+        code: `"use client"
+
+import { useState } from "react"
+
+export function TranscribeForm() {
+  const [transcript, setTranscript] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLoading(true)
+    try {
+      const formData = new FormData()
+      formData.append("audio", file)
+      const res = await fetch("/api/transcribe", {
+        method: "POST",
+        body: formData,
+      })
+      const { text } = await res.json()
+      setTranscript(text)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-xl p-8">
+      <h1 className="text-lg font-semibold">Transcribe Audio</h1>
+      <div className="mt-4">
+        <label className="block text-sm font-medium mb-2">
+          Upload audio file
+        </label>
+        <input
+          type="file"
+          accept="audio/*"
+          onChange={handleUpload}
+          disabled={loading}
+          className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-foreground file:px-4 file:py-2 file:text-sm file:text-background"
+        />
+      </div>
+      {loading && (
+        <p className="mt-4 text-sm text-muted-foreground">Transcribing...</p>
+      )}
+      {transcript && (
+        <div className="mt-4 rounded-md border p-4">
+          <p className="text-sm leading-relaxed">{transcript}</p>
+        </div>
+      )}
+    </div>
+  )
+}`,
+      },
     ],
   },
 
   "basics-tool": {
     files: [
       {
-        name: "page.tsx",
+        name: "app/page.tsx",
+        code: `import { ToolCallDemo } from "@/components/tool-call-demo"
+
+export default function Page() {
+  return (
+    <main className="min-h-screen bg-background">
+      <ToolCallDemo />
+    </main>
+  )
+}`,
+      },
+      {
+        name: "app/layout.tsx",
+        code: `export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}`,
+      },
+      {
+        name: "app/api/tool-call/route.ts",
         code: `import { generateText, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
 import { z } from "zod"
 
-export default async function Page() {
+export async function POST(req: Request) {
+  const { prompt } = await req.json()
+
   const { text, toolCalls } = await generateText({
     model: openai("gpt-4o"),
-    prompt: "What's the weather in San Francisco?",
+    prompt,
     tools: {
       getWeather: tool({
-        description: "Get weather for a city",
+        description: "Get current weather for a city",
         parameters: z.object({
           city: z.string().describe("The city name"),
         }),
         execute: async ({ city }) => ({
+          city,
           temp: 18,
           condition: "Partly Cloudy",
           humidity: 65,
@@ -305,15 +583,68 @@ export default async function Page() {
     },
   })
 
+  return Response.json({ text, toolCalls })
+}`,
+      },
+      {
+        name: "components/tool-call-demo.tsx",
+        code: `"use client"
+
+import { useState } from "react"
+
+interface ToolCall {
+  toolName: string
+  args: Record<string, unknown>
+}
+
+export function ToolCallDemo() {
+  const [prompt, setPrompt] = useState("What's the weather in San Francisco?")
+  const [result, setResult] = useState<{ text: string; toolCalls: ToolCall[] } | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setResult(null)
+    try {
+      const res = await fetch("/api/tool-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      })
+      setResult(await res.json())
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-xl p-8">
       <h1 className="text-lg font-semibold">Tool Calling</h1>
-      {toolCalls.map((call, i) => (
-        <pre key={i} className="mt-2 rounded-md bg-muted p-3 text-xs">
-          {JSON.stringify(call, null, 2)}
-        </pre>
-      ))}
-      <p className="mt-4 text-sm">{text}</p>
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
+        <input
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          className="flex-1 rounded-md border px-3 py-2 text-sm"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-50"
+        >
+          {loading ? "Calling..." : "Run"}
+        </button>
+      </form>
+      {result && (
+        <div className="mt-6 space-y-3">
+          {result.toolCalls.map((call, i) => (
+            <pre key={i} className="rounded-md bg-muted p-3 text-xs">
+              {JSON.stringify(call, null, 2)}
+            </pre>
+          ))}
+          <p className="text-sm leading-relaxed">{result.text}</p>
+        </div>
+      )}
     </div>
   )
 }`,
@@ -324,47 +655,136 @@ export default async function Page() {
   "basics-agent": {
     files: [
       {
-        name: "page.tsx",
+        name: "app/page.tsx",
+        code: `import { AgentDemo } from "@/components/agent-demo"
+
+export default function Page() {
+  return (
+    <main className="min-h-screen bg-background">
+      <AgentDemo />
+    </main>
+  )
+}`,
+      },
+      {
+        name: "app/layout.tsx",
+        code: `export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}`,
+      },
+      {
+        name: "app/api/agent/route.ts",
         code: `import { generateText, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
 import { z } from "zod"
 
-export default async function Page() {
+export async function POST(req: Request) {
+  const { prompt } = await req.json()
+
   const { text, steps } = await generateText({
     model: openai("gpt-4o"),
     maxSteps: 5,
-    prompt: "Research the latest AI developments and summarize them.",
+    prompt,
     tools: {
       search: tool({
-        description: "Search the web",
+        description: "Search the web for information",
         parameters: z.object({ query: z.string() }),
-        execute: async ({ query }) => \`Results for: \${query}\`,
+        execute: async ({ query }) => \`Search results for: \${query}\`,
       }),
       analyze: tool({
-        description: "Analyze content",
+        description: "Analyze and summarize content",
         parameters: z.object({ content: z.string() }),
-        execute: async ({ content }) => \`Analysis of: \${content}\`,
+        execute: async ({ content }) => \`Analysis: \${content.slice(0, 200)}...\`,
       }),
     },
   })
 
+  return Response.json({ text, stepCount: steps.length, steps })
+}`,
+      },
+      {
+        name: "components/agent-demo.tsx",
+        code: `"use client"
+
+import { useState } from "react"
+
+interface Step {
+  toolCalls?: { toolName: string; args: Record<string, unknown> }[]
+}
+
+export function AgentDemo() {
+  const [prompt, setPrompt] = useState(
+    "Research the latest AI developments and summarize them."
+  )
+  const [result, setResult] = useState<{
+    text: string
+    stepCount: number
+    steps: Step[]
+  } | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setResult(null)
+    try {
+      const res = await fetch("/api/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      })
+      setResult(await res.json())
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-xl p-8">
       <h1 className="text-lg font-semibold">Agent</h1>
-      <p className="mt-1 text-xs text-muted-foreground">
-        {steps.length} steps executed
-      </p>
-      {steps.map((step, i) => (
-        <div key={i} className="mt-3 border-l-2 pl-3">
-          <p className="text-xs font-medium">Step {i + 1}</p>
-          {step.toolCalls?.map((tc, j) => (
-            <p key={j} className="text-xs text-muted-foreground">
-              Tool: {tc.toolName}({JSON.stringify(tc.args)})
-            </p>
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          className="w-full rounded-md border px-3 py-2 text-sm"
+          rows={2}
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-md bg-foreground px-4 py-2 text-sm text-background disabled:opacity-50"
+        >
+          {loading ? "Running agent..." : "Run Agent"}
+        </button>
+      </form>
+      {result && (
+        <div className="mt-6">
+          <p className="mb-3 text-xs text-muted-foreground">
+            {result.stepCount} steps executed
+          </p>
+          {result.steps.map((step, i) => (
+            <div key={i} className="mb-2 border-l-2 pl-3">
+              <p className="text-xs font-medium text-muted-foreground">
+                Step {i + 1}
+              </p>
+              {step.toolCalls?.map((tc, j) => (
+                <p key={j} className="text-xs text-muted-foreground">
+                  {tc.toolName}({JSON.stringify(tc.args)})
+                </p>
+              ))}
+            </div>
           ))}
+          <p className="mt-4 text-sm leading-relaxed">{result.text}</p>
         </div>
-      ))}
-      <p className="mt-4 text-sm">{text}</p>
+      )}
     </div>
   )
 }`,

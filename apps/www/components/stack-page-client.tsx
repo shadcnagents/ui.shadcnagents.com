@@ -188,7 +188,7 @@ function FileTreeNode({
           style={{ paddingLeft: `${4 + indent}px` }}
           className="flex w-full items-center gap-2 rounded-md py-[5px] pr-2 text-[12.5px] text-muted-foreground/70 transition-colors hover:text-foreground"
         >
-          <Folder className="size-[15px] shrink-0 text-amber-400/70" />
+          <Folder className="size-5 shrink-0 text-amber-400/80" />
           <span className="truncate font-medium">{node.name}</span>
         </button>
         {open &&
@@ -221,9 +221,9 @@ function FileTreeNode({
       )}
     >
       {isCode ? (
-        <FileCode2 className="size-[15px] shrink-0 text-sky-400/80" />
+        <FileCode2 className="size-[18px] shrink-0 text-sky-400/80" />
       ) : (
-        <File className="size-[15px] shrink-0 text-muted-foreground/40" />
+        <File className="size-[18px] shrink-0 text-muted-foreground/50" />
       )}
       <span className="truncate">{node.name}</span>
     </button>
