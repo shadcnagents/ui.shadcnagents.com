@@ -46,7 +46,7 @@ export function OpenInV0Button({
 }: OpenInV0ButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isSmallScreen = useMediaQuery("(max-width: 640px)")
-  const url = `https://v0.dev/chat/api/open?url=https://shadcncloud.com/r/${name}.json`
+  const url = `https://v0.dev/chat/api/open?url=https://shadcnagents.com/r/${name}.json`
 
   return (
     <TooltipProvider>

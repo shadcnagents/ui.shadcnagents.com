@@ -51,7 +51,7 @@ export function MiniBlocksGrid() {
 					.map((block) => (
 						<a
 							key={block.name}
-							href={`https://pro.shadcncloud.com/blocks/${block.name}`}
+							href={`https://pro.shadcnagents.com/blocks/${block.name}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="group relative flex flex-col border border-border bg-background transition-all duration-150 hover:border-foreground/10 hover:shadow-lg hover:shadow-primary/5"

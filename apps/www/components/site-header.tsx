@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { MainNav } from "@/components/main-nav"
 import { ModeToggle } from "@/components/mode-toggle"
+import { UserMenu } from "@/components/user-menu"
 
 export function SiteHeader() {
   const pathname = usePathname()
@@ -20,6 +21,7 @@ export function SiteHeader() {
         <div className="flex flex-1 items-center justify-end space-x-2">
           <nav className="flex items-center gap-1">
             <ModeToggle />
+            <UserMenu />
             <Link
               href="/pricing"
               className={cn(

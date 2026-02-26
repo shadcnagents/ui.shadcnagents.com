@@ -29,7 +29,7 @@ export function MainNav() {
           <path d="M9.5 10c-.18-.63-.5-1.21-.94-1.69A4.48 4.48 0 0 0 5 7C2.79 7 1 8.79 1 11c0 1.88 1.29 3.46 3.04 3.89" />
         </svg>
         <span className="hidden text-sm font-bold sm:inline-block">
-          shadcncloud
+          shadcnagents
         </span>
         <span className="sr-only">{siteConfig.name}</span>
       </Link>

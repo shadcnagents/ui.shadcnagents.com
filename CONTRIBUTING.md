@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to shadcncloud.
+Thanks for your interest in contributing to shadcnagents.
 
 ## About this repository
 
@@ -10,7 +10,7 @@ This is a monorepo using [pnpm](https://pnpm.io) workspaces and [Turborepo](http
 
 ```
 apps/
-  www/            — Next.js 16 app (shadcncloud.com)
+  www/            — Next.js 16 app (shadcnagents.com)
     app/          — App Router pages
     components/   — React components
     config/       — Configuration files

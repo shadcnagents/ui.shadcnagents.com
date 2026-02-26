@@ -63,13 +63,13 @@ export function MobileNav() {
           onOpenChange={setOpen}
         >
           <Icons.brandLogo className="size-6 fill-black  " />
-          <span className=" text-lg font-bold sm:inline-block">shadcncloud</span>
+          <span className=" text-lg font-bold sm:inline-block">shadcnagents</span>
           <span className="sr-only">{siteConfig.name}</span>
         </MobileLink>
 
         <div className="flex flex-col space-y-3 bg-background pt-4">
           <a
-            href="https://pro.shadcncloud.com/blocks"
+            href="https://pro.shadcnagents.com/blocks"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
@@ -79,7 +79,7 @@ export function MobileNav() {
             Blocks <span className="text-xs text-cyan-500">(8 new)</span>
           </a>
           <a
-            href="https://pro.shadcncloud.com/sections"
+            href="https://pro.shadcnagents.com/sections"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(

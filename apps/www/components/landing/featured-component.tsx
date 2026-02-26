@@ -60,7 +60,7 @@ export function FeaturedComponent() {
 						rows={15}
 						lightSize={2}
 						gap={1}
-						text="Welcome to shadcncloud"
+						text="Welcome to shadcnagents"
 						font="default"
 						disableDrawing={false}
 						updateInterval={50}

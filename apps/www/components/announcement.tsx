@@ -13,7 +13,7 @@ import { NeumorphEyebrow } from "@/registry/default/ui/neumorph-eyebrow"
 export function Announcement() {
   return (
     <Link
-      href="https://shadcncloud.com"
+      href="https://shadcnagents.com"
       className="hidden md:block "
       target="_blank"
       rel="noreferrer"

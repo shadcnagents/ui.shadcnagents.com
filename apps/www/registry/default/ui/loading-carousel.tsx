@@ -49,28 +49,28 @@ interface LoadingCarouselProps {
 const defaultTips: Tip[] = [
   {
     text: "Backend snippets. Shadcn style headless components.. but for your backend.",
-    image: "/placeholders/shadcncloud-snips.png",
-    url: "https://www.shadcncloud.com/backend",
+    image: "/placeholders/shadcnagents-snips.png",
+    url: "https://www.shadcnagents.com/backend",
   },
   {
     text: "Create your first directory app today. AI batch scripts to process 100s of urls in seconds.",
-    image: "/placeholders/shadcncloud-dir.png",
-    url: "https://www.shadcncloud.com/templates/shadcncloud-seo",
+    image: "/placeholders/shadcnagents-dir.png",
+    url: "https://www.shadcnagents.com/templates/shadcnagents-seo",
   },
   {
     text: "Landing page template. Framer motion, shadcn, and tailwind.",
-    image: "/placeholders/shadcncloud-rune.png",
-    url: "https://www.shadcncloud.com/templates/shadcncloud-landing-page",
+    image: "/placeholders/shadcnagents-rune.png",
+    url: "https://www.shadcnagents.com/templates/shadcnagents-landing-page",
   },
   {
     text: "Vector embeddings, semantic search, and chat based vector retrieval on easy mode.",
-    image: "/placeholders/shadcncloud-manifest.png",
-    url: "https://www.shadcncloud.com/templates/manifest",
+    image: "/placeholders/shadcnagents-manifest.png",
+    url: "https://www.shadcnagents.com/templates/manifest",
   },
   {
     text: "SEO analysis app. Scraping, analysis, insights, and AI recommendations.",
-    image: "/placeholders/shadcncloud-seo.png",
-    url: "https://www.shadcncloud.com/templates/shadcncloud-seo",
+    image: "/placeholders/shadcnagents-seo.png",
+    url: "https://www.shadcnagents.com/templates/shadcnagents-seo",
   },
 ]
 

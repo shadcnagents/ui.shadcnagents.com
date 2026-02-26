@@ -13,8 +13,8 @@ export default function LogoCarouselDemo() {
           <GradientHeading variant="secondary">
             The best are already here
           </GradientHeading>
-          <a href="https://www.shadcncloud.com" target="_blank">
-            <GradientHeading size="xxl">Try shadcncloud</GradientHeading>
+          <a href="https://www.shadcnagents.com" target="_blank">
+            <GradientHeading size="xxl">Try shadcnagents</GradientHeading>
           </a>
         </div>
 

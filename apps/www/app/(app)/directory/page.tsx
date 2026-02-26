@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 export const metadata: Metadata = {
   title: "Community Directory",
   description:
-    "User-submitted agent patterns, tools, and integrations for the shadcncloud ecosystem.",
+    "User-submitted agent patterns, tools, and integrations for the shadcnagents ecosystem.",
 }
 
 const directoryItems = [

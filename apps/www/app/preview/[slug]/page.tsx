@@ -113,8 +113,8 @@ function PreviewContent({ slug }: { slug: string }) {
 
   useEffect(() => {
     document.title = pattern
-      ? `${pattern.text} — shadcncloud Preview`
-      : `Preview — shadcncloud`
+      ? `${pattern.text} — shadcnagents Preview`
+      : `Preview — shadcnagents`
   }, [pattern])
 
   return (

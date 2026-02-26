@@ -18,14 +18,14 @@ import { IntroDisclosure } from "../ui/intro-disclosure"
 
 const steps = [
   {
-    title: "Welcome to shadcncloud",
+    title: "Welcome to shadcnagents",
     short_description: "Discover our modern component library",
     full_description:
-      "Welcome to shadcncloud! Let's explore how our beautifully crafted components can help you build stunning user interfaces with ease.",
+      "Welcome to shadcnagents! Let's explore how our beautifully crafted components can help you build stunning user interfaces with ease.",
     media: {
       type: "image" as const,
       src: "/feature-3.png",
-      alt: "shadcncloud components overview",
+      alt: "shadcnagents components overview",
     },
   },
   {

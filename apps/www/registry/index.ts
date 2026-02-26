@@ -3,7 +3,7 @@ import { type Registry } from "@/registry/schema"
 import { ui } from "@/registry/ui"
 
 export const registry = {
-  name: "shadcncloud",
-  homepage: "https://shadcncloud.com",
+  name: "shadcnagents",
+  homepage: "https://shadcnagents.com",
   items: [...ui, ...examples],
 } satisfies Registry

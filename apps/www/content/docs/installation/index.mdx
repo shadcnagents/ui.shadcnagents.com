@@ -32,11 +32,11 @@ export function cn(...inputs: ClassValue[]) {
 
 ### CLI Installation (shadcn v3)
 
-For projects using shadcn CLI v3, you can configure the shadcncloud registry to install components directly via the command line.
+For projects using shadcn CLI v3, you can configure the shadcnagents registry to install components directly via the command line.
 
 #### Configure Registry
 
-Add the shadcncloud registry to your `components.json` file:
+Add the shadcnagents registry to your `components.json` file:
 
 ```json
 {
@@ -60,7 +60,7 @@ Add the shadcncloud registry to your `components.json` file:
   },
   "iconLibrary": "lucide",
   "registries": {
-    "@shadcncloud": "https://shadcncloud.com/r/{name}.json"
+    "@shadcnagents": "https://shadcnagents.com/r/{name}.json"
   }
 }
 ```
@@ -71,13 +71,13 @@ Once configured, you can install components using:
 
 ```bash
 # Install a single component
-npx shadcn@beta add @shadcncloud/text-gif
+npx shadcn@beta add @shadcnagents/text-gif
 
 # Install multiple components
-npx shadcn@beta add @shadcncloud/texture-card @shadcncloud/texture-button
+npx shadcn@beta add @shadcnagents/texture-card @shadcnagents/texture-button
 
 # Search for components
-npx shadcn@beta search @shadcncloud --query "texture-button"
+npx shadcn@beta search @shadcnagents --query "texture-button"
 ```
 
 ### Manual Installation

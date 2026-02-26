@@ -150,7 +150,7 @@ export function SiteFooter() {
 
           {/* Brand + theme toggle */}
           <div className="flex items-center gap-4 text-sm">
-            <span className="font-medium">shadcncloud</span>
+            <span className="font-medium">shadcnagents</span>
             <span className="text-muted-foreground">Theme</span>
           </div>
         </div>

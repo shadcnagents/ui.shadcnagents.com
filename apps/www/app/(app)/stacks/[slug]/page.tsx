@@ -20,10 +20,10 @@ export async function generateMetadata({
   const stack = allStacks.find((s) => s.link === `/stacks/${slug}`)
 
   if (!stack) {
-    return { title: "Stack | shadcncloud" }
+    return { title: "Stack | shadcnagents" }
   }
 
-  const title = `${stack.text} – Vercel AI SDK Example | shadcncloud`
+  const title = `${stack.text} – Vercel AI SDK Example | shadcnagents`
   const description = `${stack.description}. Production-ready Vercel AI SDK implementation with shadcn/ui, Next.js, and TypeScript. Copy-paste ready.`
   const url = `${siteConfig.url}/stacks/${slug}`
 
@@ -44,7 +44,7 @@ export async function generateMetadata({
       description: stack.description,
       url,
       type: "website",
-      siteName: "shadcncloud",
+      siteName: "shadcnagents",
     },
     twitter: {
       card: "summary_large_image",

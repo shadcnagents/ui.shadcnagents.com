@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 
 import { Metadata, Viewport } from "next"
+import { Suspense } from "react"
 
 import { siteConfig } from "@/config/site"
 import { GeistSans } from "geist/font/sans"
@@ -16,11 +17,13 @@ import { Analytics } from "@/components/analytics"
 import { ThemeProvider } from "@/components/providers"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeSwitcher } from "@/components/theme-switcher"
+import { SessionProvider } from "@/components/session-provider"
+import { PostHogProvider } from "@/components/posthog-provider"
 
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
-    template: `%s · shadcncloud`,
+    template: `%s · shadcnagents`,
   },
   metadataBase: new URL(siteConfig.url),
   description: siteConfig.description,
@@ -39,21 +42,21 @@ export const metadata: Metadata = {
     "tailwind v4",
     "turbopack",
   ],
-  authors: [{ name: "shadcncloud", url: "https://shadcncloud.com" }],
-  creator: "shadcncloud",
+  authors: [{ name: "shadcnagents", url: "https://shadcnagents.com" }],
+  creator: "shadcnagents",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
     title: siteConfig.name,
     description: siteConfig.description,
-    siteName: "shadcncloud",
+    siteName: "shadcnagents",
     images: [
       {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "shadcncloud – AI SDK Agent Patterns",
+        alt: "shadcnagents – AI SDK Agent Patterns",
       },
     ],
   },
@@ -62,7 +65,7 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: "@shadcncloud",
+    creator: "@shadcnagents",
   },
   icons: {
     icon: "/favicon.ico",
@@ -94,24 +97,28 @@ export default function RootLayout({ children }: RootLayoutProps) {
           GeistMono.variable
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div vaul-drawer-wrapper="">
-            <div className="relative z-10 flex min-h-screen flex-col">
-              {children}
-            </div>
-          </div>
-          <TailwindIndicator />
-          <ThemeSwitcher />
-          <Analytics />
-          <NewYorkToaster />
-          <DefaultToaster />
-          <NewYorkSonner />
-        </ThemeProvider>
+        <SessionProvider>
+          <PostHogProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div vaul-drawer-wrapper="">
+                <div className="relative z-10 flex min-h-screen flex-col">
+                  <Suspense>{children}</Suspense>
+                </div>
+              </div>
+              <TailwindIndicator />
+              <ThemeSwitcher />
+              <Analytics />
+              <NewYorkToaster />
+              <DefaultToaster />
+              <NewYorkSonner />
+            </ThemeProvider>
+          </PostHogProvider>
+        </SessionProvider>
       </body>
     </html>
   )

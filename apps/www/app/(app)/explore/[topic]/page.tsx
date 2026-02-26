@@ -9,7 +9,7 @@ const topics = [
     slug: "ai-agent-builder",
     title: "AI Agent Builder",
     description:
-      "Build production-ready AI agents with shadcncloud patterns. Our agent builder patterns give you composable, type-safe building blocks for creating intelligent agents that can reason, use tools, and interact with users through rich conversational interfaces.",
+      "Build production-ready AI agents with shadcnagents patterns. Our agent builder patterns give you composable, type-safe building blocks for creating intelligent agents that can reason, use tools, and interact with users through rich conversational interfaces.",
     relatedPatterns: ["/group/agents", "/group/tools", "/group/chat"],
   },
   {
@@ -44,7 +44,7 @@ const topics = [
     slug: "ai-agent-platform",
     title: "AI Agent Platform",
     description:
-      "Build your own AI agent platform with shadcncloud. Full-stack patterns for agent management, deployment, monitoring, and user-facing interfaces that scale from prototype to production.",
+      "Build your own AI agent platform with shadcnagents. Full-stack patterns for agent management, deployment, monitoring, and user-facing interfaces that scale from prototype to production.",
     relatedPatterns: ["/group/agents", "/group/integrations", "/group/data"],
   },
   {

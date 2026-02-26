@@ -17,8 +17,8 @@ export function PlugCardGrid() {
 		{
 			title: "Full Stack Shadcn Templates",
 			description:
-				"Comprehensive Next.js + Supabase templates built with Tailwind CSS, shadcncloud components, and shadcn.",
-			href: "https://www.shadcncloud.com",
+				"Comprehensive Next.js + Supabase templates built with Tailwind CSS, shadcnagents components, and shadcn.",
+			href: "https://www.shadcnagents.com",
 		},
 	];
 
