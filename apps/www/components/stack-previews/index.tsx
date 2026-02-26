@@ -41,6 +41,16 @@ const CodeBlock3Preview = dynamic(() => import("./marketing").then((m) => ({ def
 const FeatureGridPreview = dynamic(() => import("./marketing").then((m) => ({ default: m.FeatureGridPreview })))
 const BentoLayoutPreview = dynamic(() => import("./marketing").then((m) => ({ default: m.BentoLayoutPreview })))
 
+const ArtifactCanvasPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.ArtifactCanvasPreview })))
+const VoiceInputPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.VoiceInputPreview })))
+const StreamingMarkdownPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.StreamingMarkdownPreview })))
+const ModelSelectorPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.ModelSelectorPreview })))
+const PromptSuggestionsPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.PromptSuggestionsPreview })))
+const TokenCounterPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.TokenCounterPreview })))
+const AILoadingStatesPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.AILoadingStatesPreview })))
+const StructuredOutputPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.StructuredOutputPreview })))
+const AIImageOutputPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.AIImageOutputPreview })))
+
 /* ─── Registry: slug → component ─── */
 
 export const stackPreviewRegistry: Record<string, ComponentType> = {
@@ -89,4 +99,15 @@ export const stackPreviewRegistry: Record<string, ComponentType> = {
   "marketing-feature-code-block-3": CodeBlock3Preview,
   "marketing-feature-grid-1": FeatureGridPreview,
   "marketing-bento-1": BentoLayoutPreview,
+
+  // AI UI Primitives
+  "artifact-canvas": ArtifactCanvasPreview,
+  "voice-input-button": VoiceInputPreview,
+  "streaming-markdown-renderer": StreamingMarkdownPreview,
+  "model-selector": ModelSelectorPreview,
+  "prompt-suggestion-pills": PromptSuggestionsPreview,
+  "token-counter": TokenCounterPreview,
+  "ai-loading-states": AILoadingStatesPreview,
+  "structured-output-viewer": StructuredOutputPreview,
+  "ai-image-output": AIImageOutputPreview,
 }

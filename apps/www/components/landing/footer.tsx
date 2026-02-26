@@ -49,7 +49,7 @@ export const Footer = () => (
 				<div className="flex items-center justify-center gap-1">
 					<Icons.brandLogo className="size-6 fill-black dark:fill-white " />
 					<h2 className="mb-2 text-center font-medium text-3xl tracking-[-0.12rem] md:text-4xl ">
-						shadcncloud
+						shadcnagents
 					</h2>
 					<Icons.brandLogo className="size-6 fill-black dark:fill-white " />
 				</div>

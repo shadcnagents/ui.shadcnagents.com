@@ -4,7 +4,7 @@ export function AlertBanner() {
 	return (
 		<div className="relative z-50 w-full bg-[#ADFA1B] text-black">
 			<a
-				href="https://shadcncloud.com"
+				href="https://shadcnagents.com"
 				target="_blank"
 				rel="noopener"
 				className="group flex items-center justify-center gap-3 px-4 py-1.5 transition-colors hover:bg-[#9de610]"

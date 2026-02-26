@@ -737,7 +737,7 @@ function TemplateCard({
 			className="group relative flex flex-col overflow-hidden border border-border bg-background transition-all duration-150 hover:border-foreground/40 hover:shadow-lg hover:shadow-primary/5"
 			target="_blank"
 			rel="noopener noreferrer"
-			href={`https://shadcncloud.com/templates/${slug}`}
+			href={`https://shadcnagents.com/templates/${slug}`}
 		>
 			{/* Corner accents */}
 			<div className="-top-px -left-px pointer-events-none absolute h-3 w-3 border-primary/50 border-t-2 border-l-2 opacity-0 transition-all duration-200 group-hover:opacity-100" />
@@ -899,7 +899,7 @@ function FeaturedPatternCard({
 			className="group relative flex flex-col border border-border bg-background transition-all duration-150 hover:border-foreground/10 hover:shadow-lg hover:shadow-primary/5"
 			target="_blank"
 			rel="noopener noreferrer"
-			href={`https://shadcncloud.com${href}`}
+			href={`https://shadcnagents.com${href}`}
 		>
 			{/* Corner accents */}
 			<div className="-top-px -left-px pointer-events-none absolute h-3 w-3 border-primary/50 border-t-2 border-l-2 opacity-0 transition-all duration-200 group-hover:opacity-100" />
@@ -1090,7 +1090,7 @@ export function WhatsIncluded() {
 				<div className="flex justify-center">
 					<a
 						className="group flex items-center gap-2 border border-border bg-background px-6 py-3 font-mono text-sm uppercase tracking-wider transition-all hover:border-foreground/40 hover:bg-foreground hover:text-background"
-						href="https://shadcncloud.com/directory"
+						href="https://shadcnagents.com/directory"
 						target="_blank"
 						rel="noopener noreferrer"
 					>
@@ -1157,7 +1157,7 @@ export function WhatsIncluded() {
 							className="group flex items-center gap-2 border border-primary/30 bg-primary/5 px-6 py-3 font-mono text-sm uppercase tracking-wider transition-all hover:border-primary/60 hover:bg-primary hover:text-primary-foreground"
 							target="_blank"
 							rel="noopener noreferrer"
-							href="https://shadcncloud.com/templates"
+							href="https://shadcnagents.com/templates"
 						>
 							<HugeiconsIcon
 								className="size-4 text-primary group-hover:text-primary-foreground"

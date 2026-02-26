@@ -146,10 +146,10 @@ function ProTemplateCard({ card }: { card: (typeof TEMPLATES_GRID)[number] }) {
 export const TEMPLATES_GRID = [
 	{
 		name: "Logo GPT",
-		slug: "https://pro.shadcncloud.com/templates/logo-gpt-template",
+		slug: "https://pro.shadcnagents.com/templates/logo-gpt-template",
 		new: true,
-		downloadUrl: "shadcncloud-gpt-template.zip",
-		liveUrl: "https://pro.shadcncloud.com/templates/logo-gpt-template", // replace with the actual live URL
+		downloadUrl: "shadcnagents-gpt-template.zip",
+		liveUrl: "https://pro.shadcnagents.com/templates/logo-gpt-template", // replace with the actual live URL
 		meta: "fullstack",
 		description:
 			"AI-powered logo generation platform with Dalle integration, token-based currency system, and secure image storage using Supabase.",
@@ -182,9 +182,9 @@ export const TEMPLATES_GRID = [
 	},
 	{
 		name: "Directory",
-		slug: "https://pro.shadcncloud.com/templates/shadcncloud-directory-template",
+		slug: "https://pro.shadcnagents.com/templates/shadcnagents-directory-template",
 		new: true,
-		downloadUrl: "shadcncloud-directory.zip",
+		downloadUrl: "shadcnagents-directory.zip",
 		liveUrl: "https://nextjs.design", // replace with the actual live URL
 		meta: "fullstack",
 		description:
@@ -223,9 +223,9 @@ export const TEMPLATES_GRID = [
 	},
 	{
 		name: "Travel Stash",
-		slug: "https://pro.shadcncloud.com/templates/shadcncloud-travel-stash",
+		slug: "https://pro.shadcnagents.com/templates/shadcnagents-travel-stash",
 		new: false,
-		downloadUrl: "shadcncloud-travel-stash.zip",
+		downloadUrl: "shadcnagents-travel-stash.zip",
 		liveUrl: "https://dub.sh/travl", // replace with the actual live URL
 		meta: "fullstack",
 		description:
@@ -262,10 +262,10 @@ export const TEMPLATES_GRID = [
 		name: "Landing Page",
 		new: false,
 		meta: "marketing",
-		downloadUrl: "shadcncloud-landing-page.zip",
+		downloadUrl: "shadcnagents-landing-page.zip",
 		liveUrl: "https://dub.sh/rune",
 		gradient: "bg-gradient-to-b from-white/10 to-[#FF9150] via-[#FFD0B7]/30",
-		slug: "https://pro.shadcncloud.com/templates/shadcncloud-landing-page",
+		slug: "https://pro.shadcnagents.com/templates/shadcnagents-landing-page",
 		description:
 			"Modern landing page template featuring Framer Motion animations, custom navigation components, and responsive design optimized for conversions.",
 		features: [
@@ -288,9 +288,9 @@ export const TEMPLATES_GRID = [
 
 	{
 		name: "SEO Tool",
-		slug: "https://pro.shadcncloud.com/templates/shadcncloud-seo",
+		slug: "https://pro.shadcnagents.com/templates/shadcnagents-seo",
 		new: false,
-		downloadUrl: "shadcncloud-seo.zip",
+		downloadUrl: "shadcnagents-seo.zip",
 		liveUrl: "https://cleanmyseo.com",
 		meta: "fullstack",
 		description:
@@ -323,10 +323,10 @@ export const TEMPLATES_GRID = [
 
 	{
 		name: "Manifest",
-		slug: "https://pro.shadcncloud.com/templates/manifest",
+		slug: "https://pro.shadcnagents.com/templates/manifest",
 		meta: "fullstack",
 		liveUrl: "https://dub.sh/vector",
-		downloadUrl: "shadcncloud-manifest.zip",
+		downloadUrl: "shadcnagents-manifest.zip",
 		// gradient: "bg-gradient-to-b from-green-50 to-green-400 via-black/10",
 		gradient: "bg-gradient-to-b from-white/10 to-green-400 via-green-50",
 		new: false,

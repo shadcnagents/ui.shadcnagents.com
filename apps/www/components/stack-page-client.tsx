@@ -2,6 +2,7 @@
 
 import { use, useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import {
   Check,
   ChevronDown,
@@ -22,10 +23,16 @@ import {
 } from "lucide-react"
 
 import { getAllStacks } from "@/config/stacks"
+import { stackContent } from "@/config/stack-content"
 import { cn } from "@/lib/utils"
 import { stackPreviewRegistry } from "@/components/stack-previews"
 import { stackSourceRegistry } from "@/lib/stack-source"
 import { Button } from "@/components/ui/button"
+
+interface ProSourceFile {
+  name: string
+  code: string
+}
 
 function makeThemeVars(base: Record<string, string>) {
   const vars: Record<string, string> = {}
@@ -127,6 +134,7 @@ interface StackPageClientProps {
 
 export function StackPageClient({ params }: StackPageClientProps) {
   const { slug } = use(params)
+  const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview")
   const [cliCopied, setCliCopied] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
@@ -137,6 +145,9 @@ export function StackPageClient({ params }: StackPageClientProps) {
   const [showThemePanel, setShowThemePanel] = useState(false)
   const [customColor, setCustomColor] = useState("")
   const [previewKey, setPreviewKey] = useState(0)
+  const [proFiles, setProFiles] = useState<ProSourceFile[] | null>(null)
+  const [proLoading, setProLoading] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
   const themePanelRef = useRef<HTMLDivElement>(null)
 
@@ -152,10 +163,16 @@ export function StackPageClient({ params }: StackPageClientProps) {
     stackIndex < allStacks.length - 1 ? allStacks[stackIndex + 1] : null
 
   const PreviewComponent = stackPreviewRegistry[slug]
-  const source = stackSourceRegistry[slug]
+  // For pro stacks: use fetched pro files if user is authenticated + isPro, else fall back to registry
+  const freeSource = stackSourceRegistry[slug]
+  const userIsPro = session?.user?.isPro ?? false
+  const source = isPro && userIsPro && proFiles
+    ? { files: proFiles }
+    : freeSource
   const activeFile = source?.files[activeFileIndex]
+  const content = stackContent[slug]
 
-  const cliCommand = `npx shadcn add https://shadcncloud.com/r/${slug}`
+  const cliCommand = `npx shadcn add https://shadcnagents.com/r/${slug}`
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -171,6 +188,21 @@ export function StackPageClient({ params }: StackPageClientProps) {
       return () => document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [showThemePanel])
+
+  // Fetch pro source from private GitHub repo when user is authenticated + isPro
+  useEffect(() => {
+    if (!isPro || !session?.user?.isPro) return
+    if (proFiles) return // already fetched
+
+    setProLoading(true)
+    fetch(`/api/pro/${slug}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.files) setProFiles(data.files)
+      })
+      .catch(console.error)
+      .finally(() => setProLoading(false))
+  }, [slug, isPro, session?.user?.isPro, proFiles])
 
   function handleCopyCli() {
     navigator.clipboard.writeText(cliCommand)
@@ -222,6 +254,15 @@ export function StackPageClient({ params }: StackPageClientProps) {
           <p className="text-xs text-muted-foreground">{description}</p>
         </div>
         <div className="flex items-center gap-1.5">
+          {content && (
+            <button
+              onClick={() => setShowDetails((v) => !v)}
+              title={showDetails ? "Hide details" : "Show details"}
+              className="flex size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <ChevronDown className={cn("size-3.5 transition-transform duration-200", showDetails && "rotate-180")} />
+            </button>
+          )}
           {prevStack && (
             <Link
               href={prevStack.link}
@@ -241,6 +282,71 @@ export function StackPageClient({ params }: StackPageClientProps) {
             </Link>
           )}
         </div>
+      </div>
+
+      {/* Details panel — always in DOM for SEO, collapsed by default */}
+      <div
+        className={cn(
+          "shrink-0 overflow-hidden border-b border-border/20 bg-muted/5 transition-all duration-300",
+          showDetails ? "max-h-[420px]" : "max-h-0 border-b-0"
+        )}
+      >
+        {content && (
+          <div className="grid grid-cols-1 gap-6 px-6 py-5 md:grid-cols-[1fr_auto]">
+            {/* Left: intro + use cases */}
+            <div className="space-y-4 min-w-0">
+              <p className="text-[12.5px] leading-[1.75] text-foreground/65">{content.intro}</p>
+              <ul className="space-y-1">
+                {content.useCases.map((uc) => (
+                  <li key={uc} className="flex items-start gap-2 text-[12px] leading-[1.6] text-foreground/55">
+                    <span className="mt-[5px] size-1 shrink-0 rounded-full bg-foreground/25" />
+                    {uc}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Right: tech stack + related */}
+            <div className="shrink-0 space-y-4 md:w-52">
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40">Tech stack</p>
+                <div className="flex flex-wrap gap-1">
+                  {content.techStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded border border-border/40 bg-muted/40 px-1.5 py-0.5 font-mono text-[10px] text-foreground/45"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {content.relatedSlugs && content.relatedSlugs.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40">Related</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {content.relatedSlugs.map((relSlug) => {
+                      const relStack = getAllStacks().find((s) => s.link === `/stacks/${relSlug}`)
+                      if (!relStack) return null
+                      return (
+                        <Link
+                          key={relSlug}
+                          href={relStack.link}
+                          scroll={false}
+                          onClick={() => setShowDetails(false)}
+                          className="rounded border border-border/40 bg-muted/30 px-2 py-0.5 text-[11px] text-foreground/55 transition-colors hover:border-border hover:bg-muted/60 hover:text-foreground"
+                        >
+                          {relStack.text}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CLI Command bar */}
@@ -475,16 +581,25 @@ export function StackPageClient({ params }: StackPageClientProps) {
               )}
               style={previewThemeVars as React.CSSProperties}
             >
-              {isPro ? (
+              {isPro && !userIsPro ? (
                 <div className="text-center">
                   <Lock className="mx-auto mb-3 size-5 text-muted-foreground/25" />
                   <p className="text-sm font-medium text-foreground">Pro Stack</p>
                   <p className="mt-1 text-xs text-muted-foreground/50">
-                    Unlock with Pro for full preview and source code
+                    {session?.user
+                      ? "Upgrade to Pro to unlock full preview and source code"
+                      : "Sign in or upgrade to Pro to access this stack"}
                   </p>
-                  <Button asChild size="sm" className="mt-4">
-                    <Link href="/pricing">Unlock with Pro</Link>
-                  </Button>
+                  <div className="mt-4 flex items-center justify-center gap-2">
+                    {!session?.user && (
+                      <Button asChild variant="outline" size="sm">
+                        <Link href="/auth/login">Sign In</Link>
+                      </Button>
+                    )}
+                    <Button asChild size="sm">
+                      <Link href="/pricing">Unlock with Pro</Link>
+                    </Button>
+                  </div>
                 </div>
               ) : PreviewComponent ? (
                 <div className="w-full" key={previewKey}>
@@ -494,6 +609,7 @@ export function StackPageClient({ params }: StackPageClientProps) {
                 <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
               )}
             </div>
+
           </div>
         )}
 
@@ -544,16 +660,31 @@ export function StackPageClient({ params }: StackPageClientProps) {
                   <p className="text-sm text-muted-foreground/40">Source code coming soon</p>
                 </div>
               )}
-              {isPro && source && (
+              {isPro && !userIsPro && (
                 <div className="absolute inset-0 top-[140px]">
                   <div className="h-16 bg-gradient-to-b from-transparent to-background/80" />
                   <div className="flex h-full flex-col items-center bg-background/80 pt-8 backdrop-blur-sm">
-                    <Lock className="mb-3 size-5 text-muted-foreground/25" />
-                    <p className="text-sm font-medium">Pro Stack</p>
-                    <p className="mt-1 text-xs text-muted-foreground/50">Unlock with Pro for full source code</p>
-                    <Button asChild size="sm" className="mt-4">
-                      <Link href="/pricing">Unlock with Pro</Link>
-                    </Button>
+                    {proLoading ? (
+                      <p className="text-xs text-muted-foreground animate-pulse">Loading source…</p>
+                    ) : (
+                      <>
+                        <Lock className="mb-3 size-5 text-muted-foreground/25" />
+                        <p className="text-sm font-medium">Pro Stack</p>
+                        <p className="mt-1 text-xs text-muted-foreground/50">
+                          {session?.user ? "Upgrade to Pro" : "Sign in or upgrade to Pro"}
+                        </p>
+                        <div className="mt-4 flex gap-2">
+                          {!session?.user && (
+                            <Button asChild variant="outline" size="sm">
+                              <Link href="/auth/login">Sign In</Link>
+                            </Button>
+                          )}
+                          <Button asChild size="sm">
+                            <Link href="/pricing">Unlock with Pro</Link>
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               )}

@@ -80,7 +80,7 @@ const CliRegistryConfig = React.memo<CliRegistryConfigProps>(
                   Registry Configuration
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Configure your project to use the shadcncloud registry with shadcn
+                  Configure your project to use the shadcnagents registry with shadcn
                   CLI v3.
                 </p>
               </div>
@@ -168,15 +168,15 @@ const CliRegistryConfig = React.memo<CliRegistryConfigProps>(
                       <div className="space-y-2">
                         <div className="space-y-1">
                           <code className="block rounded bg-zinc-50 px-2 py-1 text-sm text-zinc-800">
-                            npx shadcn@beta add @shadcncloud/button
+                            npx shadcn@beta add @shadcnagents/button
                           </code>
                           <p className="text-sm text-zinc-600">
-                            Install button from shadcncloud registry
+                            Install button from shadcnagents registry
                           </p>
                         </div>
                         <div className="space-y-1">
                           <code className="block rounded bg-zinc-50 px-2 py-1 text-sm text-zinc-800">
-                            npx shadcn@beta add @shadcncloud/button @shadcncloud/card
+                            npx shadcn@beta add @shadcnagents/button @shadcnagents/card
                           </code>
                           <p className="text-sm text-zinc-600">
                             Install multiple resources at once
@@ -184,7 +184,7 @@ const CliRegistryConfig = React.memo<CliRegistryConfigProps>(
                         </div>
                         <div className="space-y-1">
                           <code className="block rounded bg-zinc-50 px-2 py-1 text-sm text-zinc-800">
-                            npx shadcn@beta search @shadcncloud --query
+                            npx shadcn@beta search @shadcnagents --query
                             &quot;button&quot;
                           </code>
                           <p className="text-sm text-zinc-600">
@@ -218,7 +218,7 @@ const CliRegistryConfig = React.memo<CliRegistryConfigProps>(
                           </h5>
                           <pre className="overflow-x-auto rounded bg-zinc-50 p-2 text-xs text-zinc-600">
                             {`{
-  "@shadcncloud": "https://shadcncloud.com/r/{name}.json",
+  "@shadcnagents": "https://shadcnagents.com/r/{name}.json",
   "@v0": "https://v0.dev/chat/b/{name}"
 }`}
                           </pre>
@@ -229,7 +229,7 @@ const CliRegistryConfig = React.memo<CliRegistryConfigProps>(
                           </h5>
                           <pre className="overflow-x-auto rounded bg-zinc-50 p-2 text-xs text-zinc-600">
                             {`{
-  "@shadcncloud": "https://shadcncloud.com/r/{name}.json",
+  "@shadcnagents": "https://shadcnagents.com/r/{name}.json",
   "@v0": "https://v0.dev/chat/b/{name}",
   "@acme": "https://registry.acme.com/{name}.json"
 }`}
@@ -282,7 +282,7 @@ const CliRegistryConfig = React.memo<CliRegistryConfigProps>(
   "iconLibrary": "lucide",
 
   "registries": {
-    "@shadcncloud": "https://shadcncloud.com/r/{name}.json"
+    "@shadcnagents": "https://shadcnagents.com/r/{name}.json"
   }
 }`}
                         </pre>

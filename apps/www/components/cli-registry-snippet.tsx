@@ -28,7 +28,7 @@ export function CliRegistrySnippet({ className }: CliRegistrySnippetProps) {
 
   const registrySnippet = `{
   "registries": {
-    "@shadcncloud": "https://shadcncloud.com/r/{name}.json"
+    "@shadcnagents": "https://shadcnagents.com/r/{name}.json"
   }
 }`
 
@@ -115,7 +115,7 @@ export function CliRegistrySnippet({ className }: CliRegistrySnippetProps) {
             <p className="text-xs text-muted-foreground">
               Then install with:{" "}
               <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                npx shadcn@beta add @shadcncloud/component-name
+                npx shadcn@beta add @shadcnagents/component-name
               </code>
             </p>
           </div>
