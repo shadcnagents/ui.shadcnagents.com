@@ -7,7 +7,7 @@ import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
-  title: "Vercel AI SDK Components & Blocks | shadcncloud",
+  title: "Vercel AI SDK Components & Blocks | shadcnagents",
   description:
     "60+ production-ready Vercel AI SDK components and agent patterns for Next.js. generateText, streamText, tool calling, AI agents, orchestration, RAG, and more. Copy-paste with shadcn/ui and TypeScript.",
   keywords: [
@@ -25,16 +25,16 @@ export const metadata: Metadata = {
     "vercel ai sdk nextjs",
   ],
   openGraph: {
-    title: "Vercel AI SDK Components & Blocks | shadcncloud",
+    title: "Vercel AI SDK Components & Blocks | shadcnagents",
     description:
       "60+ production-ready Vercel AI SDK components and agent patterns. Copy-paste with shadcn/ui, Next.js, and TypeScript.",
     type: "website",
     url: `${siteConfig.url}/stacks`,
-    siteName: "shadcncloud",
+    siteName: "shadcnagents",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vercel AI SDK Components & Blocks | shadcncloud",
+    title: "Vercel AI SDK Components & Blocks | shadcnagents",
     description:
       "60+ production-ready Vercel AI SDK components and agent patterns for Next.js.",
   },
@@ -55,7 +55,7 @@ export default function StacksPage() {
     url: `${siteConfig.url}/stacks`,
     publisher: {
       "@type": "Organization",
-      name: "shadcncloud",
+      name: "shadcnagents",
       url: siteConfig.url,
     },
     mainEntity: {

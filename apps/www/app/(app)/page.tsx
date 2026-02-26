@@ -145,7 +145,7 @@ export default function IndexPage() {
             &ldquo;
           </span>
           <blockquote className="text-lg leading-relaxed md:text-xl">
-            shadcncloud looks amazing. A registry of agents makes so much sense.
+            shadcnagents looks amazing. A registry of agents makes so much sense.
             I like this distribution method.
           </blockquote>
           <figcaption className="mt-6 flex items-center gap-3">
@@ -161,7 +161,7 @@ export default function IndexPage() {
       {/* ─────────────────── Company Logos ─────────────────── */}
       <section className="mx-auto max-w-4xl px-4 py-12 md:py-16">
         <p className="mb-8 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground">
-          Devs from these companies are using shadcncloud
+          Devs from these companies are using shadcnagents
         </p>
         <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
           {companyLogos.map((name) => (
