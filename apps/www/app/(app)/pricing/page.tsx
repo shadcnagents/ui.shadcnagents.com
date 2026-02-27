@@ -112,11 +112,11 @@ export default function PricingPage() {
           </div>
 
           {/* Pro Plan */}
-          <div className="ring-foreground flex flex-col rounded-lg border-2 p-8 ring-2">
+          <div className="ring-primary flex flex-col rounded-lg border-2 p-8 ring-2">
             <div className="mb-6">
               <div className="flex items-center gap-3">
                 <h2 className="text-xl font-semibold">{proPlan.name}</h2>
-                <span className="bg-foreground text-background rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider">
+                <span className="bg-primary text-primary-foreground rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider">
                   Lifetime
                 </span>
               </div>
@@ -160,7 +160,7 @@ export default function PricingPage() {
 
             <Link
               href={proPlan.href}
-              className="bg-foreground text-background hover:bg-foreground/90 inline-flex items-center justify-center rounded-md px-6 py-3 text-sm font-medium transition-colors"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-6 py-3 text-sm font-medium transition-colors"
             >
               {proPlan.cta}
             </Link>

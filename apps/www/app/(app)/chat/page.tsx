@@ -212,7 +212,7 @@ export default function ChatPage() {
         <div className="flex gap-3">
           <Link
             href="/stacks/ai-elements-chat"
-            className="group inline-flex items-center gap-2 bg-foreground px-6 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="group inline-flex items-center gap-2 bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Start with basic chat
             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -311,7 +311,7 @@ export default function ChatPage() {
           </div>
           <Link
             href="/stacks"
-            className="group inline-flex items-center gap-2 bg-foreground px-8 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="group inline-flex items-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Browse all stacks
             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />

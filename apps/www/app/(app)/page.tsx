@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { ArrowRight, Check, Terminal } from "lucide-react"
 
+import { siteConfig } from "@/config/site"
+
 /* ─────────────────────── Data ─────────────────────── */
 
 const techBadges = [
@@ -192,26 +194,24 @@ export default function IndexPage() {
           style={{ fontSize: "clamp(28px, 14px + 3.2vw, 54px)" }}
         >
           <span className="block font-editorial italic text-[1.15em]">
-            Ship AI Features With
+            AI SDK Components You Can
           </span>
           <span
             className="block font-mono font-medium tracking-[-0.09em]"
             style={{ wordSpacing: "-0.16em" }}
           >
-            One CLI Command
+            Copy, Paste, and Ship Today
           </span>
         </h1>
 
         <p className="mx-auto max-w-2xl text-center text-lg leading-relaxed text-muted-foreground md:text-xl">
-          Full-stack AI stacks — not just components. Each stack includes the
-          UI, the API route, types, and all wiring. Install via the shadcn CLI
-          and ship to production.
+          {siteConfig.description}
         </p>
 
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
           <Link
             href="/stacks"
-            className="group inline-flex items-center justify-center gap-2 bg-foreground px-8 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="group inline-flex items-center justify-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Browse 100+ stacks
             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -437,7 +437,7 @@ export default function IndexPage() {
             <div>
               <div className="mb-1 flex items-center gap-2">
                 <h3 className="text-lg font-semibold">Pro</h3>
-                <span className="rounded-full bg-foreground px-2 py-0.5 font-mono text-[10px] font-medium text-background">
+                <span className="rounded-full bg-primary px-2 py-0.5 font-mono text-[10px] font-medium text-primary-foreground">
                   LIFETIME
                 </span>
               </div>
@@ -460,7 +460,7 @@ export default function IndexPage() {
             </ul>
             <Link
               href="/pricing"
-              className="group mt-auto inline-flex items-center justify-center gap-2 bg-foreground px-6 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+              className="group mt-auto inline-flex items-center justify-center gap-2 bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Get all access
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -516,7 +516,7 @@ export default function IndexPage() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
             <Link
               href="/stacks"
-              className="group inline-flex items-center justify-center gap-2 bg-foreground px-8 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+              className="group inline-flex items-center justify-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Explore all stacks
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />

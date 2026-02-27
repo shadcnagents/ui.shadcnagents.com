@@ -102,7 +102,7 @@ export default function OnboardingPage() {
           <button
             onClick={handleSubmit}
             disabled={!useCase || !techStack || saving}
-            className="h-10 w-full rounded-md bg-foreground text-sm font-medium text-background transition-opacity disabled:opacity-40 hover:opacity-90"
+            className="h-10 w-full rounded-md bg-primary text-sm font-medium text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-90"
           >
             {saving ? "Saving…" : "Get started →"}
           </button>
