@@ -565,7 +565,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === "preview"
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -577,7 +577,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "flex items-center gap-1.5 border-l border-border px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === "code"
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -767,7 +767,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               >
                 {isPro && !userIsPro ? (
                   <div className="text-center">
-                    <Lock className="mx-auto mb-3 size-5 text-muted-foreground/25" />
+                    <Lock className="mx-auto mb-3 size-5 text-primary/30" />
                     <p className="text-sm font-medium text-foreground">Pro Stack</p>
                     <p className="mt-1 text-xs text-muted-foreground/50">
                       {session?.user
@@ -780,7 +780,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                           <Link href="/auth/login">Sign In</Link>
                         </Button>
                       )}
-                      <Button asChild size="sm">
+                      <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                         <Link href="/pricing">Unlock with Pro</Link>
                       </Button>
                     </div>
@@ -871,7 +871,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                         <p className="text-xs text-muted-foreground animate-pulse">Loading source…</p>
                       ) : (
                         <>
-                          <Lock className="mb-3 size-5 text-muted-foreground/25" />
+                          <Lock className="mb-3 size-5 text-primary/30" />
                           <p className="text-sm font-medium">Pro Stack</p>
                           <p className="mt-1 text-xs text-muted-foreground/50">
                             {session?.user ? "Upgrade to Pro" : "Sign in or upgrade to Pro"}
@@ -882,7 +882,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                                 <Link href="/auth/login">Sign In</Link>
                               </Button>
                             )}
-                            <Button asChild size="sm">
+                            <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                               <Link href="/pricing">Unlock with Pro</Link>
                             </Button>
                           </div>
