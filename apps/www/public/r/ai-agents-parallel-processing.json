@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-agents-parallel-processing",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nasync function analyzeInParallel(content: string) {\n  const [sentiment, entities, topics] = await Promise.all([\n    generateText({\n      model: openai(\"gpt-4o-mini\"),\n      system: \"Analyze sentiment. Return: positive, negative, or neutral.\",\n      prompt: content,\n    }),\n    generateText({\n      model: openai(\"gpt-4o-mini\"),\n      system: \"Extract named entities as a JSON array.\",\n      prompt: content,\n    }),\n    generateText({\n      model: openai(\"gpt-4o-mini\"),\n      system: \"Classify the main topics. Return as a JSON array.\",\n      prompt: content,\n    }),\n  ])\n\n  return {\n    sentiment: sentiment.text,\n    entities: entities.text,\n    topics: topics.text,\n  }\n}\n\nexport default async function Page() {\n  const result = await analyzeInParallel(\n    \"OpenAI released GPT-5 today, marking a significant advance in AI.\"\n  )\n\n  return (\n    <div className=\"mx-auto max-w-xl space-y-3 p-8\">\n      <h1 className=\"text-lg font-semibold\">Parallel Processing</h1>\n      {Object.entries(result).map(([key, value]) => (\n        <div key={key} className=\"rounded-md border p-3\">\n          <p className=\"text-xs font-medium uppercase\">{key}</p>\n          <p className=\"mt-1 text-sm text-muted-foreground\">{value}</p>\n        </div>\n      ))}\n    </div>\n  )\n}"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-workflow-basic",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nasync function analyzeUrl(url: string) {\n  // Step 1: Fetch content\n  const html = await fetch(url).then((r) => r.text())\n\n  // Step 2: Extract text\n  const text = html.replace(/<[^>]*>/g, \" \").replace(/\\s+/g, \" \").trim()\n\n  // Step 3: Analyze with AI\n  const { text: analysis } = await generateText({\n    model: openai(\"gpt-4o\"),\n    system: \"Analyze the following webpage content. Provide a structured summary.\",\n    prompt: text.slice(0, 4000),\n  })\n\n  // Step 4: Generate structured output\n  const { text: structured } = await generateText({\n    model: openai(\"gpt-4o\"),\n    system: \"Convert this analysis to JSON with keys: title, summary, topics, sentiment.\",\n    prompt: analysis,\n  })\n\n  return JSON.parse(structured)\n}\n\nexport default async function Page() {\n  const result = await analyzeUrl(\"https://example.com\")\n\n  return (\n    <div className=\"mx-auto max-w-xl p-8\">\n      <h1 className=\"text-lg font-semibold\">URL Analysis</h1>\n      <pre className=\"mt-4 rounded-md bg-muted p-4 text-xs\">\n        {JSON.stringify(result, null, 2)}\n      </pre>\n    </div>\n  )\n}"
+    }
+  ]
+}

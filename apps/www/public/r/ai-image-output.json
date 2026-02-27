@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-image-output",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "ai-image-output.tsx",
+      "type": "registry:component",
+      "target": "ai-image-output.tsx",
+      "content": "\"use client\"\n\nimport { useState } from \"react\"\nimport { Download, RefreshCw } from \"lucide-react\"\n\nexport function AIImageOutput() {\n  const [prompt, setPrompt] = useState(\"\")\n  const [imageUrl, setImageUrl] = useState<string | null>(null)\n  const [loading, setLoading] = useState(false)\n  const [elapsed, setElapsed] = useState(0)\n\n  async function generate() {\n    if (!prompt.trim() || loading) return\n    setLoading(true)\n    setImageUrl(null)\n    setElapsed(0)\n\n    const start = Date.now()\n    const timer = setInterval(() => setElapsed((Date.now() - start) / 1000), 100)\n\n    const res = await fetch(\"/api/generate-image\", {\n      method: \"POST\",\n      body: JSON.stringify({ prompt }),\n      headers: { \"Content-Type\": \"application/json\" },\n    })\n    const { url } = await res.json()\n    clearInterval(timer)\n    setElapsed((Date.now() - start) / 1000)\n    setImageUrl(url)\n    setLoading(false)\n  }\n\n  return (\n    <div className=\"mx-auto max-w-sm space-y-4 p-6\">\n      <div className=\"flex gap-2\">\n        <input\n          value={prompt}\n          onChange={(e) => setPrompt(e.target.value)}\n          onKeyDown={(e) => e.key === \"Enter\" && generate()}\n          placeholder=\"Describe an image…\"\n          className=\"flex-1 rounded-lg border border-border/40 bg-muted/20 px-3 py-2 text-sm outline-none\"\n        />\n        <button\n          onClick={generate}\n          disabled={loading || !prompt.trim()}\n          className=\"rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-40\"\n        >\n          {loading ? <RefreshCw className=\"size-4 animate-spin\" /> : \"Generate\"}\n        </button>\n      </div>\n\n      <div className=\"relative aspect-square w-full overflow-hidden rounded-xl border border-border/40 bg-muted/20\">\n        {loading && (\n          <div className=\"absolute inset-0 flex flex-col items-center justify-center gap-2\">\n            <div className=\"size-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground\" />\n            <span className=\"text-xs text-muted-foreground\">{elapsed.toFixed(1)}s</span>\n          </div>\n        )}\n        {imageUrl && (\n          <>\n            <img src={imageUrl} alt={prompt} className=\"h-full w-full object-cover\" />\n            <div className=\"absolute bottom-3 right-3\">\n              <a\n                href={imageUrl}\n                download=\"generated.png\"\n                className=\"flex items-center gap-1.5 rounded-full bg-background/70 px-3 py-1.5 text-xs font-medium backdrop-blur-sm\"\n              >\n                <Download className=\"size-3\" /> Save\n              </a>\n            </div>\n          </>\n        )}\n      </div>\n    </div>\n  )\n}"
+    },
+    {
+      "path": "app/api/generate-image/route.ts",
+      "type": "registry:file",
+      "target": "app/api/generate-image/route.ts",
+      "content": "import { generateImage } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nexport async function POST(req: Request) {\n  const { prompt } = await req.json()\n\n  const { image } = await generateImage({\n    model: openai.image(\"dall-e-3\"),\n    prompt,\n    size: \"1024x1024\",\n    quality: \"standard\",\n  })\n\n  return Response.json({ url: image.url })\n}"
+    }
+  ]
+}

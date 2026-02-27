@@ -1,0 +1,38 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "basics-transcribe",
+  "type": "registry:block",
+  "description": "Transcribe audio files to text using OpenAI Whisper and the Vercel AI SDK.",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "app/page.tsx",
+      "type": "registry:page",
+      "target": "app/page.tsx",
+      "content": "import type { Metadata } from \"next\"\nimport { TranscribeDemo } from \"@/components/transcribe-demo\"\n\nexport const metadata: Metadata = {\n  title: \"Transcribe Audio — AI SDK Demo\",\n  description: \"Transcribe audio files to text using OpenAI Whisper and the Vercel AI SDK.\",\n}\n\nexport default function Page() {\n  return (\n    <main className=\"flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12\">\n      <TranscribeDemo />\n    </main>\n  )\n}\n"
+    },
+    {
+      "path": "app/layout.tsx",
+      "type": "registry:page",
+      "target": "app/layout.tsx",
+      "content": "import type { Metadata } from \"next\"\nimport { Inter } from \"next/font/google\"\nimport type { ReactNode } from \"react\"\nimport { cn } from \"@/lib/utils\"\n\nconst inter = Inter({ subsets: [\"latin\"] })\n\nexport const metadata: Metadata = {\n  title: \"Transcribe Audio — AI SDK Demo\",\n  description: \"Transcribe audio files to text using OpenAI Whisper and the Vercel AI SDK.\",\n}\n\nexport default function RootLayout({ children }: { children: ReactNode }) {\n  return (\n    <html lang=\"en\" suppressHydrationWarning>\n      <body className={cn(\"min-h-svh bg-background font-sans antialiased\", inter.className)}>\n        {children}\n      </body>\n    </html>\n  )\n}\n"
+    },
+    {
+      "path": "app/api/transcribe/route.ts",
+      "type": "registry:file",
+      "target": "app/api/transcribe/route.ts",
+      "content": "import { experimental_transcribe as transcribe } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nexport async function POST(req: Request) {\n  try {\n    const formData = await req.formData()\n    const audio = formData.get(\"audio\") as File | null\n\n    if (!audio) {\n      return Response.json({ error: \"audio file is required\" }, { status: 400 })\n    }\n\n    const { text } = await transcribe({\n      model: openai.transcription(\"whisper-1\"),\n      audio,\n    })\n\n    return Response.json({ text })\n  } catch (error) {\n    console.error(\"[transcribe]\", error)\n    return Response.json({ error: \"Failed to transcribe audio\" }, { status: 500 })\n  }\n}\n"
+    },
+    {
+      "path": "components/transcribe-demo.tsx",
+      "type": "registry:component",
+      "target": "components/transcribe-demo.tsx",
+      "content": "\"use client\"\n\nimport { useState } from \"react\"\n\nexport function TranscribeDemo() {\n  const [transcript, setTranscript] = useState<string | null>(null)\n  const [error, setError] = useState<string | null>(null)\n  const [loading, setLoading] = useState(false)\n  const [fileName, setFileName] = useState<string | null>(null)\n\n  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {\n    const file = e.target.files?.[0]\n    if (!file) return\n\n    setFileName(file.name)\n    setLoading(true)\n    setTranscript(null)\n    setError(null)\n\n    try {\n      const formData = new FormData()\n      formData.append(\"audio\", file)\n      const res = await fetch(\"/api/transcribe\", { method: \"POST\", body: formData })\n      if (!res.ok) throw new Error(await res.text())\n      const { text } = await res.json()\n      setTranscript(text)\n    } catch (err) {\n      setError(err instanceof Error ? err.message : \"Transcription failed\")\n    } finally {\n      setLoading(false)\n    }\n  }\n\n  return (\n    <div className=\"mx-auto w-full max-w-lg space-y-6\">\n      <div>\n        <h1 className=\"text-xl font-semibold tracking-tight\">Transcribe Audio</h1>\n        <p className=\"mt-1 text-sm text-muted-foreground\">\n          Upload an audio file and convert it to text with Whisper.\n        </p>\n      </div>\n\n      <label className=\"flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border/60 bg-muted/20 px-6 py-10 transition-colors hover:border-border hover:bg-muted/30\">\n        {loading ? (\n          <div className=\"flex flex-col items-center gap-2 text-muted-foreground\">\n            <svg className=\"size-6 animate-spin\" viewBox=\"0 0 24 24\" fill=\"none\">\n              <circle className=\"opacity-25\" cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" strokeWidth=\"4\" />\n              <path className=\"opacity-75\" fill=\"currentColor\" d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z\" />\n            </svg>\n            <span className=\"text-sm\">Transcribing {fileName}…</span>\n          </div>\n        ) : (\n          <>\n            <svg className=\"size-8 text-muted-foreground/40\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" strokeWidth={1.5}>\n              <path strokeLinecap=\"round\" strokeLinejoin=\"round\" d=\"M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z\" />\n            </svg>\n            <div className=\"text-center\">\n              <p className=\"text-sm font-medium\">Click to upload audio</p>\n              <p className=\"mt-0.5 text-xs text-muted-foreground/60\">mp3, wav, m4a, ogg, webm</p>\n            </div>\n          </>\n        )}\n        <input\n          type=\"file\"\n          accept=\"audio/*\"\n          onChange={handleUpload}\n          disabled={loading}\n          className=\"sr-only\"\n        />\n      </label>\n\n      {error && (\n        <div className=\"rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5\">\n          <p className=\"text-sm text-destructive\">{error}</p>\n        </div>\n      )}\n\n      {transcript && (\n        <div className=\"rounded-lg border bg-muted/40 px-4 py-3\">\n          <div className=\"mb-2 flex items-center justify-between\">\n            <p className=\"text-[13px] font-medium text-muted-foreground/60\">Transcript</p>\n            <button\n              onClick={() => navigator.clipboard.writeText(transcript)}\n              className=\"text-[11px] text-muted-foreground/50 transition-colors hover:text-foreground\"\n            >\n              Copy\n            </button>\n          </div>\n          <p className=\"text-sm leading-relaxed text-foreground/85\">{transcript}</p>\n        </div>\n      )}\n    </div>\n  )\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-elements-confirmation",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "@ai-sdk/react"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "\"use client\"\n\nimport { useChat } from \"@ai-sdk/react\"\n\nexport default function ToolConfirmation() {\n  const { messages, input, handleInputChange, handleSubmit, addToolResult } =\n    useChat({ maxSteps: 3 })\n\n  return (\n    <div className=\"mx-auto flex h-screen max-w-xl flex-col\">\n      <div className=\"flex-1 space-y-4 overflow-y-auto p-4\">\n        {messages.map((m) => (\n          <div key={m.id}>\n            {m.parts?.map((part, i) => {\n              if (\n                part.type === \"tool-invocation\" &&\n                part.toolInvocation.state === \"call\"\n              ) {\n                return (\n                  <div key={i} className=\"rounded-md border p-4\">\n                    <p className=\"text-sm font-medium\">\n                      Approve: {part.toolInvocation.toolName}\n                    </p>\n                    <pre className=\"mt-2 text-xs text-muted-foreground\">\n                      {JSON.stringify(part.toolInvocation.args, null, 2)}\n                    </pre>\n                    <div className=\"mt-3 flex gap-2\">\n                      <button\n                        onClick={() =>\n                          addToolResult({\n                            toolCallId: part.toolInvocation.toolCallId,\n                            result: \"Approved\",\n                          })\n                        }\n                        className=\"rounded bg-foreground px-3 py-1 text-xs text-background\"\n                      >\n                        Approve\n                      </button>\n                      <button\n                        onClick={() =>\n                          addToolResult({\n                            toolCallId: part.toolInvocation.toolCallId,\n                            result: \"Denied by user\",\n                          })\n                        }\n                        className=\"rounded border px-3 py-1 text-xs\"\n                      >\n                        Deny\n                      </button>\n                    </div>\n                  </div>\n                )\n              }\n              return null\n            })}\n          </div>\n        ))}\n      </div>\n      <form onSubmit={handleSubmit} className=\"border-t p-4\">\n        <input\n          value={input}\n          onChange={handleInputChange}\n          className=\"w-full rounded-md border px-3 py-2 text-sm\"\n        />\n      </form>\n    </div>\n  )\n}"
+    }
+  ]
+}

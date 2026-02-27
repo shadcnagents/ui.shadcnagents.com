@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-agents-routing",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nconst agents = {\n  writer: openai(\"gpt-4o\"),\n  coder: openai(\"gpt-4o\"),\n  analyst: openai(\"gpt-4o\"),\n}\n\nasync function routeRequest(prompt: string) {\n  const { text: route } = await generateText({\n    model: openai(\"gpt-4o-mini\"),\n    system: `Classify the user request into one of: writer, coder, analyst.\nRespond with only the category name.`,\n    prompt,\n  })\n\n  const agent = route.trim().toLowerCase() as keyof typeof agents\n  const model = agents[agent] ?? agents.writer\n\n  const { text } = await generateText({\n    model,\n    prompt,\n  })\n\n  return { agent, text }\n}\n\nexport default async function Page() {\n  const { agent, text } = await routeRequest(\"Write a haiku about AI\")\n\n  return (\n    <div className=\"mx-auto max-w-xl p-8\">\n      <p className=\"text-xs text-muted-foreground\">Routed to: {agent}</p>\n      <p className=\"mt-4 text-sm\">{text}</p>\n    </div>\n  )\n}"
+    }
+  ]
+}

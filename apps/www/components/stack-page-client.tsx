@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
 import {
@@ -29,12 +29,31 @@ import { getAllStacks } from "@/config/stacks"
 import { stackContent } from "@/config/stack-content"
 import { cn } from "@/lib/utils"
 import { stackPreviewRegistry } from "@/components/stack-previews"
-import { stackSourceRegistry } from "@/lib/stack-source"
+import type { StackRegistryFile } from "@/lib/stack-registry"
 import { Button } from "@/components/ui/button"
 
 interface ProSourceFile {
   name: string
   code: string
+}
+
+type PkgManager = "npm" | "pnpm" | "yarn" | "bun"
+
+const PKG_MANAGERS: { id: PkgManager; label: string }[] = [
+  { id: "npm", label: "npm" },
+  { id: "pnpm", label: "pnpm" },
+  { id: "yarn", label: "yarn" },
+  { id: "bun", label: "bun" },
+]
+
+function getCLICommand(pkgManager: PkgManager, slug: string): string {
+  const url = `https://shadcnagents.com/r/${slug}`
+  switch (pkgManager) {
+    case "npm":  return `npx shadcn@latest add ${url}`
+    case "pnpm": return `pnpm dlx shadcn@latest add ${url}`
+    case "yarn": return `yarn dlx shadcn@latest add ${url}`
+    case "bun":  return `bunx --bun shadcn@latest add ${url}`
+  }
 }
 
 function makeThemeVars(base: Record<string, string>) {
@@ -189,9 +208,9 @@ function FileTreeNode({
           className="flex w-full items-center gap-1.5 rounded-sm py-[5px] pr-2 text-[13px] text-muted-foreground/70 transition-colors hover:bg-muted/60 hover:text-foreground"
         >
           {open ? (
-            <FolderOpenIcon className="size-4 shrink-0 text-amber-400/90" />
+            <FolderOpenIcon className="size-4 shrink-0 text-muted-foreground/40" />
           ) : (
-            <FolderIcon className="size-4 shrink-0 text-amber-400/90" />
+            <FolderIcon className="size-4 shrink-0 text-muted-foreground/40" />
           )}
           <span className="truncate font-medium">{node.name}</span>
         </button>
@@ -239,11 +258,11 @@ function FileTreeNode({
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface StackPageClientProps {
-  params: Promise<{ slug: string }>
+  slug: string
+  registrySource?: StackRegistryFile[] | null
 }
 
-export function StackPageClient({ params }: StackPageClientProps) {
-  const { slug } = use(params)
+export function StackPageClient({ slug, registrySource }: StackPageClientProps) {
   const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview")
   const [cliCopied, setCliCopied] = useState(false)
@@ -258,6 +277,8 @@ export function StackPageClient({ params }: StackPageClientProps) {
   const [proFiles, setProFiles] = useState<ProSourceFile[] | null>(null)
   const [proLoading, setProLoading] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
+  const [highlightedLines, setHighlightedLines] = useState<string[] | null>(null)
+  const [pkgManager, setPkgManager] = useState<PkgManager>("npm")
   const previewRef = useRef<HTMLDivElement>(null)
   const themePanelRef = useRef<HTMLDivElement>(null)
 
@@ -273,16 +294,16 @@ export function StackPageClient({ params }: StackPageClientProps) {
     stackIndex < allStacks.length - 1 ? allStacks[stackIndex + 1] : null
 
   const PreviewComponent = stackPreviewRegistry[slug]
-  // For pro stacks: use fetched pro files if user is authenticated + isPro, else fall back to registry
-  const freeSource = stackSourceRegistry[slug]
   const userIsPro = session?.user?.isPro ?? false
+
+  const freeSource = registrySource ? { files: registrySource } : undefined
   const source = isPro && userIsPro && proFiles
     ? { files: proFiles }
     : freeSource
   const activeFile = source?.files[activeFileIndex]
   const content = stackContent[slug]
 
-  const cliCommand = `npx shadcn add https://shadcnagents.com/r/${slug}`
+  const cliCommand = getCLICommand(pkgManager, slug)
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -313,6 +334,38 @@ export function StackPageClient({ params }: StackPageClientProps) {
       .catch(console.error)
       .finally(() => setProLoading(false))
   }, [slug, isPro, session?.user?.isPro, proFiles])
+
+  // Syntax-highlight the active file with shiki whenever it changes.
+  // Uses DOMParser to extract per-line innerHTML — regex breaks on nested spans.
+  useEffect(() => {
+    if (!activeFile) {
+      setHighlightedLines(null)
+      return
+    }
+    const ext = activeFile.name.split(".").pop() ?? "tsx"
+    const lang = ["ts", "tsx", "js", "jsx", "json", "css", "html", "md"].includes(ext) ? ext : "tsx"
+    setHighlightedLines(null)
+
+    import("shiki")
+      .then(({ codeToHtml }) =>
+        codeToHtml(activeFile.code, {
+          lang,
+          themes: { dark: "github-dark", light: "github-light" },
+          defaultColor: false,
+        })
+      )
+      .then((html) => {
+        // DOMParser safely handles arbitrarily nested span trees per line
+        const doc = new DOMParser().parseFromString(html, "text/html")
+        const lineEls = doc.querySelectorAll("code .line")
+        if (lineEls.length === 0) {
+          setHighlightedLines(null)
+          return
+        }
+        setHighlightedLines(Array.from(lineEls).map((el) => el.innerHTML))
+      })
+      .catch(() => setHighlightedLines(null))
+  }, [activeFile])
 
   function handleCopyCli() {
     navigator.clipboard.writeText(cliCommand)
@@ -459,28 +512,48 @@ export function StackPageClient({ params }: StackPageClientProps) {
         )}
       </div>
 
-      {/* CLI Command bar */}
-      <div className="shrink-0 flex items-center gap-3 border-b border-border px-4 py-1.5">
-        <Terminal className="size-3.5 shrink-0 text-muted-foreground/40" />
-        <code className="flex-1 truncate font-mono text-xs text-muted-foreground">
-          {cliCommand}
-        </code>
-        <button
-          onClick={handleCopyCli}
-          className="flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          {cliCopied ? (
-            <>
-              <Check className="size-3" />
-              Copied
-            </>
-          ) : (
-            <>
-              <Copy className="size-3" />
-              Copy
-            </>
-          )}
-        </button>
+      {/* CLI Command bar — package manager tabs */}
+      <div className="shrink-0 border-b border-border">
+        {/* Tab row */}
+        <div className="flex items-center gap-0 border-b border-border/50 px-4">
+          {PKG_MANAGERS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setPkgManager(id)}
+              className={cn(
+                "border-b-2 px-3 py-1.5 text-[11px] font-medium transition-colors",
+                pkgManager === id
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground/60 hover:text-muted-foreground"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {/* Command row */}
+        <div className="flex items-center gap-3 px-4 py-1.5">
+          <Terminal className="size-3.5 shrink-0 text-muted-foreground/40" />
+          <code className="flex-1 truncate font-mono text-xs text-muted-foreground">
+            {cliCommand}
+          </code>
+          <button
+            onClick={handleCopyCli}
+            className="flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {cliCopied ? (
+              <>
+                <Check className="size-3" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="size-3" />
+                Copy
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Toolbar */}
@@ -488,7 +561,7 @@ export function StackPageClient({ params }: StackPageClientProps) {
         <div className="flex items-center gap-2">
           <div className="flex overflow-hidden rounded-md border border-border">
             <button
-              onClick={() => { setActiveTab("preview"); setActiveFileIndex(0) }}
+              onClick={() => { setActiveTab("preview"); setActiveFileIndex(0); setHighlightedLines(null) }}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === "preview"
@@ -768,9 +841,19 @@ export function StackPageClient({ params }: StackPageClientProps) {
                             <div key={i}>{i + 1}</div>
                           ))}
                         </div>
-                        {/* Code content */}
-                        <pre className="flex-1 overflow-x-auto py-4 pl-5 pr-8 text-foreground/80">
-                          <code>{activeFile.code}</code>
+                        {/* Code content — syntax-highlighted via shiki, plain fallback while loading */}
+                        <pre className="shiki-pre flex-1 overflow-x-auto py-4 pl-5 pr-8">
+                          {highlightedLines ? (
+                            highlightedLines.map((line, i) => (
+                              <span
+                                key={i}
+                                className="block"
+                                dangerouslySetInnerHTML={{ __html: line || "\u200B" }}
+                              />
+                            ))
+                          ) : (
+                            <code className="text-foreground/80">{activeFile.code}</code>
+                          )}
                         </pre>
                       </div>
                     </div>

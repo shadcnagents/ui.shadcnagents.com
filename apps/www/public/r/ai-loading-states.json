@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-loading-states",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "loading-states.tsx",
+      "type": "registry:component",
+      "target": "loading-states.tsx",
+      "content": "\"use client\"\n\n/* Wave dots — ellipse pattern */\nconst ELLIPSE = [3, 5, 7, 5, 3]\n\nexport function WaveDots() {\n  return (\n    <div className=\"flex flex-col items-center gap-[3px]\">\n      {ELLIPSE.map((count, row) => (\n        <div key={row} className=\"flex gap-[3px]\">\n          {Array.from({ length: count }).map((_, col) => (\n            <div\n              key={col}\n              className=\"size-[3px] rounded-full bg-foreground\"\n              style={{\n                animation: \"wave 1.4s ease-in-out infinite\",\n                animationDelay: `${col * 0.08 + row * 0.05}s`,\n              }}\n            />\n          ))}\n        </div>\n      ))}\n      <style>{`@keyframes wave{0%,100%{transform:scaleY(.3);opacity:.3}50%{transform:scaleY(1);opacity:1}}`}</style>\n    </div>\n  )\n}\n\n/* Pulsing orb */\nexport function PulsingOrb() {\n  return (\n    <div className=\"relative flex size-10 items-center justify-center\">\n      <div className=\"absolute inset-0 animate-ping rounded-full bg-foreground/10\" />\n      <div className=\"size-5 animate-pulse rounded-full bg-foreground/80\" />\n    </div>\n  )\n}\n\n/* Shimmer skeleton */\nexport function ShimmerSkeleton({ lines = 3 }: { lines?: number }) {\n  return (\n    <div className=\"space-y-2\">\n      {Array.from({ length: lines }).map((_, i) => (\n        <div\n          key={i}\n          className=\"relative h-3 overflow-hidden rounded-full bg-muted/60\"\n          style={{ width: `${[100, 75, 88][i % 3]}%` }}\n        >\n          <div\n            className=\"absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-foreground/10 to-transparent\"\n            style={{ animation: \"shimmer 1.6s ease-in-out infinite\" }}\n          />\n        </div>\n      ))}\n      <style>{`@keyframes shimmer{0%{transform:translateX(-100%) skewX(-12deg)}100%{transform:translateX(200%) skewX(-12deg)}}`}</style>\n    </div>\n  )\n}\n\n/* Typing indicator */\nexport function TypingIndicator() {\n  return (\n    <div className=\"flex items-end gap-1.5 rounded-xl bg-muted/40 px-4 py-3 w-fit\">\n      {[0, 1, 2].map((i) => (\n        <div\n          key={i}\n          className=\"size-2 rounded-full bg-foreground/60\"\n          style={{ animation: `wave 1s ease-in-out ${i * 0.15}s infinite alternate` }}\n        />\n      ))}\n    </div>\n  )\n}"
+    }
+  ]
+}
