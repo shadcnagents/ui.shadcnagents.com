@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tool-websearch-exa",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "zod"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText, tool } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\nimport Exa from \"exa-js\"\nimport { z } from \"zod\"\n\nconst exa = new Exa(process.env.EXA_API_KEY!)\n\nexport default async function Page() {\n  const { text } = await generateText({\n    model: openai(\"gpt-4o\"),\n    prompt: \"Find the best resources about building AI agents\",\n    tools: {\n      search: tool({\n        description: \"Search the web using Exa neural search\",\n        parameters: z.object({\n          query: z.string(),\n          numResults: z.number().default(5),\n        }),\n        execute: async ({ query, numResults }) => {\n          const results = await exa.searchAndContents(query, {\n            numResults,\n            text: true,\n          })\n          return results.results.map((r) => ({\n            title: r.title,\n            url: r.url,\n            text: r.text?.slice(0, 200),\n          }))\n        },\n      }),\n    },\n    maxSteps: 3,\n  })\n\n  return (\n    <div className=\"mx-auto max-w-xl p-8\">\n      <p className=\"text-sm\">{text}</p>\n    </div>\n  )\n}"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-artifact-chart",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "@ai-sdk/react"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "\"use client\"\n\nimport { useChat } from \"@ai-sdk/react\"\n\ninterface ChartData {\n  labels: string[]\n  values: number[]\n  title: string\n}\n\nexport default function ChartGeneration() {\n  const { messages, input, handleInputChange, handleSubmit } = useChat()\n\n  return (\n    <div className=\"mx-auto flex h-screen max-w-xl flex-col\">\n      <div className=\"flex-1 overflow-y-auto p-4\">\n        {messages.map((m) => (\n          <div key={m.id} className=\"mb-4\">\n            {m.parts?.map((part, i) => {\n              if (\n                part.type === \"tool-invocation\" &&\n                part.toolName === \"generateChart\"\n              ) {\n                const data: ChartData = part.result\n                const max = Math.max(...data.values)\n                return (\n                  <div key={i} className=\"rounded-md border p-4\">\n                    <p className=\"mb-4 text-sm font-medium\">{data.title}</p>\n                    <div className=\"flex h-40 items-end gap-2\">\n                      {data.values.map((v, j) => (\n                        <div key={j} className=\"flex flex-1 flex-col items-center gap-1\">\n                          <span className=\"text-xs\">{v}</span>\n                          <div\n                            className=\"w-full rounded-t bg-foreground/70\"\n                            style={{ height: `${(v / max) * 100}%` }}\n                          />\n                          <span className=\"text-[10px] text-muted-foreground\">\n                            {data.labels[j]}\n                          </span>\n                        </div>\n                      ))}\n                    </div>\n                  </div>\n                )\n              }\n              if (part.type === \"text\") {\n                return <p key={i} className=\"text-sm\">{part.text}</p>\n              }\n              return null\n            })}\n          </div>\n        ))}\n      </div>\n      <form onSubmit={handleSubmit} className=\"border-t p-4\">\n        <input\n          value={input}\n          onChange={handleInputChange}\n          placeholder=\"Generate a chart...\"\n          className=\"w-full rounded-md border px-3 py-2 text-sm\"\n        />\n      </form>\n    </div>\n  )\n}"
+    }
+  ]
+}

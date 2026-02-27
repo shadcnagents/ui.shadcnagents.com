@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tool-websearch-claude",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/anthropic"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText } from \"ai\"\nimport { anthropic } from \"@ai-sdk/anthropic\"\n\nexport default async function Page() {\n  const { text, sources } = await generateText({\n    model: anthropic(\"claude-sonnet-4-20250514\"),\n    prompt: \"What are the latest developments in AI?\",\n    tools: {\n      web_search: anthropic.tools.webSearch_20250305({\n        maxUses: 3,\n      }),\n    },\n    maxSteps: 3,\n  })\n\n  return (\n    <div className=\"mx-auto max-w-xl p-8\">\n      <p className=\"text-sm leading-relaxed\">{text}</p>\n      {sources && (\n        <div className=\"mt-4 space-y-2\">\n          <p className=\"text-xs font-medium\">Sources</p>\n          {sources.map((s, i) => (\n            <a\n              key={i}\n              href={s.url}\n              className=\"block rounded border p-2 text-xs hover:bg-muted\"\n            >\n              {s.title}\n            </a>\n          ))}\n        </div>\n      )}\n    </div>\n  )\n}"
+    }
+  ]
+}

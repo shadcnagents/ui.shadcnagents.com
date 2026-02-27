@@ -12,10 +12,7 @@ import {
 import { useTheme } from "next-themes"
 
 import { docsConfig } from "@/config/docs"
-import {
-  stacksConfig,
-  isSubCategory,
-} from "@/config/stacks"
+import { stacksConfig, isSubCategory } from "@/config/stacks"
 import {
   CommandDialog,
   CommandEmpty,

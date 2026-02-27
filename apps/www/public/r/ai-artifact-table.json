@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-artifact-table",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "@ai-sdk/react"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "\"use client\"\n\nimport { useChat } from \"@ai-sdk/react\"\nimport { useState } from \"react\"\n\nexport default function TableEditor() {\n  const { messages, input, handleInputChange, handleSubmit } = useChat()\n\n  return (\n    <div className=\"mx-auto flex h-screen max-w-3xl flex-col\">\n      <div className=\"flex-1 overflow-y-auto p-4\">\n        {messages.map((m) => (\n          <div key={m.id} className=\"mb-4\">\n            {m.parts?.map((part, i) => {\n              if (\n                part.type === \"tool-invocation\" &&\n                part.toolName === \"generateTable\"\n              ) {\n                const data = part.result?.rows ?? []\n                const cols = part.result?.columns ?? []\n                return (\n                  <table key={i} className=\"w-full border-collapse\">\n                    <thead>\n                      <tr>\n                        {cols.map((col: string) => (\n                          <th key={col} className=\"border p-2 text-left text-xs\">\n                            {col}\n                          </th>\n                        ))}\n                      </tr>\n                    </thead>\n                    <tbody>\n                      {data.map((row: Record<string, string>, j: number) => (\n                        <tr key={j}>\n                          {cols.map((col: string) => (\n                            <td key={col} className=\"border p-2 text-sm\">\n                              {row[col]}\n                            </td>\n                          ))}\n                        </tr>\n                      ))}\n                    </tbody>\n                  </table>\n                )\n              }\n              if (part.type === \"text\") {\n                return <p key={i} className=\"text-sm\">{part.text}</p>\n              }\n              return null\n            })}\n          </div>\n        ))}\n      </div>\n      <form onSubmit={handleSubmit} className=\"border-t p-4\">\n        <input\n          value={input}\n          onChange={handleInputChange}\n          placeholder=\"Generate a table...\"\n          className=\"w-full rounded-md border px-3 py-2 text-sm\"\n        />\n      </form>\n    </div>\n  )\n}"
+    }
+  ]
+}

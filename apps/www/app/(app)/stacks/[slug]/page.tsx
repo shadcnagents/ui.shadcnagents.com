@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { getAllStacks } from "@/config/stacks"
 import { siteConfig } from "@/config/site"
 import { StackPageClient } from "@/components/stack-page-client"
+import { getStackRegistrySource } from "@/lib/stack-registry"
 
 export function generateStaticParams() {
   return getAllStacks().map((s) => ({
@@ -57,10 +58,12 @@ export async function generateMetadata({
   }
 }
 
-export default function StackPage({
+export default async function StackPage({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
-  return <StackPageClient params={params} />
+  const { slug } = await params
+  const registrySource = getStackRegistrySource(slug)
+  return <StackPageClient slug={slug} registrySource={registrySource} />
 }

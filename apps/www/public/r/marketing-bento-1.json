@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "marketing-bento-1",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "component.tsx",
+      "type": "registry:component",
+      "target": "component.tsx",
+      "content": "export function BentoGrid() {\n  return (\n    <section className=\"py-24\">\n      <div className=\"mx-auto max-w-4xl px-6\">\n        <h2 className=\"text-center text-2xl font-semibold tracking-tight\">\n          Platform Features\n        </h2>\n        <div className=\"mt-10 grid grid-cols-3 gap-3\">\n          {/* Large card */}\n          <div className=\"col-span-2 row-span-2 flex flex-col justify-between rounded-lg border p-6\">\n            <div>\n              <span className=\"text-[10px] font-medium uppercase tracking-wider text-muted-foreground\">\n                AI Models\n              </span>\n              <h3 className=\"mt-2 text-lg font-semibold\">Unified Model API</h3>\n              <p className=\"mt-1 text-sm text-muted-foreground\">\n                One interface for every provider.\n              </p>\n            </div>\n            <div className=\"mt-4 space-y-1\">\n              {[\"OpenAI\", \"Anthropic\", \"Google\", \"Meta\"].map((p) => (\n                <div key={p} className=\"flex items-center gap-2 text-sm text-muted-foreground\">\n                  <div className=\"size-1.5 rounded-full bg-foreground/30\" />\n                  {p}\n                </div>\n              ))}\n            </div>\n          </div>\n\n          <div className=\"rounded-lg border p-4\">\n            <span className=\"text-[10px] uppercase text-muted-foreground\">Latency</span>\n            <p className=\"mt-2 text-2xl font-semibold\">&lt;100ms</p>\n            <p className=\"text-xs text-muted-foreground\">First token</p>\n          </div>\n\n          <div className=\"rounded-lg border p-4\">\n            <span className=\"text-[10px] uppercase text-muted-foreground\">Uptime</span>\n            <p className=\"mt-2 text-2xl font-semibold\">99.9%</p>\n            <p className=\"text-xs text-muted-foreground\">SLA</p>\n          </div>\n\n          <div className=\"col-span-3 rounded-lg border p-5\">\n            <div className=\"flex items-center justify-between\">\n              <div>\n                <h3 className=\"text-sm font-medium\">Ready to get started?</h3>\n                <p className=\"text-xs text-muted-foreground\">\n                  Build your first AI app in under 5 minutes.\n                </p>\n              </div>\n              <button className=\"rounded-md bg-foreground px-4 py-2 text-sm text-background\">\n                Get Started\n              </button>\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>\n  )\n}"
+    }
+  ]
+}
