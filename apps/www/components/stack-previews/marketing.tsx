@@ -37,13 +37,13 @@ print(response.choices[0].message.content)`,
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
           Start Building in Minutes
         </h3>
-        <p className="mt-2 text-sm text-muted-foreground/60">
+        <p className="mt-2 text-sm text-muted-foreground">
           Simple, intuitive API that works with any language model
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border/40">
-        <div className="flex items-center gap-0 border-b border-border/40 bg-muted/30 px-4">
+      <div className="overflow-hidden rounded-lg border border-border/60">
+        <div className="flex items-center gap-0 border-b border-border/60 bg-muted/50 px-4">
           {Object.keys(codeExamples).map((lang) => (
             <button
               key={lang}
@@ -51,15 +51,15 @@ print(response.choices[0].message.content)`,
               className={`border-b-2 px-3 py-2 text-xs font-medium transition-colors ${
                 activeTab === lang
                   ? "border-foreground text-foreground"
-                  : "border-transparent text-muted-foreground/50 hover:text-muted-foreground"
+                  : "border-transparent text-muted-foreground hover:text-muted-foreground"
               }`}
             >
               {lang}
             </button>
           ))}
         </div>
-        <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed [&::-webkit-scrollbar]:hidden">
-          <code className="text-foreground/80">{codeExamples[activeTab]}</code>
+        <pre className="overflow-x-auto p-4 text-sm leading-relaxed [&::-webkit-scrollbar]:hidden">
+          <code className="text-foreground">{codeExamples[activeTab]}</code>
         </pre>
       </div>
     </div>
@@ -75,15 +75,15 @@ export function CodeBlock2Preview() {
           <h3 className="text-sm font-semibold text-foreground">
             Server Action
           </h3>
-          <div className="overflow-hidden rounded-lg border border-border/40 bg-muted/20">
-            <div className="flex items-center gap-2 border-b border-border/30 px-3 py-1.5">
-              <div className="size-2 rounded-full bg-muted-foreground/20" />
-              <span className="text-[10px] text-muted-foreground/40">
+          <div className="overflow-hidden rounded-lg border border-border/60 bg-muted/40">
+            <div className="flex items-center gap-2 border-b border-border/50 px-3 py-1.5">
+              <div className="size-2 rounded-full bg-muted-foreground/40" />
+              <span className="text-[12px] text-muted-foreground/60">
                 actions.ts
               </span>
             </div>
-            <pre className="p-3 text-[11px] leading-relaxed">
-              <code className="text-foreground/70">{`"use server"
+            <pre className="p-3 text-[13px] leading-relaxed">
+              <code className="text-foreground">{`"use server"
 
 import { streamText } from "ai"
 import { openai } from "@ai-sdk/openai"
@@ -103,15 +103,15 @@ export async function chat(
 
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-foreground">Client UI</h3>
-          <div className="overflow-hidden rounded-lg border border-border/40 bg-muted/20">
-            <div className="flex items-center gap-2 border-b border-border/30 px-3 py-1.5">
-              <div className="size-2 rounded-full bg-muted-foreground/20" />
-              <span className="text-[10px] text-muted-foreground/40">
+          <div className="overflow-hidden rounded-lg border border-border/60 bg-muted/40">
+            <div className="flex items-center gap-2 border-b border-border/50 px-3 py-1.5">
+              <div className="size-2 rounded-full bg-muted-foreground/40" />
+              <span className="text-[12px] text-muted-foreground/60">
                 page.tsx
               </span>
             </div>
-            <pre className="p-3 text-[11px] leading-relaxed">
-              <code className="text-foreground/70">{`"use client"
+            <pre className="p-3 text-[13px] leading-relaxed">
+              <code className="text-foreground">{`"use client"
 
 import { useChat } from "@ai-sdk/react"
 
@@ -142,56 +142,56 @@ export default function Chat() {
 export function CodeBlock3Preview() {
   return (
     <div className="mx-auto w-full max-w-2xl p-8">
-      <div className="overflow-hidden rounded-xl border border-foreground/10 bg-[#0a0a0a] text-white dark:border-border/30">
-        <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2">
+      <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 text-white">
+        <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-2.5">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
-              <div className="size-2.5 rounded-full bg-white/10" />
-              <div className="size-2.5 rounded-full bg-white/10" />
-              <div className="size-2.5 rounded-full bg-white/10" />
+              <div className="size-2.5 rounded-full bg-zinc-700" />
+              <div className="size-2.5 rounded-full bg-zinc-700" />
+              <div className="size-2.5 rounded-full bg-zinc-700" />
             </div>
-            <span className="ml-2 text-[10px] text-white/30">agent.ts</span>
+            <span className="ml-2 text-[12px] text-zinc-500">agent.ts</span>
           </div>
-          <button className="text-[10px] text-white/20 hover:text-white/40">
+          <button className="text-[12px] text-zinc-600 hover:text-zinc-400">
             Copy
           </button>
         </div>
-        <pre className="overflow-x-auto p-4 text-[12px] leading-relaxed [&::-webkit-scrollbar]:hidden">
+        <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed [&::-webkit-scrollbar]:hidden">
           <code>
-            <span className="text-white/40">{"// "}</span>
-            <span className="text-white/50">Multi-step agent with tools</span>
+            <span className="text-zinc-500">{"// "}</span>
+            <span className="text-zinc-400">Multi-step agent with tools</span>
             {"\n"}
-            <span className="text-white/40">import</span>
-            <span className="text-white/80">{" { generateText, tool }"}</span>
-            <span className="text-white/40"> from </span>
-            <span className="text-white/60">{'"ai"'}</span>
+            <span className="text-zinc-500">import</span>
+            <span className="text-zinc-200">{" { generateText, tool }"}</span>
+            <span className="text-zinc-500"> from </span>
+            <span className="text-zinc-300">{'"ai"'}</span>
             {"\n"}
-            <span className="text-white/40">import</span>
-            <span className="text-white/80">{" { anthropic }"}</span>
-            <span className="text-white/40"> from </span>
-            <span className="text-white/60">{'"@ai-sdk/anthropic"'}</span>
+            <span className="text-zinc-500">import</span>
+            <span className="text-zinc-200">{" { anthropic }"}</span>
+            <span className="text-zinc-500"> from </span>
+            <span className="text-zinc-300">{'"@ai-sdk/anthropic"'}</span>
             {"\n\n"}
-            <span className="text-white/40">const</span>
-            <span className="text-white/80"> result </span>
-            <span className="text-white/40">= await</span>
-            <span className="text-white/80">{" generateText({"}</span>
+            <span className="text-zinc-500">const</span>
+            <span className="text-zinc-200"> result </span>
+            <span className="text-zinc-500">= await</span>
+            <span className="text-zinc-200">{" generateText({"}</span>
             {"\n"}
-            <span className="text-white/80">{"  model: "}</span>
-            <span className="text-white/60">{`anthropic("claude-sonnet-4-20250514")`}</span>
-            <span className="text-white/80">,</span>
+            <span className="text-zinc-200">{"  model: "}</span>
+            <span className="text-zinc-300">{`anthropic("claude-sonnet-4-20250514")`}</span>
+            <span className="text-zinc-200">,</span>
             {"\n"}
-            <span className="text-white/80">{"  maxSteps: "}</span>
-            <span className="text-white/60">5</span>
-            <span className="text-white/80">,</span>
+            <span className="text-zinc-200">{"  maxSteps: "}</span>
+            <span className="text-zinc-300">5</span>
+            <span className="text-zinc-200">,</span>
             {"\n"}
-            <span className="text-white/80">{"  tools: { "}</span>
-            <span className="text-white/60">search, analyze, report</span>
-            <span className="text-white/80">{" },"}</span>
+            <span className="text-zinc-200">{"  tools: { "}</span>
+            <span className="text-zinc-300">search, analyze, report</span>
+            <span className="text-zinc-200">{" },"}</span>
             {"\n"}
-            <span className="text-white/80">{"  prompt: "}</span>
-            <span className="text-white/60">{'"Research AI trends"'}</span>
+            <span className="text-zinc-200">{"  prompt: "}</span>
+            <span className="text-zinc-300">{'"Research AI trends"'}</span>
             {"\n"}
-            <span className="text-white/80">{"})"}</span>
+            <span className="text-zinc-200">{"})"}</span>
           </code>
         </pre>
       </div>
@@ -234,7 +234,7 @@ export function FeatureGridPreview() {
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
           Everything You Need
         </h3>
-        <p className="mt-2 text-sm text-muted-foreground/60">
+        <p className="mt-2 text-sm text-muted-foreground">
           Built for modern AI applications
         </p>
       </div>
@@ -243,12 +243,12 @@ export function FeatureGridPreview() {
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="rounded-lg border border-border/40 p-5 transition-colors hover:border-border/60"
+            className="rounded-lg border border-border/60 p-5 transition-colors hover:border-border/60"
           >
             <h4 className="text-sm font-medium text-foreground">
               {feature.title}
             </h4>
-            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground/60">
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
               {feature.description}
             </p>
           </div>
@@ -270,15 +270,15 @@ export function BentoLayoutPreview() {
 
       <div className="grid grid-cols-3 gap-3">
         {/* Large card */}
-        <div className="col-span-2 row-span-2 flex flex-col justify-between rounded-lg border border-border/40 p-6">
+        <div className="col-span-2 row-span-2 flex flex-col justify-between rounded-lg border border-border/60 p-6">
           <div>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+            <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground/60">
               AI Models
             </span>
             <h4 className="mt-2 text-lg font-semibold text-foreground">
               Unified Model API
             </h4>
-            <p className="mt-1 text-xs text-muted-foreground/60">
+            <p className="mt-1 text-xs text-muted-foreground">
               One interface for every provider. Switch models without changing
               your code.
             </p>
@@ -287,9 +287,9 @@ export function BentoLayoutPreview() {
             {["OpenAI", "Anthropic", "Google", "Meta"].map((p) => (
               <div
                 key={p}
-                className="flex items-center gap-2 text-xs text-muted-foreground/50"
+                className="flex items-center gap-2 text-xs text-muted-foreground"
               >
-                <div className="size-1.5 rounded-full bg-foreground/30" />
+                <div className="size-1.5 rounded-full bg-foreground/50" />
                 {p}
               </div>
             ))}
@@ -297,42 +297,42 @@ export function BentoLayoutPreview() {
         </div>
 
         {/* Small cards */}
-        <div className="flex flex-col justify-between rounded-lg border border-border/40 p-4">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+        <div className="flex flex-col justify-between rounded-lg border border-border/60 p-4">
+          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground/60">
             Latency
           </span>
           <div className="mt-2">
             <p className="text-2xl font-semibold tabular-nums text-foreground">
               &lt;100ms
             </p>
-            <p className="text-[10px] text-muted-foreground/50">
+            <p className="text-[12px] text-muted-foreground">
               First token time
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col justify-between rounded-lg border border-border/40 p-4">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+        <div className="flex flex-col justify-between rounded-lg border border-border/60 p-4">
+          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground/60">
             Uptime
           </span>
           <div className="mt-2">
             <p className="text-2xl font-semibold tabular-nums text-foreground">
               99.9%
             </p>
-            <p className="text-[10px] text-muted-foreground/50">
+            <p className="text-[12px] text-muted-foreground">
               Availability SLA
             </p>
           </div>
         </div>
 
         {/* Wide card */}
-        <div className="col-span-3 rounded-lg border border-border/40 p-5">
+        <div className="col-span-3 rounded-lg border border-border/60 p-5">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-sm font-medium text-foreground">
                 Ready to get started?
               </h4>
-              <p className="mt-0.5 text-xs text-muted-foreground/50">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 Install the SDK and build your first AI app in under 5 minutes.
               </p>
             </div>

@@ -9,14 +9,14 @@ import { Icons } from "@/components/icons"
  * ────────────────────────────────────────────────────────── */
 
 const stacks = [
-  { title: "SDK Basics", href: "/stacks/basics-generate-text" },
-  { title: "Chat Interfaces", href: "/stacks/ai-elements-chat" },
-  { title: "Agent Patterns", href: "/stacks/ai-agents-routing" },
-  { title: "Human-in-the-Loop", href: "/stacks/ai-human-in-the-loop" },
-  { title: "Artifacts & Output", href: "/stacks/ai-artifact-chart" },
-  { title: "Tools & Integrations", href: "/stacks/tool-websearch-claude" },
-  { title: "Workflows", href: "/stacks/ai-workflow-basic" },
-  { title: "Marketing UI", href: "/stacks/marketing-bento-1" },
+  { title: "Foundations", href: "/stacks/basics-generate-text" },
+  { title: "Chat Kit", href: "/stacks/ai-elements-chat" },
+  { title: "Agent Architecture", href: "/stacks/ai-agents-routing" },
+  { title: "Human in the Loop", href: "/stacks/ai-human-in-the-loop" },
+  { title: "Rich Output", href: "/stacks/ai-artifact-chart" },
+  { title: "Connectors", href: "/stacks/tool-websearch-claude" },
+  { title: "Pipelines", href: "/stacks/ai-workflow-basic" },
+  { title: "Landing Blocks", href: "/stacks/marketing-bento-1" },
 ]
 
 const developer = [
@@ -103,7 +103,7 @@ export function SiteFooter() {
           </Link>
           <p className="mt-3 max-w-md text-[14px] leading-relaxed text-muted-foreground">
             Production-ready AI stacks for Next.js. Browse, install with one
-            CLI command, and ship to production. 100+ stacks, 117 UI
+            CLI command, and ship to production. {siteConfig.counts.stacks}+ stacks, {siteConfig.counts.uiComponents} UI
             components.
           </p>
         </div>

@@ -21,16 +21,28 @@ import {
   RefreshCw,
   Smartphone,
   Tablet,
+  Github,
   Terminal,
   X,
 } from "lucide-react"
 
 import { getAllStacks } from "@/config/stacks"
 import { stackContent } from "@/config/stack-content"
+import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { stackPreviewRegistry } from "@/components/stack-previews"
 import type { StackRegistryFile } from "@/lib/stack-registry"
 import { Button } from "@/components/ui/button"
+import {
+  ClaudeAIIcon,
+  OpenAIIcon,
+  GoogleIcon,
+  NextjsIcon,
+  ReactIcon,
+  TypeScriptIcon,
+  TailwindCSSIcon,
+  SupabaseIconGreen,
+} from "@/components/icons"
 
 interface ProSourceFile {
   name: string
@@ -54,6 +66,42 @@ function getCLICommand(pkgManager: PkgManager, slug: string): string {
     case "yarn": return `yarn dlx shadcn@latest add ${url}`
     case "bun":  return `bunx --bun shadcn@latest add ${url}`
   }
+}
+
+/* ─── Provider / Tech icon mapping ─── */
+
+const TECH_ICON_MAP: { match: string; icon: React.ComponentType<any>; label: string }[] = [
+  { match: "Anthropic", icon: ClaudeAIIcon, label: "Anthropic Claude" },
+  { match: "Claude", icon: ClaudeAIIcon, label: "Anthropic Claude" },
+  { match: "OpenAI", icon: OpenAIIcon, label: "OpenAI" },
+  { match: "Google", icon: GoogleIcon, label: "Google" },
+  { match: "Gemini", icon: GoogleIcon, label: "Google Gemini" },
+  { match: "Next.js", icon: NextjsIcon, label: "Next.js" },
+  { match: "React", icon: ReactIcon, label: "React" },
+  { match: "TypeScript", icon: TypeScriptIcon, label: "TypeScript" },
+  { match: "Tailwind", icon: TailwindCSSIcon, label: "Tailwind CSS" },
+  { match: "Supabase", icon: SupabaseIconGreen, label: "Supabase" },
+]
+
+function getProviderIcons(techStack: string[]) {
+  const seen = new Set<React.ComponentType<any>>()
+  const result: { icon: React.ComponentType<any>; label: string }[] = []
+  for (const tech of techStack) {
+    const entry = TECH_ICON_MAP.find((m) => tech.includes(m.match))
+    if (entry && !seen.has(entry.icon)) {
+      seen.add(entry.icon)
+      result.push({ icon: entry.icon, label: entry.label })
+    }
+  }
+  return result
+}
+
+function StackBlitzIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 28 28" fill="none" {...props}>
+      <path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z" fill="currentColor" />
+    </svg>
+  )
 }
 
 function makeThemeVars(base: Record<string, string>) {
@@ -208,9 +256,9 @@ function FileTreeNode({
           className="flex w-full items-center gap-1.5 rounded-sm py-[5px] pr-2 text-[13px] text-muted-foreground/70 transition-colors hover:bg-muted/60 hover:text-foreground"
         >
           {open ? (
-            <FolderOpenIcon className="size-4 shrink-0 text-muted-foreground/40" />
+            <FolderOpenIcon className="size-4 shrink-0 text-muted-foreground/60" />
           ) : (
-            <FolderIcon className="size-4 shrink-0 text-muted-foreground/40" />
+            <FolderIcon className="size-4 shrink-0 text-muted-foreground/60" />
           )}
           <span className="truncate font-medium">{node.name}</span>
         </button>
@@ -405,43 +453,59 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
   return (
     <div className="flex h-full flex-col">
       {/* Top bar */}
-      <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-2">
-        <div className="flex items-center gap-3">
-          <h1 className="text-sm font-semibold text-foreground">{stackName}</h1>
+      <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-2.5">
+        <div className="flex items-center gap-3 min-w-0">
+          <h1 className="shrink-0 text-[15px] font-semibold text-foreground">{stackName}</h1>
           {isPro && (
-            <span className="rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+            <span className="shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 text-[11px] font-medium uppercase text-muted-foreground">
               Pro
             </span>
           )}
-          <span className="text-xs text-muted-foreground/40">—</span>
-          <p className="text-xs text-muted-foreground">{description}</p>
+          <span className="shrink-0 text-sm text-muted-foreground/50">—</span>
+          <p className="truncate text-[13px] text-muted-foreground">{description}</p>
+          {content && (() => {
+            const icons = getProviderIcons(content.techStack)
+            if (icons.length === 0) return null
+            return (
+              <>
+                <div className="h-4 w-px shrink-0 bg-border" />
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {icons.map(({ icon: Icon, label }) => (
+                    <span key={label} title={label} className="flex size-6 items-center justify-center rounded text-foreground/70 transition-colors hover:text-foreground">
+                      <Icon className="size-[18px]" />
+                    </span>
+                  ))}
+                </div>
+              </>
+            )
+          })()}
         </div>
         <div className="flex items-center gap-1.5">
           {content && (
             <button
               onClick={() => setShowDetails((v) => !v)}
               title={showDetails ? "Hide details" : "Show details"}
-              className="flex size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              <ChevronDown className={cn("size-3.5 transition-transform duration-200", showDetails && "rotate-180")} />
+              <ChevronDown className={cn("size-4 transition-transform duration-200", showDetails && "rotate-180")} />
             </button>
           )}
           {prevStack && (
             <Link
               href={prevStack.link}
               scroll={false}
-              className="flex size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              <ChevronLeft className="size-3.5" />
+              <ChevronLeft className="size-4" />
             </Link>
           )}
           {nextStack && (
             <Link
               href={nextStack.link}
               scroll={false}
-              className="flex size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              <ChevronRight className="size-3.5" />
+              <ChevronRight className="size-4" />
             </Link>
           )}
         </div>
@@ -450,7 +514,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
       {/* Details panel — always in DOM for SEO, collapsed by default */}
       <div
         className={cn(
-          "shrink-0 overflow-hidden border-b border-border/20 bg-muted/5 transition-all duration-300",
+          "shrink-0 overflow-hidden border-b border-border/40 bg-muted/10 transition-all duration-300",
           showDetails ? "max-h-[420px]" : "max-h-0 border-b-0"
         )}
       >
@@ -458,11 +522,11 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
           <div className="grid grid-cols-1 gap-6 px-6 py-5 md:grid-cols-[1fr_auto]">
             {/* Left: intro + use cases */}
             <div className="space-y-4 min-w-0">
-              <p className="text-[12.5px] leading-[1.75] text-foreground/65">{content.intro}</p>
-              <ul className="space-y-1">
+              <p className="text-[13px] leading-[1.75] text-foreground/80">{content.intro}</p>
+              <ul className="space-y-1.5">
                 {content.useCases.map((uc) => (
-                  <li key={uc} className="flex items-start gap-2 text-[12px] leading-[1.6] text-foreground/55">
-                    <span className="mt-[5px] size-1 shrink-0 rounded-full bg-foreground/25" />
+                  <li key={uc} className="flex items-start gap-2 text-[13px] leading-[1.6] text-foreground/70">
+                    <span className="mt-[7px] size-1 shrink-0 rounded-full bg-foreground/40" />
                     {uc}
                   </li>
                 ))}
@@ -470,24 +534,29 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
             </div>
 
             {/* Right: tech stack + related */}
-            <div className="shrink-0 space-y-4 md:w-52">
-              <div className="space-y-1.5">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40">Tech stack</p>
-                <div className="flex flex-wrap gap-1">
-                  {content.techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded border border-border/40 bg-muted/40 px-1.5 py-0.5 font-mono text-[10px] text-foreground/45"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+            <div className="shrink-0 space-y-4 md:w-56">
+              <div className="space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Tech stack</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {content.techStack.map((tech) => {
+                    const iconEntry = TECH_ICON_MAP.find((m) => tech.includes(m.match))
+                    const TechIcon = iconEntry?.icon
+                    return (
+                      <span
+                        key={tech}
+                        className="flex items-center gap-1 rounded border border-border/60 bg-muted/50 px-2 py-0.5 font-mono text-[11px] text-foreground/80"
+                      >
+                        {TechIcon && <TechIcon className="size-3.5 shrink-0" />}
+                        {tech}
+                      </span>
+                    )
+                  })}
                 </div>
               </div>
 
               {content.relatedSlugs && content.relatedSlugs.length > 0 && (
-                <div className="space-y-1.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/40">Related</p>
+                <div className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Related</p>
                   <div className="flex flex-wrap gap-1.5">
                     {content.relatedSlugs.map((relSlug) => {
                       const relStack = getAllStacks().find((s) => s.link === `/stacks/${relSlug}`)
@@ -498,7 +567,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                           href={relStack.link}
                           scroll={false}
                           onClick={() => setShowDetails(false)}
-                          className="rounded border border-border/40 bg-muted/30 px-2 py-0.5 text-[11px] text-foreground/55 transition-colors hover:border-border hover:bg-muted/60 hover:text-foreground"
+                          className="rounded border border-border/60 bg-muted/40 px-2 py-0.5 text-[12px] text-foreground/70 transition-colors hover:border-border hover:bg-muted/70 hover:text-foreground"
                         >
                           {relStack.text}
                         </Link>
@@ -521,10 +590,10 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               key={id}
               onClick={() => setPkgManager(id)}
               className={cn(
-                "border-b-2 px-3 py-1.5 text-[11px] font-medium transition-colors",
+                "border-b-2 px-3 py-2 text-[12px] font-medium transition-colors",
                 pkgManager === id
                   ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground/60 hover:text-muted-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               )}
             >
               {label}
@@ -532,23 +601,23 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
           ))}
         </div>
         {/* Command row */}
-        <div className="flex items-center gap-3 px-4 py-1.5">
-          <Terminal className="size-3.5 shrink-0 text-muted-foreground/40" />
-          <code className="flex-1 truncate font-mono text-xs text-muted-foreground">
+        <div className="flex items-center gap-3 px-4 py-2">
+          <Terminal className="size-4 shrink-0 text-muted-foreground" />
+          <code className="flex-1 truncate font-mono text-[13px] text-foreground/80">
             {cliCommand}
           </code>
           <button
             onClick={handleCopyCli}
-            className="flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1 text-[12px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             {cliCopied ? (
               <>
-                <Check className="size-3" />
+                <Check className="size-3.5" />
                 Copied
               </>
             ) : (
               <>
-                <Copy className="size-3" />
+                <Copy className="size-3.5" />
                 Copy
               </>
             )}
@@ -557,34 +626,42 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
       </div>
 
       {/* Toolbar */}
-      <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-1.5">
-        <div className="flex items-center gap-2">
+      <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-2">
+        <div className="flex items-center gap-3">
           <div className="flex overflow-hidden rounded-md border border-border">
             <button
               onClick={() => { setActiveTab("preview"); setActiveFileIndex(0); setHighlightedLines(null) }}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
+                "flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-medium transition-colors",
                 activeTab === "preview"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <Eye className="size-3" />
+              <Eye className="size-3.5" />
               Preview
             </button>
             <button
               onClick={() => { setActiveTab("code"); setActiveFileIndex(0) }}
               className={cn(
-                "flex items-center gap-1.5 border-l border-border px-3 py-1.5 text-xs font-medium transition-colors",
+                "flex items-center gap-1.5 border-l border-border px-3.5 py-2 text-[13px] font-medium transition-colors",
                 activeTab === "code"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <Code2 className="size-3" />
+              <Code2 className="size-3.5" />
               Code
             </button>
           </div>
+
+          {source?.files && source.files.length > 0 && (
+            <span className="hidden text-[12px] tabular-nums text-muted-foreground sm:inline">
+              {source.files.length} {source.files.length === 1 ? "file" : "files"}
+              <span className="mx-1.5 text-border">·</span>
+              {source.files.reduce((sum, f) => sum + f.code.split("\n").length, 0)} lines
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -600,13 +677,13 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                 key={size}
                 onClick={() => setDevice(size)}
                 className={cn(
-                  "flex size-7 items-center justify-center rounded-sm transition-colors",
+                  "flex size-8 items-center justify-center rounded-sm transition-colors",
                   device === size
                     ? "bg-muted text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Icon className="size-3.5" />
+                <Icon className="size-4" />
               </button>
             ))}
             <div className="mx-0.5 h-4 w-px bg-border" />
@@ -622,16 +699,16 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                 window.open(`/preview/${slug}?${p.toString()}`, "_blank")
               }}
               title="Open in new tab"
-              className="flex size-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="flex size-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              <ExternalLink className="size-3.5" />
+              <ExternalLink className="size-4" />
             </button>
             <button
               onClick={() => setPreviewKey((k) => k + 1)}
               title="Refresh preview"
-              className="flex size-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="flex size-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              <RefreshCw className="size-3" />
+              <RefreshCw className="size-3.5" />
             </button>
           </div>
 
@@ -643,13 +720,13 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                   onClick={() => { setActiveTheme(i); setCustomColor("") }}
                   title={preset.name}
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-sm transition-colors",
+                    "flex size-8 items-center justify-center rounded-sm transition-colors",
                     activeTheme === i && !customColor ? "bg-muted" : "hover:bg-muted/50"
                   )}
                 >
                   <span
                     className={cn(
-                      "size-3 rounded-full border transition-transform",
+                      "size-3.5 rounded-full border transition-transform",
                       activeTheme === i && !customColor
                         ? "scale-110 border-foreground/30"
                         : "border-transparent"
@@ -661,73 +738,73 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               <div className="mx-0.5 h-4 w-px bg-border" />
               <button
                 onClick={() => setShowThemePanel(!showThemePanel)}
-                className="flex items-center gap-1 rounded-sm px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="flex items-center gap-1 rounded-sm px-2 py-1.5 text-[13px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 {customColor ? "Custom" : themePresets[activeTheme].name}
-                <ChevronDown className="size-3" />
+                <ChevronDown className="size-3.5" />
               </button>
             </div>
 
             {showThemePanel && (
-              <div className="absolute right-0 top-full z-50 mt-1 w-[260px] rounded-lg border border-border bg-background p-3 shadow-lg">
+              <div className="absolute right-0 top-full z-50 mt-1 w-[280px] rounded-lg border border-border bg-background p-4 shadow-lg">
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-xs font-medium text-foreground">Customize Theme</span>
+                  <span className="text-[13px] font-medium text-foreground">Customize Theme</span>
                   <button onClick={() => setShowThemePanel(false)} className="text-muted-foreground hover:text-foreground">
-                    <X className="size-3" />
+                    <X className="size-4" />
                   </button>
                 </div>
                 <div className="mb-3">
-                  <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">Color</p>
+                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Color</p>
                   <div className="flex flex-wrap gap-1">
                     {themePresets.map((preset, i) => (
                       <button
                         key={preset.name}
                         onClick={() => { setActiveTheme(i); setCustomColor("") }}
                         className={cn(
-                          "flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] transition-colors",
+                          "flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] transition-colors",
                           activeTheme === i && !customColor
                             ? "border-foreground/20 bg-muted font-medium text-foreground"
                             : "border-transparent text-muted-foreground hover:bg-muted"
                         )}
                       >
-                        <span className="size-2.5 rounded-full" style={{ backgroundColor: preset.dot }} />
+                        <span className="size-3 rounded-full" style={{ backgroundColor: preset.dot }} />
                         {preset.name}
                       </button>
                     ))}
                   </div>
                 </div>
                 <div className="mb-3">
-                  <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">Custom Primary</p>
+                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Custom Primary</p>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
                       value={customColor || themePresets[activeTheme].dot}
                       onChange={(e) => setCustomColor(e.target.value)}
-                      className="size-7 cursor-pointer rounded border border-border bg-transparent p-0"
+                      className="size-8 cursor-pointer rounded border border-border bg-transparent p-0"
                     />
                     <input
                       type="text"
                       value={customColor}
                       onChange={(e) => setCustomColor(e.target.value)}
                       placeholder="oklch(0.6 0.2 260) or #hex"
-                      className="h-7 flex-1 rounded-md border border-border bg-transparent px-2 text-[11px] text-foreground outline-none placeholder:text-muted-foreground/30"
+                      className="h-8 flex-1 rounded-md border border-border bg-transparent px-2 text-[12px] text-foreground outline-none placeholder:text-muted-foreground/50"
                     />
                     {customColor && (
-                      <button onClick={() => setCustomColor("")} className="text-[10px] text-muted-foreground hover:text-foreground">
+                      <button onClick={() => setCustomColor("")} className="text-[11px] text-muted-foreground hover:text-foreground">
                         Reset
                       </button>
                     )}
                   </div>
                 </div>
                 <div>
-                  <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50">Radius</p>
+                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Radius</p>
                   <div className="flex gap-1">
                     {radiusOptions.map((opt, i) => (
                       <button
                         key={opt.label}
                         onClick={() => setActiveRadius(i)}
                         className={cn(
-                          "flex-1 rounded-md border py-1 text-center text-[11px] transition-colors",
+                          "flex-1 rounded-md border py-1.5 text-center text-[12px] transition-colors",
                           activeRadius === i
                             ? "border-foreground/20 bg-muted font-medium text-foreground"
                             : "border-transparent text-muted-foreground hover:bg-muted"
@@ -742,19 +819,39 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
             )}
           </div>
 
+          <a
+            href={`https://stackblitz.com/github/shadcnagents/ui?file=apps/www/registry/stacks/${slug}/page.tsx`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open in StackBlitz"
+            className="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <StackBlitzIcon className="size-4" />
+          </a>
+
+          <a
+            href={`${siteConfig.links.github}/tree/main/apps/www/registry/stacks/${slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View source on GitHub"
+            className="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <Github className="size-4" />
+          </a>
+
           <button
             onClick={handleCopyCli}
-            className="flex size-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             title="Copy CLI command"
           >
-            <ClipboardCopy className="size-3.5" />
+            <ClipboardCopy className="size-4" />
           </button>
         </div>
       </div>
 
       {/* Content area — padded viewport frame with rounded border */}
       <div className="flex min-h-0 flex-1 flex-col p-3">
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background">
+        <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm dark:bg-black">
           {activeTab === "preview" && (
             <div className="h-full overflow-y-scroll scrollbar-hide">
               {isPro && !userIsPro ? (
@@ -793,7 +890,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                       <PreviewComponent />
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
+                    <p className="text-sm text-muted-foreground">Preview coming soon</p>
                   )}
                 </div>
               )}
@@ -804,7 +901,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
             <div className="flex h-full">
               {source && source.files.length > 0 && (
                 <div className="w-[200px] shrink-0 overflow-y-scroll border-r border-border bg-muted/10 py-3 scrollbar-hide">
-                  <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+                  <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                     Files
                   </p>
                   <div className="px-1.5">
@@ -824,12 +921,12 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                 {source && activeFile ? (
                   <>
                     <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-1.5">
-                      <span className="text-[11px] text-muted-foreground">{activeFile.name}</span>
+                      <span className="text-[13px] text-muted-foreground">{activeFile.name}</span>
                       <button
                         onClick={handleCopyCode}
-                        className="flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                        className="flex items-center gap-1.5 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
                       >
-                        <ClipboardCopy className="size-3" />
+                        <ClipboardCopy className="size-3.5" />
                         {codeCopied ? "Copied" : "Copy"}
                       </button>
                     </div>
@@ -839,7 +936,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                         {/* Gutter: line numbers */}
                         <div
                           aria-hidden
-                          className="sticky left-0 z-10 shrink-0 select-none border-r border-border/30 bg-muted/10 px-3 py-4 text-right text-muted-foreground/30"
+                          className="sticky left-0 z-10 shrink-0 select-none border-r border-border/40 bg-muted/10 px-3 py-4 text-right text-muted-foreground/50"
                         >
                           {activeFile.code.split("\n").map((_, i) => (
                             <div key={i}>{i + 1}</div>
@@ -864,7 +961,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                   </>
                 ) : (
                   <div className="flex flex-1 items-center justify-center">
-                    <p className="text-sm text-muted-foreground/40">Source code coming soon</p>
+                    <p className="text-sm text-muted-foreground">Source code coming soon</p>
                   </div>
                 )}
                 {isPro && !userIsPro && (

@@ -55,7 +55,7 @@ export function ClaudeWebSearchPreview() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           placeholder="Search the web..."
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/40 focus:border-foreground/20"
+          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
         />
         <button
           onClick={handleSearch}
@@ -68,11 +68,11 @@ export function ClaudeWebSearchPreview() {
 
       {/* Searching state */}
       {phase === "searching" && (
-        <div className="flex items-center gap-3 rounded-md border border-border/40 bg-muted/20 p-3">
+        <div className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/40 p-3">
           <div className="size-4 animate-spin rounded-full border-2 border-foreground/15 border-t-foreground" />
           <div>
             <p className="text-xs font-medium text-foreground">Searching the web...</p>
-            <p className="text-[10px] text-muted-foreground/50">Querying multiple sources</p>
+            <p className="text-[12px] text-muted-foreground">Querying multiple sources</p>
           </div>
         </div>
       )}
@@ -86,29 +86,29 @@ export function ClaudeWebSearchPreview() {
                 <div className="size-3 animate-spin rounded-full border border-foreground/20 border-t-foreground" />
               )}
               {phase === "done" && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-500">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-600 dark:text-emerald-400">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               )}
-              <span className="text-[10px] text-muted-foreground/50">
+              <span className="text-[12px] text-muted-foreground">
                 {phase === "reading" ? `Reading sources... (${visibleResults}/${results.length})` : `${results.length} results found`}
               </span>
             </div>
             {phase === "done" && (
-              <button onClick={() => { setPhase("idle"); setVisibleResults(0) }} className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground">
+              <button onClick={() => { setPhase("idle"); setVisibleResults(0) }} className="text-[12px] text-muted-foreground hover:text-muted-foreground">
                 Clear
               </button>
             )}
           </div>
           {results.slice(0, visibleResults).map((result, i) => (
-            <div key={i} className="animate-in fade-in slide-in-from-bottom-1 rounded-md border border-border/40 p-3 duration-300">
+            <div key={i} className="animate-in fade-in slide-in-from-bottom-1 rounded-md border border-border/60 p-3 duration-300">
               <div className="flex items-start gap-2.5">
                 <span className="mt-0.5 text-sm">{result.favicon}</span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-foreground">
                     {result.title}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-muted-foreground/40">
+                  <p className="mt-0.5 text-[12px] text-muted-foreground">
                     {result.url}
                   </p>
                   <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
@@ -164,7 +164,7 @@ export function ExaWebSearchPreview() {
               if (e.key === "Enter") setSearched(true)
             }}
             placeholder="Find papers about neural information retrieval"
-            className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/40 focus:border-foreground/20"
+            className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
           />
           <button
             onClick={() => setSearched(true)}
@@ -180,10 +180,10 @@ export function ExaWebSearchPreview() {
           {results.map((result, i) => (
             <div
               key={i}
-              className="flex gap-3 rounded-md border border-border/40 p-3"
+              className="flex gap-3 rounded-md border border-border/60 p-3"
             >
               <div className="shrink-0">
-                <div className="flex size-8 items-center justify-center rounded-md bg-muted text-[10px] font-medium tabular-nums text-muted-foreground">
+                <div className="flex size-8 items-center justify-center rounded-md bg-muted text-[12px] font-medium tabular-nums text-muted-foreground">
                   {result.score}
                 </div>
               </div>
@@ -191,7 +191,7 @@ export function ExaWebSearchPreview() {
                 <p className="text-sm font-medium text-foreground">
                   {result.title}
                 </p>
-                <p className="text-[10px] text-muted-foreground/40">
+                <p className="text-[12px] text-muted-foreground">
                   {result.url}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -232,7 +232,7 @@ export function CheerioScraperPreview() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://example.com"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/40 focus:border-foreground/20"
+          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
         />
         <button
           onClick={() => setScraped(true)}
@@ -243,8 +243,8 @@ export function CheerioScraperPreview() {
       </div>
 
       {scraped && (
-        <div className="rounded-md border border-border/40 bg-muted/20 p-4">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+        <div className="rounded-md border border-border/60 bg-muted/40 p-4">
+          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
             DOM Structure
           </span>
           <div className="mt-2 space-y-0.5 font-mono">
@@ -254,11 +254,11 @@ export function CheerioScraperPreview() {
                 className="flex items-baseline gap-1"
                 style={{ paddingLeft: `${node.indent * 16}px` }}
               >
-                <span className="text-[11px] text-muted-foreground/60">
+                <span className="text-[13px] text-muted-foreground">
                   &lt;{node.tag}&gt;
                 </span>
                 {node.text && (
-                  <span className="text-[11px] text-foreground/70">
+                  <span className="text-[13px] text-foreground/70">
                     {node.text}
                   </span>
                 )}
@@ -283,7 +283,7 @@ export function JinaScraperPreview() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://example.com/blog/post"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/40 focus:border-foreground/20"
+          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
         />
         <button
           onClick={() => setScraped(true)}
@@ -295,31 +295,31 @@ export function JinaScraperPreview() {
 
       {scraped && (
         <div className="space-y-3">
-          <div className="rounded-md border border-border/40 p-3">
+          <div className="rounded-md border border-border/60 p-3">
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <span className="text-muted-foreground/40">Title</span>
+                <span className="text-muted-foreground">Title</span>
                 <p className="mt-0.5 font-medium text-foreground">
                   Building AI-Powered Apps
                 </p>
               </div>
               <div>
-                <span className="text-muted-foreground/40">Author</span>
+                <span className="text-muted-foreground">Author</span>
                 <p className="mt-0.5 font-medium text-foreground">Jane Smith</p>
               </div>
               <div>
-                <span className="text-muted-foreground/40">Published</span>
+                <span className="text-muted-foreground">Published</span>
                 <p className="mt-0.5 text-foreground">2025-01-15</p>
               </div>
               <div>
-                <span className="text-muted-foreground/40">Word Count</span>
+                <span className="text-muted-foreground">Word Count</span>
                 <p className="mt-0.5 text-foreground">2,340</p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-md border border-border/40 bg-muted/20 p-4">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+          <div className="rounded-md border border-border/60 bg-muted/40 p-4">
+            <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
               Extracted Content
             </span>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
@@ -398,7 +398,7 @@ Read the [documentation](https://docs.example.com) for more details.`
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleConvert()}
           placeholder="https://docs.example.com/guide"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/40 focus:border-foreground/20"
+          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
         />
         <button
           onClick={handleConvert}
@@ -410,33 +410,33 @@ Read the [documentation](https://docs.example.com) for more details.`
       </div>
 
       {converting && (
-        <div className="flex items-center gap-3 rounded-md border border-border/40 bg-muted/20 p-3">
+        <div className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/40 p-3">
           <div className="size-4 animate-spin rounded-full border-2 border-foreground/15 border-t-foreground" />
           <div>
             <p className="text-xs font-medium text-foreground">Fetching page...</p>
-            <p className="text-[10px] text-muted-foreground/50">Converting HTML to Markdown</p>
+            <p className="text-[12px] text-muted-foreground">Converting HTML to Markdown</p>
           </div>
         </div>
       )}
 
       {converted && (
-        <div className="rounded-md border border-border/40 bg-muted/20 p-4">
+        <div className="rounded-md border border-border/60 bg-muted/40 p-4">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+              <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
                 Markdown Output
               </span>
-              <span className="text-[10px] text-muted-foreground/30">
+              <span className="text-[12px] text-muted-foreground">
                 {markdown.length} chars
               </span>
             </div>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1 text-[10px] text-muted-foreground/40 transition-colors hover:text-muted-foreground"
+              className="flex items-center gap-1 text-[12px] text-muted-foreground transition-colors hover:text-muted-foreground"
             >
               {copied ? (
                 <>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-500">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-600 dark:text-emerald-400">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   Copied!
@@ -452,7 +452,7 @@ Read the [documentation](https://docs.example.com) for more details.`
               )}
             </button>
           </div>
-          <pre className="max-h-64 overflow-y-auto overflow-x-auto text-[11px] leading-relaxed text-muted-foreground [&::-webkit-scrollbar]:hidden">
+          <pre className="max-h-64 overflow-y-auto overflow-x-auto text-[13px] leading-relaxed text-muted-foreground [&::-webkit-scrollbar]:hidden">
             {markdown}
           </pre>
         </div>
@@ -490,7 +490,7 @@ export function PDFAnalysisPreview() {
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
-            className="text-muted-foreground/40"
+            className="text-muted-foreground"
           >
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
@@ -498,21 +498,21 @@ export function PDFAnalysisPreview() {
             <line x1="16" y1="17" x2="8" y2="17" />
             <polyline points="10 9 9 9 8 9" />
           </svg>
-          <p className="mt-2 text-xs text-muted-foreground/50">
+          <p className="mt-2 text-xs text-muted-foreground">
             Drop PDF file or click to upload
           </p>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center gap-3 rounded-md border border-border/40 p-3">
-            <div className="flex size-10 items-center justify-center rounded-md bg-muted text-[10px] font-medium text-muted-foreground">
+          <div className="flex items-center gap-3 rounded-md border border-border/60 p-3">
+            <div className="flex size-10 items-center justify-center rounded-md bg-muted text-[12px] font-medium text-muted-foreground">
               PDF
             </div>
             <div>
               <p className="text-xs font-medium text-foreground">
                 research-paper.pdf
               </p>
-              <p className="text-[10px] text-muted-foreground/40">
+              <p className="text-[12px] text-muted-foreground">
                 2.4 MB · 12 pages
               </p>
             </div>
@@ -527,8 +527,8 @@ export function PDFAnalysisPreview() {
 
           {done && (
             <div className="space-y-3">
-              <div className="rounded-md border border-border/40 p-3">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+              <div className="rounded-md border border-border/60 p-3">
+                <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
                   Document Summary
                 </span>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
@@ -547,12 +547,12 @@ export function PDFAnalysisPreview() {
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="rounded-md border border-border/40 p-2 text-center"
+                    className="rounded-md border border-border/60 p-2 text-center"
                   >
                     <p className="text-sm font-medium text-foreground">
                       {stat.value}
                     </p>
-                    <p className="text-[10px] text-muted-foreground/40">
+                    <p className="text-[12px] text-muted-foreground">
                       {stat.label}
                     </p>
                   </div>

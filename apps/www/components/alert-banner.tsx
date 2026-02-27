@@ -1,5 +1,7 @@
 import { ArrowRight } from "lucide-react";
 
+import { siteConfig } from "@/config/site";
+
 export function AlertBanner() {
 	return (
 		<div className="relative z-50 w-full bg-[#ADFA1B] text-black">
@@ -21,7 +23,7 @@ export function AlertBanner() {
 						/
 					</span>
 					<span className="hidden font-pixel-square text-[11px] tracking-wider text-black/50 sm:inline">
-						100+ AI agent patterns - just copy & paste
+						{siteConfig.counts.stacks}+ AI agent stacks - just copy & paste
 					</span>
 				</div>
 				<ArrowRight className="size-3 text-black/40 transition-transform group-hover:translate-x-0.5 group-hover:text-black" />

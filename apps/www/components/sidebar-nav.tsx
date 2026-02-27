@@ -16,8 +16,8 @@ export function DocsSidebarNav({ items }: DocsSidebarNavProps) {
   return items.length ? (
     <div className="w-full">
       {items.map((item, index) => (
-        <div key={`${item.title}-${index}`} className={cn("pb-4")}>
-          <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
+        <div key={`${item.title}-${index}`} className={cn("pb-5")}>
+          <h4 className="mb-1.5 px-2 py-1 text-xs font-semibold tracking-wide text-foreground/80">
             {item.title}
           </h4>
           {item?.items?.length && (
@@ -63,10 +63,10 @@ function NavItem({ item, pathname }: NavItemProps) {
   if (hasChildren) {
     return (
       <div>
-        <span className="flex w-full cursor-default items-center rounded-md p-2 text-xs font-medium text-muted-foreground">
+        <span className="flex w-full cursor-default items-center px-2 py-1.5 text-xs font-medium text-muted-foreground/70">
           {item.title}
         </span>
-        <div className="ml-3 border-l border-border pl-3">
+        <div className="ml-3 border-l border-border/50 pl-3">
           <DocsSidebarNavItems items={item.items} pathname={pathname} />
         </div>
       </div>
@@ -78,26 +78,18 @@ function NavItem({ item, pathname }: NavItemProps) {
       <Link
         href={item.href}
         className={cn(
-          "group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline",
+          "group flex w-full items-center rounded-md px-2 py-1.5 text-[13px] transition-colors hover:bg-muted/60 hover:text-foreground",
           item.disabled && "cursor-not-allowed opacity-60",
-          isActive ? "font-medium text-foreground" : "text-muted-foreground"
+          isActive
+            ? "bg-muted/80 font-medium text-foreground"
+            : "text-muted-foreground"
         )}
         target={item.external ? "_blank" : ""}
         rel={item.external ? "noreferrer" : ""}
       >
         {item.title}
-        {item.label === "new" && (
-          <span className="ml-2 rounded-sm border border-black bg-[#adfa1d] px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
-            {item.label}
-          </span>
-        )}
-        {item.label === "recent" && (
-          <span className="ml-2 rounded-sm border border-black bg-cyan-200  px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
-            {item.label}
-          </span>
-        )}
-        {item.label === "updated" && (
-          <span className="ml-2 rounded-sm border border-black bg-pink-400 px-1.5 py-0.5 text-xs leading-none text-[#000000] no-underline group-hover:no-underline">
+        {item.label && (
+          <span className="ml-2 bg-primary px-1.5 py-0.5 text-[10px] font-semibold leading-none text-primary-foreground no-underline group-hover:no-underline">
             {item.label}
           </span>
         )}
@@ -108,13 +100,13 @@ function NavItem({ item, pathname }: NavItemProps) {
   return (
     <span
       className={cn(
-        "flex w-full cursor-not-allowed items-center rounded-md p-2 text-muted-foreground hover:underline",
+        "flex w-full cursor-not-allowed items-center p-2 text-muted-foreground hover:underline",
         item.disabled && "cursor-not-allowed opacity-60"
       )}
     >
       {item.title}
       {item.label && (
-        <span className="ml-2 rounded-md bg-muted px-1.5 py-0.5 text-xs leading-none text-muted-foreground no-underline group-hover:no-underline">
+        <span className="ml-2 bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-primary no-underline group-hover:no-underline">
           {item.label}
         </span>
       )}
