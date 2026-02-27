@@ -7,7 +7,7 @@ import { Typewriter } from "../ui/typewriter"
 const texts = [
   "Testing 124",
   "Look at shadcnagents.com",
-  "and check gnow.io",
+  "and check shadcnagents.com",
   "Sick af",
 ]
 

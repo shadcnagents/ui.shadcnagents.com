@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ArrowRight, IceCream } from "lucide-react";
-import brandDirectoryHomeDark from "@/components/landing/assets/cult-directory-dark-home.png";
-import brandLogoGPTHome from "@/components/landing/assets/cult-logo-gpt.png";
-import brandSeoOg from "@/components/landing/assets/cult-seo-og.png";
+import brandDirectoryHomeDark from "@/components/landing/assets/directory-dark-home.png";
+import brandLogoGPTHome from "@/components/landing/assets/logo-gpt.png";
+import brandSeoOg from "@/components/landing/assets/seo-og.png";
 import manifestBottomLeft from "@/components/landing/assets/manifest-library.png";
 import runeHero from "@/components/landing/assets/rune-hero.png";
 import travelStash4 from "@/components/landing/assets/travel-stash.png";

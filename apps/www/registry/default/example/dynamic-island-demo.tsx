@@ -83,7 +83,7 @@ const DynamicAction = () => {
   const renderTallState = () => (
     <DynamicContainer className="  flex flex-col mt-6 w-full items-start  gap-1 px-8 font-semibold">
       <DynamicDescription className="bg-cyan-300 rounded-2xl tracking-tight leading-5  p-2">
-        The Cult of Pythagoras
+        The Harmony of Spheres
       </DynamicDescription>
       <DynamicDescription className="bg-cyan-300 rounded-2xl tracking-tight leading-5  p-2 text-left">
         Music of the Spheres, an idea that celestial bodies produce a form of

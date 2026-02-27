@@ -3,10 +3,10 @@ import { ArrowRight, StickerIcon } from "lucide-react";
 export function PlugCardGrid() {
 	const cards = [
 		{
-			title: "Free AI Marketing",
+			title: "AI Agent Stacks",
 			description:
-				"An AI Cofounder that knows your brand. Start creating marketing copy that converts.",
-			href: "https://www.newcopy.ai",
+				"Production-ready AI agent patterns. Build intelligent workflows with copy-paste components.",
+			href: "https://www.shadcnagents.com/stacks",
 		},
 		{
 			title: "Free SEO Improvement Tool",
