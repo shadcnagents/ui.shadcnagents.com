@@ -76,28 +76,20 @@ export default function IndexPage() {
     <div className="isolate min-h-screen overflow-hidden">
       {/* ──────────────────────── Hero ──────────────────────── */}
       <section className="mx-auto flex max-w-[980px] flex-col items-center gap-6 px-4 py-16 md:py-24 lg:py-32">
-        {/* Badge */}
-        <div className="flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5">
-          <span className="font-mono text-xs tracking-wider text-muted-foreground">
-            New
-          </span>
-          <span className="text-muted-foreground/40" aria-hidden="true">
-            ·
-          </span>
-          <span className="font-mono text-xs tracking-wider text-muted-foreground">
-            Free
-          </span>
-          <span className="text-muted-foreground/40" aria-hidden="true">
-            ·
-          </span>
-          <span className="font-mono text-xs tracking-wider text-muted-foreground">
-            Expand All
-          </span>
-        </div>
-
         {/* Heading */}
-        <h1 className="mx-auto max-w-4xl text-center text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-          AI SDK Agents You Can Copy&nbsp;&amp;&nbsp;Paste
+        <h1
+          className="mx-auto max-w-4xl text-center leading-[1.2] tracking-[-0.031em]"
+          style={{ fontSize: "clamp(28px, 14px + 3.2vw, 54px)" }}
+        >
+          <span className="block font-editorial italic text-[1.15em]">
+            AI SDK Components You Can
+          </span>
+          <span
+            className="block font-mono font-medium tracking-[-0.09em]"
+            style={{ wordSpacing: "-0.16em" }}
+          >
+            Copy, Paste, and Ship Today
+          </span>
         </h1>
 
         {/* Subheading */}
@@ -109,13 +101,13 @@ export default function IndexPage() {
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
           <Link
             href="/stacks"
-            className="inline-flex items-center justify-center rounded-md bg-foreground px-8 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="inline-flex items-center justify-center bg-foreground px-8 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
           >
             Try out all 100 agent stacks
           </Link>
           <Link
             href="/directory"
-            className="inline-flex items-center justify-center rounded-md border border-border bg-background px-8 py-3 text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex items-center justify-center border border-border bg-background px-8 py-3 text-sm font-medium transition-colors hover:bg-muted"
           >
             Browse directory
           </Link>
