@@ -12,9 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${baseUrl}/stacks`, lastModified: now, changeFrequency: "daily", priority: 0.95 },
+    { url: `${baseUrl}/agents`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${baseUrl}/chat`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${baseUrl}/templates`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/pricing`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/directory`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${baseUrl}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
   ]
 
   // All 60+ stack pages — highest priority, these are the money pages
