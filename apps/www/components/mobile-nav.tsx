@@ -62,8 +62,8 @@ export function MobileNav() {
           className="flex items-center"
           onOpenChange={setOpen}
         >
-          <Icons.brandLogo className="size-6 fill-black  " />
-          <span className=" text-lg font-bold sm:inline-block">shadcnagents</span>
+          <Icons.brandLogo className="size-5 text-foreground" />
+          <span className="font-mono text-sm font-semibold tracking-tight">shadcnagents</span>
           <span className="sr-only">{siteConfig.name}</span>
         </MobileLink>
 
