@@ -82,26 +82,26 @@ const techBadges = [
 ]
 
 /* ──────────────────────────────────────────────────────────
- *  FOOTER — Intercom-inspired, always dark
+ *  FOOTER — Intercom-inspired, theme-adaptive
  *  3 zones: Brand → 5-col links → Bottom bar
  * ────────────────────────────────────────────────────────── */
 
 export function SiteFooter() {
   return (
-    <footer className="bg-neutral-950 text-neutral-300">
+    <footer className="border-t border-border bg-muted/40">
       {/* ── Zone 1: Brand ── */}
-      <div className="border-b border-neutral-800 px-6 py-12 md:px-10 md:py-16">
+      <div className="border-b border-border px-6 py-12 md:px-10 md:py-16">
         <div className="mx-auto max-w-7xl">
           <Link
             href="/"
             className="group inline-flex items-center gap-2.5"
           >
-            <Icons.brandLogo className="size-6 text-white transition-transform group-hover:scale-110" />
-            <span className="font-mono text-xl font-semibold tracking-tight text-white">
+            <Icons.brandLogo className="size-6 text-foreground transition-transform group-hover:scale-110" />
+            <span className="font-mono text-xl font-semibold tracking-tight text-foreground">
               shadcnagents
             </span>
           </Link>
-          <p className="mt-3 max-w-md text-[14px] leading-relaxed text-neutral-400">
+          <p className="mt-3 max-w-md text-[14px] leading-relaxed text-muted-foreground">
             Production-ready AI stacks for Next.js. Browse, install with one
             CLI command, and ship to production. 100+ stacks, 117 UI
             components.
@@ -126,7 +126,7 @@ export function SiteFooter() {
       </div>
 
       {/* ── Zone 3: Bottom bar ── */}
-      <div className="border-t border-neutral-800 px-6 py-5 md:px-10">
+      <div className="border-t border-border px-6 py-5 md:px-10">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
           {/* Tech badges */}
           <div className="flex flex-wrap items-center gap-1.5">
@@ -136,7 +136,7 @@ export function SiteFooter() {
                 href={t.href}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-neutral-800 px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-neutral-500 transition-colors hover:border-neutral-600 hover:text-neutral-300"
+                className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
               >
                 {t.label}
               </Link>
@@ -145,7 +145,7 @@ export function SiteFooter() {
 
           {/* Copyright + socials */}
           <div className="flex items-center gap-4">
-            <span className="font-mono text-[11px] tracking-wider text-neutral-600">
+            <span className="font-mono text-[11px] tracking-wider text-muted-foreground/60">
               &copy; {new Date().getFullYear()} shadcnagents
             </span>
             <div className="flex items-center gap-1">
@@ -153,7 +153,7 @@ export function SiteFooter() {
                 href={siteConfig.links.github}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex size-7 items-center justify-center rounded-md text-neutral-500 transition-colors hover:text-white"
+                className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Icons.gitHub className="size-3.5" />
                 <span className="sr-only">GitHub</span>
@@ -162,7 +162,7 @@ export function SiteFooter() {
                 href={siteConfig.links.twitter}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex size-7 items-center justify-center rounded-md text-neutral-500 transition-colors hover:text-white"
+                className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Icons.twitter className="size-3 fill-current" />
                 <span className="sr-only">Twitter</span>
@@ -185,7 +185,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h3 className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-neutral-500">
+      <h3 className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/40">
         {heading}
       </h3>
       <nav className="flex flex-col gap-2.5">
@@ -196,7 +196,7 @@ function FooterColumn({
             {...(link.external
               ? { target: "_blank", rel: "noreferrer" }
               : {})}
-            className="text-[13px] text-neutral-400 transition-colors hover:text-white"
+            className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
           >
             {link.title}
           </Link>
