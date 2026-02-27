@@ -757,15 +757,8 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background">
           {activeTab === "preview" && (
             <div className="h-full overflow-y-scroll scrollbar-hide">
-              <div
-                ref={previewRef}
-                className={cn(
-                  "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
-                  deviceWidthClass
-                )}
-                style={previewThemeVars as React.CSSProperties}
-              >
-                {isPro && !userIsPro ? (
+              {isPro && !userIsPro ? (
+                <div className="flex min-h-full items-center justify-center p-8">
                   <div className="text-center">
                     <Lock className="mx-auto mb-3 size-5 text-primary/30" />
                     <p className="text-sm font-medium text-foreground">Pro Stack</p>
@@ -780,19 +773,30 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                           <Link href="/auth/login">Sign In</Link>
                         </Button>
                       )}
-                      <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                      <Button asChild size="sm">
                         <Link href="/pricing">Unlock with Pro</Link>
                       </Button>
                     </div>
                   </div>
-                ) : PreviewComponent ? (
-                  <div className="w-full" key={previewKey}>
-                    <PreviewComponent />
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div
+                  ref={previewRef}
+                  className={cn(
+                    "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
+                    deviceWidthClass
+                  )}
+                  style={previewThemeVars as React.CSSProperties}
+                >
+                  {PreviewComponent ? (
+                    <div className="w-full" key={previewKey}>
+                      <PreviewComponent />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
