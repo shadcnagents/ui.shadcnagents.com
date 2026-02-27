@@ -523,7 +523,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "border-b-2 px-3 py-1.5 text-[11px] font-medium transition-colors",
                 pkgManager === id
-                  ? "border-foreground text-foreground"
+                  ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground/60 hover:text-muted-foreground"
               )}
             >
@@ -565,7 +565,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === "preview"
-                  ? "bg-foreground text-background"
+                  ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -577,7 +577,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "flex items-center gap-1.5 border-l border-border px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === "code"
-                  ? "bg-foreground text-background"
+                  ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
