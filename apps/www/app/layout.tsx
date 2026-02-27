@@ -6,6 +6,36 @@ import { Suspense } from "react"
 import { siteConfig } from "@/config/site"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
+import { Playfair_Display, Boldonse, Pattaya, Oooh_Baby } from "next/font/google"
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  style: "italic",
+  variable: "--font-playfair",
+  display: "swap",
+})
+
+const pattaya = Pattaya({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-pattaya",
+  display: "swap",
+})
+
+const boldonse = Boldonse({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-boldonse",
+  display: "swap",
+})
+
+const ooohBaby = Oooh_Baby({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-oooh-baby",
+  display: "swap",
+})
+
 
 import { cn } from "@/lib/utils"
 import { Toaster as NewYorkSonner } from "@/components/ui/sonner"
@@ -94,9 +124,31 @@ export default function RootLayout({ children }: RootLayoutProps) {
         className={cn(
           "relative min-h-screen bg-background font-sans antialiased",
           GeistSans.variable,
-          GeistMono.variable
+          GeistMono.variable,
+          playfairDisplay.variable,
+          boldonse.variable,
+          pattaya.variable,
+          ooohBaby.variable
         )}
       >
+        {/* Paper noise texture — two layers for light/dark, hidden on stacks */}
+        <div
+          aria-hidden
+          className="noise-overlay pointer-events-none fixed inset-0 z-[9999] mix-blend-multiply opacity-[0.07] dark:hidden"
+          style={{
+            backgroundImage:
+              'url("/page-background/light-bg-paper-texture.webp")',
+            backgroundSize: "200px 200px",
+          }}
+        />
+        <div
+          aria-hidden
+          className="noise-overlay pointer-events-none fixed inset-0 z-[9999] hidden mix-blend-screen opacity-[0.05] dark:block"
+          style={{
+            backgroundImage: 'url("/page-background/bg-paper-texture.webp")',
+            backgroundSize: "200px 200px",
+          }}
+        />
         <SessionProvider>
           <PostHogProvider>
             <ThemeProvider
