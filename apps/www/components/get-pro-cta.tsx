@@ -9,7 +9,7 @@ export function GetProCta() {
       </p>
       <Link
         href="/pricing"
-        className="inline-flex items-center justify-center rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background transition-colors hover:bg-foreground/90"
+        className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
       >
         Unlock All Access
       </Link>

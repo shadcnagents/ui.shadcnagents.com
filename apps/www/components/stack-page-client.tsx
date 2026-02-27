@@ -523,7 +523,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "border-b-2 px-3 py-1.5 text-[11px] font-medium transition-colors",
                 pkgManager === id
-                  ? "border-foreground text-foreground"
+                  ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground/60 hover:text-muted-foreground"
               )}
             >
@@ -565,7 +565,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === "preview"
-                  ? "bg-foreground text-background"
+                  ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -577,7 +577,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               className={cn(
                 "flex items-center gap-1.5 border-l border-border px-3 py-1.5 text-xs font-medium transition-colors",
                 activeTab === "code"
-                  ? "bg-foreground text-background"
+                  ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -757,17 +757,10 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background">
           {activeTab === "preview" && (
             <div className="h-full overflow-y-scroll scrollbar-hide">
-              <div
-                ref={previewRef}
-                className={cn(
-                  "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
-                  deviceWidthClass
-                )}
-                style={previewThemeVars as React.CSSProperties}
-              >
-                {isPro && !userIsPro ? (
+              {isPro && !userIsPro ? (
+                <div className="flex min-h-full items-center justify-center p-8">
                   <div className="text-center">
-                    <Lock className="mx-auto mb-3 size-5 text-muted-foreground/25" />
+                    <Lock className="mx-auto mb-3 size-5 text-primary/30" />
                     <p className="text-sm font-medium text-foreground">Pro Stack</p>
                     <p className="mt-1 text-xs text-muted-foreground/50">
                       {session?.user
@@ -785,14 +778,25 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                       </Button>
                     </div>
                   </div>
-                ) : PreviewComponent ? (
-                  <div className="w-full" key={previewKey}>
-                    <PreviewComponent />
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div
+                  ref={previewRef}
+                  className={cn(
+                    "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
+                    deviceWidthClass
+                  )}
+                  style={previewThemeVars as React.CSSProperties}
+                >
+                  {PreviewComponent ? (
+                    <div className="w-full" key={previewKey}>
+                      <PreviewComponent />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground/40">Preview coming soon</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -871,7 +875,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                         <p className="text-xs text-muted-foreground animate-pulse">Loading source…</p>
                       ) : (
                         <>
-                          <Lock className="mb-3 size-5 text-muted-foreground/25" />
+                          <Lock className="mb-3 size-5 text-primary/30" />
                           <p className="text-sm font-medium">Pro Stack</p>
                           <p className="mt-1 text-xs text-muted-foreground/50">
                             {session?.user ? "Upgrade to Pro" : "Sign in or upgrade to Pro"}
@@ -882,7 +886,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
                                 <Link href="/auth/login">Sign In</Link>
                               </Button>
                             )}
-                            <Button asChild size="sm">
+                            <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                               <Link href="/pricing">Unlock with Pro</Link>
                             </Button>
                           </div>

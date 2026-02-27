@@ -70,7 +70,7 @@ export function StacksSidebar() {
               }
             }}
             placeholder="Search stacks..."
-            className="h-8 w-full rounded-md border border-border/60 bg-background/60 pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground/55 focus:border-border focus:bg-background"
+            className="h-8 w-full rounded-md border border-border/60 bg-background/60 pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground/55 focus:border-primary/40 focus:bg-background"
           />
         </div>
       </div>
@@ -121,7 +121,7 @@ function CategorySection({
     <div className="mb-6">
       {/* Category header */}
       <div className="px-2 pb-1.5 pt-1">
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+        <span className="text-[13px] font-semibold uppercase tracking-widest text-muted-foreground/50">
           {category.name}
         </span>
       </div>
@@ -166,7 +166,7 @@ function SubCategorySection({
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-[7px] text-[14px] font-medium text-foreground/80 transition-colors hover:text-foreground"
+        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-[7px] text-[15px] font-medium text-foreground/80 transition-colors hover:text-foreground"
       >
         <ChevronDown
           className={cn(
@@ -202,7 +202,7 @@ function ItemLink({
       href={item.link}
       scroll={false}
       className={cn(
-        "group flex w-full items-center gap-2 rounded-md px-2 py-[7px] text-[14px] transition-colors",
+        "group flex w-full items-center gap-2 rounded-md px-2 py-[7px] text-[15px] transition-colors",
         isActive
           ? "text-foreground font-medium"
           : "text-foreground/70 hover:text-foreground"
@@ -213,7 +213,7 @@ function ItemLink({
         className={cn(
           "shrink-0 rounded-full transition-all duration-150",
           isActive
-            ? "h-4 w-[3px] bg-foreground/70"
+            ? "h-4 w-[3px] bg-primary"
             : "h-[3px] w-[3px] bg-foreground/20"
         )}
       />

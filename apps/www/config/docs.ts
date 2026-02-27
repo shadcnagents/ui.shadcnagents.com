@@ -12,6 +12,14 @@ export const docsConfig: DocsConfig = {
       href: "/stacks",
     },
     {
+      title: "Agents",
+      href: "/agents",
+    },
+    {
+      title: "Chat",
+      href: "/chat",
+    },
+    {
       title: "Templates",
       href: "/templates",
     },

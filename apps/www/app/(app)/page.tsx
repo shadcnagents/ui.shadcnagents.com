@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Check, Terminal } from "lucide-react"
 
 import { siteConfig } from "@/config/site"
 
@@ -65,27 +65,51 @@ const stackCategories = [
   },
 ] as const
 
-const howItWorks = [
+const cliSteps = [
   {
-    step: "01",
-    title: "Browse stacks",
-    description:
-      "Find the AI pattern you need — chat, agents, workflows, artifacts. Live preview every stack before using it.",
-    code: null,
+    command: "npx shadcn@latest add https://shadcnagents.com/r/ai-elements-chat.json",
+    label: "Install a chat interface",
   },
   {
-    step: "02",
-    title: "Install with one command",
-    description:
-      "Every stack installs via the shadcn CLI. Get the component, the API route, and all dependencies in one shot.",
-    code: "npx shadcn@latest add https://shadcnagents.com/r/ai-elements-chat.json",
+    command: "npx shadcn@latest add https://shadcnagents.com/r/ai-agents-routing.json",
+    label: "Add agent routing",
   },
   {
-    step: "03",
-    title: "Ship to production",
+    command: "npx shadcn@latest add https://shadcnagents.com/r/ai-artifact-chart.json",
+    label: "Add chart artifacts",
+  },
+] as const
+
+const whyDifferent = [
+  {
+    title: "Stacks, not snippets",
     description:
-      "Raw source code you own. Customize everything — styles, providers, logic. No lock-in, no wrappers.",
-    code: null,
+      "Each stack is a full vertical slice — UI component, API route, types, and dependencies. Not a code block you have to figure out how to wire up.",
+  },
+  {
+    title: "CLI-first distribution",
+    description:
+      "Install with one command via the shadcn CLI. Get the component, the route, the types, and every dependency resolved automatically.",
+  },
+  {
+    title: "117 UI components included",
+    description:
+      "Not just AI patterns. A full component library — buttons, cards, animations, loaders, forms — all built with Tailwind v4 and Radix.",
+  },
+  {
+    title: "Live previews, not guesswork",
+    description:
+      "Every stack has an interactive preview you can try before installing. See exactly what you're getting before a single line touches your codebase.",
+  },
+  {
+    title: "Own your code forever",
+    description:
+      "Raw TypeScript source dropped into your project. No wrappers, no runtime dependencies, no vendor lock-in. Modify anything.",
+  },
+  {
+    title: "Any provider, any model",
+    description:
+      "Works with OpenAI, Anthropic, Google, Groq, Mistral — any AI SDK-compatible provider. Switch models with a single line change.",
   },
 ] as const
 
@@ -110,42 +134,51 @@ const testimonials = [
   },
 ] as const
 
+const proFeatures = [
+  "All 100+ stacks with full source code",
+  "Agent patterns & orchestration",
+  "Human-in-the-loop workflows",
+  "Full-stack templates",
+  "Priority updates & new stacks",
+  "14-day money-back guarantee",
+] as const
+
 const faqItems = [
   {
-    question: "Can I customize the components for my brand?",
-    tag: "Customization",
+    question: "How is this different from copy-pasting code from docs?",
+    tag: "Difference",
     answer:
-      "Every stack ships as raw source code that you own outright. Swap colors, fonts, spacing, or use your own design tokens — no lock-in, no override gymnastics.",
+      "Each stack is a tested, production-ready vertical slice — not a tutorial excerpt. You get the UI, the API route, the types, and all dependencies wired together. One CLI command, everything works.",
   },
   {
-    question: "Do I need a backend to use these?",
-    tag: "Backend",
+    question: "Can I customize everything?",
+    tag: "Ownership",
     answer:
-      "Most stacks are full-stack and include both the UI and the API route. Run them with any Node-compatible backend or deploy directly to Vercel, Netlify, or any serverless platform.",
+      "Every stack drops raw TypeScript source into your project. There are no wrappers, no runtime dependencies, no hidden abstractions. Change colors, swap providers, restructure layouts — it's your code.",
   },
   {
-    question: "Which AI providers work?",
+    question: "Which AI providers are supported?",
     tag: "Providers",
     answer:
-      "All of them. Works with @ai-sdk/openai, @ai-sdk/anthropic, @ai-sdk/google, and any AI SDK-compatible provider. Switch models with a single line change.",
+      "All of them. Works with @ai-sdk/openai, @ai-sdk/anthropic, @ai-sdk/google, @ai-sdk/groq, and any AI SDK-compatible provider. Switch models with a single line change.",
   },
   {
-    question: "Can I use this in commercial projects?",
-    tag: "Licensing",
+    question: "Do I need a specific backend?",
+    tag: "Backend",
     answer:
-      "Yes. Perpetual license for unlimited personal and commercial projects. No attribution required.",
+      "Stacks include Next.js API routes by default. Deploy to Vercel, Netlify, Railway, or any Node-compatible platform. The UI components work with any backend that speaks the AI SDK protocol.",
   },
   {
-    question: "What's in the Pro plan?",
+    question: "What's included in Pro?",
     tag: "Pro",
     answer:
-      "Access to all 100+ stacks, full source code, priority updates, and early access to new agent architectures as they ship.",
+      "Access to all 100+ stacks including agent orchestration, human-in-the-loop, real-world examples, marketing UI, and full-stack templates. Lifetime license — pay once, use forever.",
   },
   {
-    question: "What if it doesn't work for my project?",
+    question: "What if it doesn't fit my project?",
     tag: "Guarantee",
     answer:
-      "14-day money-back guarantee, no questions asked. If the stacks don't fit your workflow, we'll refund you.",
+      "14-day money-back guarantee, no questions asked. If the stacks don't fit your workflow, you get a full refund.",
   },
 ] as const
 
@@ -178,7 +211,7 @@ export default function IndexPage() {
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
           <Link
             href="/stacks"
-            className="group inline-flex items-center justify-center gap-2 bg-foreground px-8 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="group inline-flex items-center justify-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Browse 100+ stacks
             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -201,6 +234,42 @@ export default function IndexPage() {
             </span>
           ))}
         </div>
+      </section>
+
+      {/* ═══════════════ CLI INSTALL DEMO ═══════════════ */}
+      <section className="mx-auto max-w-3xl px-4 pb-6 md:pb-12">
+        <div className="overflow-hidden border border-border bg-neutral-950">
+          {/* Terminal header */}
+          <div className="flex items-center gap-2 border-b border-neutral-800 px-4 py-2.5">
+            <div className="flex gap-1.5">
+              <div className="size-2.5 rounded-full bg-neutral-700" />
+              <div className="size-2.5 rounded-full bg-neutral-700" />
+              <div className="size-2.5 rounded-full bg-neutral-700" />
+            </div>
+            <span className="ml-2 font-mono text-[10px] text-neutral-500">
+              terminal
+            </span>
+          </div>
+          {/* Commands */}
+          <div className="flex flex-col gap-3 p-4 md:p-5">
+            {cliSteps.map((step) => (
+              <div key={step.label} className="flex flex-col gap-1">
+                <span className="font-mono text-[10px] text-neutral-600">
+                  # {step.label}
+                </span>
+                <div className="flex items-start gap-2">
+                  <Terminal className="mt-0.5 size-3 shrink-0 text-emerald-500" />
+                  <code className="break-all font-mono text-[12px] leading-relaxed text-neutral-300 md:text-[13px]">
+                    {step.command}
+                  </code>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          Works with any shadcn project. Zero config.
+        </p>
       </section>
 
       {/* ═══════════════ STACK CATEGORIES GRID ═══════════════ */}
@@ -241,39 +310,58 @@ export default function IndexPage() {
         </div>
       </section>
 
-      {/* ═══════════════ HOW IT WORKS ═══════════════ */}
-      <section className="mx-auto max-w-4xl px-4 py-12 md:py-20">
+      {/* ═══════════════ WHY DIFFERENT ═══════════════ */}
+      <section className="mx-auto max-w-5xl px-4 py-12 md:py-20">
         <div className="mb-10 text-center">
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-            How it works
+            Why shadcnagents
           </p>
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Three steps to ship AI features
+            Not another pattern library.
           </h2>
+          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+            Most AI component libraries give you code blocks to copy. We give
+            you full-stack, CLI-installable stacks that include everything —
+            UI, API, types, and wiring.
+          </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {howItWorks.map((item) => (
+        <div className="grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+          {whyDifferent.map((item) => (
             <div
-              key={item.step}
-              className="flex flex-col gap-3 border border-border p-5"
+              key={item.title}
+              className="flex flex-col gap-2 bg-background p-6"
             >
-              <span className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
-                STEP {item.step}
-              </span>
-              <h3 className="text-base font-semibold tracking-tight">
+              <h3 className="text-sm font-semibold tracking-tight">
                 {item.title}
               </h3>
-              <p className="flex-1 text-[13px] leading-relaxed text-muted-foreground">
+              <p className="text-[13px] leading-relaxed text-muted-foreground">
                 {item.description}
               </p>
-              {item.code && (
-                <div className="mt-1 overflow-x-auto rounded-md border border-border bg-muted/40 px-3 py-2">
-                  <code className="whitespace-nowrap font-mono text-[11px] text-foreground/80">
-                    {item.code}
-                  </code>
-                </div>
-              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════ NUMBERS ═══════════════ */}
+      <section className="mx-auto max-w-4xl px-4 py-12 md:py-16">
+        <div className="grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
+          {[
+            { value: "100+", label: "AI Stacks" },
+            { value: "117", label: "UI Components" },
+            { value: "8", label: "Categories" },
+            { value: "$149", label: "Lifetime Access" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="flex flex-col items-center gap-1 bg-background py-8"
+            >
+              <span className="font-mono text-3xl font-bold tracking-tight md:text-4xl">
+                {stat.value}
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                {stat.label}
+              </span>
             </div>
           ))}
         </div>
@@ -349,7 +437,7 @@ export default function IndexPage() {
             <div>
               <div className="mb-1 flex items-center gap-2">
                 <h3 className="text-lg font-semibold">Pro</h3>
-                <span className="rounded-full bg-foreground px-2 py-0.5 font-mono text-[10px] font-medium text-background">
+                <span className="rounded-full bg-primary px-2 py-0.5 font-mono text-[10px] font-medium text-primary-foreground">
                   LIFETIME
                 </span>
               </div>
@@ -363,15 +451,16 @@ export default function IndexPage() {
               </div>
             </div>
             <ul className="flex flex-col gap-2 text-[13px] text-muted-foreground">
-              <li>All 100+ stacks with source code</li>
-              <li>Agent patterns &amp; orchestration</li>
-              <li>Full-stack templates</li>
-              <li>Priority updates &amp; new stacks</li>
-              <li>14-day money-back guarantee</li>
+              {proFeatures.map((f) => (
+                <li key={f} className="flex items-start gap-2">
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+                  <span>{f}</span>
+                </li>
+              ))}
             </ul>
             <Link
               href="/pricing"
-              className="group mt-auto inline-flex items-center justify-center gap-2 bg-foreground px-6 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+              className="group mt-auto inline-flex items-center justify-center gap-2 bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Get all access
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -427,7 +516,7 @@ export default function IndexPage() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
             <Link
               href="/stacks"
-              className="group inline-flex items-center justify-center gap-2 bg-foreground px-8 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+              className="group inline-flex items-center justify-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Explore all stacks
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
