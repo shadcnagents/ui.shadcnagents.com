@@ -91,7 +91,7 @@ export function StacksSidebar() {
           <CategorySection
             key={category.id}
             category={category}
-            pathname={pathname}
+            pathname={pathname ?? ""}
             forceOpen={isSearching || expandAll}
           />
         ))}
