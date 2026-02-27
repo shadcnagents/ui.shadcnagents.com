@@ -26,24 +26,41 @@ export function MainNav() {
         <Link
           href="/stacks"
           className={cn(
-            "text-sm font-medium transition-colors hover:text-foreground/80",
+            "flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-foreground/80",
             pathname?.startsWith("/stacks")
               ? "text-foreground"
               : "text-foreground/60"
           )}
         >
           Stacks
+          <span className="inline-flex items-center justify-center bg-primary px-1 py-px text-[9px] font-semibold leading-none text-primary-foreground">
+            2
+          </span>
         </Link>
         <Link
           href="/templates"
           className={cn(
-            "text-sm font-medium transition-colors hover:text-foreground/80",
+            "flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-foreground/80",
             pathname?.startsWith("/templates")
               ? "text-foreground"
               : "text-foreground/60"
           )}
         >
           Templates
+          <span className="inline-flex items-center justify-center bg-primary px-1 py-px text-[9px] font-semibold leading-none text-primary-foreground">
+            2
+          </span>
+        </Link>
+        <Link
+          href="/docs"
+          className={cn(
+            "text-sm font-medium transition-colors hover:text-foreground/80",
+            pathname?.startsWith("/docs")
+              ? "text-foreground"
+              : "text-foreground/60"
+          )}
+        >
+          Docs
         </Link>
       </nav>
 

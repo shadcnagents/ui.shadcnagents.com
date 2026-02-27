@@ -28,19 +28,19 @@ export function TableEditorPreview() {
         <span className="text-xs font-medium text-foreground">
           AI Model Comparison
         </span>
-        <span className="text-[10px] text-muted-foreground/40">
+        <span className="text-[13px] text-muted-foreground">
           Click cells to edit
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-border/40">
+      <div className="overflow-hidden rounded-md border border-border/60">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border/40 bg-muted/30">
+            <tr className="border-b border-border/60 bg-muted/50">
               {columns.map((col) => (
                 <th
                   key={col}
-                  className="px-4 py-2 text-left text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50"
+                  className="px-4 py-2 text-left text-[13px] font-medium uppercase tracking-wider text-muted-foreground"
                 >
                   {col}
                 </th>
@@ -51,7 +51,7 @@ export function TableEditorPreview() {
             {data.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-border/20 last:border-0"
+                className="border-b border-border/60 last:border-0"
               >
                 {columns.map((col) => (
                   <td key={col} className="px-4 py-2">
@@ -69,7 +69,7 @@ export function TableEditorPreview() {
                             setEditing(null)
                           }
                         }}
-                        className="h-6 w-full rounded border border-foreground/20 bg-transparent px-1 text-xs outline-none"
+                        className="h-6 w-full rounded border border-foreground/40 bg-transparent px-1 text-xs outline-none"
                       />
                     ) : (
                       <button
@@ -117,10 +117,10 @@ export function ChartGenerationPreview() {
             <button
               key={type}
               onClick={() => setChartType(type)}
-              className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${
+              className={`rounded-md px-2 py-1 text-[13px] font-medium transition-colors ${
                 chartType === type
                   ? "bg-foreground text-background"
-                  : "text-muted-foreground/50 hover:text-muted-foreground"
+                  : "text-muted-foreground hover:text-muted-foreground"
               }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -138,14 +138,14 @@ export function ChartGenerationPreview() {
                 key={d.label}
                 className="flex flex-1 flex-col items-center gap-1"
               >
-                <span className="text-[10px] tabular-nums text-muted-foreground/50">
+                <span className="text-[13px] tabular-nums text-muted-foreground">
                   {d.value}k
                 </span>
                 <div
-                  className="w-full rounded-t bg-foreground/80 transition-all duration-500"
+                  className="w-full rounded-t bg-foreground transition-all duration-500"
                   style={{ height: `${(d.value / max) * 100}%` }}
                 />
-                <span className="text-[10px] text-muted-foreground/40">
+                <span className="text-[13px] text-muted-foreground">
                   {d.label}
                 </span>
               </div>

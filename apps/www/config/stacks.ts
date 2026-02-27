@@ -26,7 +26,7 @@ export function isSubCategory(
 
 export const stacksConfig: StackCategory[] = [
   {
-    name: "SDK API",
+    name: "Foundations",
     id: "sdk-api",
     items: [
       {
@@ -109,7 +109,7 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
-    name: "Agent Patterns",
+    name: "Agent Architecture",
     id: "agent-patterns",
     items: [
       {
@@ -196,7 +196,7 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
-    name: "Examples",
+    name: "Starter Apps",
     id: "examples",
     items: [
       {
@@ -266,7 +266,7 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
-    name: "Artifacts",
+    name: "Rich Output",
     id: "artifacts",
     items: [
       {
@@ -343,7 +343,7 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
-    name: "Tools & Integrations",
+    name: "Connectors",
     id: "tools-integrations",
     items: [
       {
@@ -412,7 +412,7 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
-    name: "Workflows",
+    name: "Pipelines",
     id: "workflows",
     items: [
       {
@@ -470,7 +470,7 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
-    name: "Chat UI Elements",
+    name: "Chat Kit",
     id: "chat-ui-elements",
     items: [
       {
@@ -626,7 +626,7 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
-    name: "Marketing UI",
+    name: "Landing Blocks",
     id: "marketing-ui",
     items: [
       {

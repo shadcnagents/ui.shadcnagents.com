@@ -219,7 +219,7 @@ export const mdxComponents = {
       return (
         <code
           className={cn(
-            "bg-muted relative rounded-md px-[0.3rem] py-[0.2rem] font-mono text-[0.8rem] break-words outline-none",
+            "bg-code relative rounded-sm border border-border/50 px-[0.4rem] py-[0.15rem] font-mono text-[0.8rem] text-code-foreground break-words outline-none",
             className
           )}
           {...props}

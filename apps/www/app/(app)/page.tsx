@@ -16,19 +16,19 @@ const techBadges = [
 
 const stackCategories = [
   {
-    name: "SDK Basics",
+    name: "Foundations",
     count: 7,
     href: "/stacks/basics-generate-text",
     description: "generateText, streamText, tool, Agent",
   },
   {
-    name: "Agent Patterns",
+    name: "Agent Architecture",
     count: 12,
     href: "/stacks/ai-agents-routing",
     description: "Routing, orchestration, evaluator-optimizer",
   },
   {
-    name: "Chat UI",
+    name: "Chat Kit",
     count: 18,
     href: "/stacks/ai-elements-chat",
     description: "Chat interfaces, reasoning, sources, plans",
@@ -40,25 +40,25 @@ const stackCategories = [
     description: "Tool approval, confirmation flows",
   },
   {
-    name: "Artifacts",
+    name: "Rich Output",
     count: 8,
     href: "/stacks/ai-artifact-chart",
     description: "Tables, charts, canvas, structured output",
   },
   {
-    name: "Tools & Integrations",
+    name: "Connectors",
     count: 8,
     href: "/stacks/tool-websearch-claude",
     description: "Web search, scraping, PDF processing",
   },
   {
-    name: "Workflows",
+    name: "Pipelines",
     count: 7,
     href: "/stacks/ai-workflow-basic",
     description: "Sequential, durable, few-shot pipelines",
   },
   {
-    name: "Marketing UI",
+    name: "Landing Blocks",
     count: 12,
     href: "/stacks/marketing-bento-1",
     description: "Bento grids, feature sections, comparisons",
@@ -92,7 +92,7 @@ const whyDifferent = [
       "Install with one command via the shadcn CLI. Get the component, the route, the types, and every dependency resolved automatically.",
   },
   {
-    title: "117 UI components included",
+    title: `${siteConfig.counts.uiComponents} UI components included`,
     description:
       "Not just AI patterns. A full component library — buttons, cards, animations, loaders, forms — all built with Tailwind v4 and Radix.",
   },
@@ -111,7 +111,7 @@ const whyDifferent = [
     description:
       "Works with OpenAI, Anthropic, Google, Groq, Mistral — any AI SDK-compatible provider. Switch models with a single line change.",
   },
-] as const
+]
 
 const testimonials = [
   {
@@ -135,13 +135,13 @@ const testimonials = [
 ] as const
 
 const proFeatures = [
-  "All 100+ stacks with full source code",
+  `All ${siteConfig.counts.stacks}+ stacks with full source code`,
   "Agent patterns & orchestration",
   "Human-in-the-loop workflows",
   "Full-stack templates",
   "Priority updates & new stacks",
   "14-day money-back guarantee",
-] as const
+]
 
 const faqItems = [
   {
@@ -172,7 +172,7 @@ const faqItems = [
     question: "What's included in Pro?",
     tag: "Pro",
     answer:
-      "Access to all 100+ stacks including agent orchestration, human-in-the-loop, real-world examples, marketing UI, and full-stack templates. Lifetime license — pay once, use forever.",
+      `Access to all ${siteConfig.counts.stacks}+ stacks including agent orchestration, human-in-the-loop, real-world examples, marketing UI, and full-stack templates. Lifetime license — pay once, use forever.`,
   },
   {
     question: "What if it doesn't fit my project?",
@@ -180,20 +180,20 @@ const faqItems = [
     answer:
       "14-day money-back guarantee, no questions asked. If the stacks don't fit your workflow, you get a full refund.",
   },
-] as const
+]
 
 /* ─────────────────────── Page ─────────────────────── */
 
 export default function IndexPage() {
   return (
-    <div className="isolate min-h-screen overflow-hidden">
+    <div className="isolate min-h-screen overflow-hidden bg-muted/40">
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section className="mx-auto flex max-w-[980px] flex-col items-center gap-6 px-4 py-16 md:py-24 lg:py-32">
         <h1
           className="mx-auto max-w-4xl text-center leading-[1.15] tracking-[-0.031em]"
           style={{ fontSize: "clamp(28px, 14px + 3.2vw, 54px)" }}
         >
-          <span className="block font-editorial italic text-[1.15em]">
+          <span className="block font-heading text-[1.15em]">
             AI SDK Components You Can
           </span>
           <span
@@ -213,7 +213,7 @@ export default function IndexPage() {
             href="/stacks"
             className="group inline-flex items-center justify-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Browse 100+ stacks
+            Browse {siteConfig.counts.stacks}+ stacks
             <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link
@@ -279,7 +279,7 @@ export default function IndexPage() {
             What you can build
           </p>
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            8 categories. 100+ stacks. Every AI pattern you need.
+            8 categories. {siteConfig.counts.stacks}+ stacks. Every AI pattern you need.
           </h2>
         </div>
 
@@ -347,8 +347,8 @@ export default function IndexPage() {
       <section className="mx-auto max-w-4xl px-4 py-12 md:py-16">
         <div className="grid grid-cols-2 gap-px border border-border bg-border md:grid-cols-4">
           {[
-            { value: "100+", label: "AI Stacks" },
-            { value: "117", label: "UI Components" },
+            { value: `${siteConfig.counts.stacks}+`, label: "AI Stacks" },
+            { value: `${siteConfig.counts.uiComponents}`, label: "UI Components" },
             { value: "8", label: "Categories" },
             { value: "$149", label: "Lifetime Access" },
           ].map((stat) => (
@@ -510,7 +510,7 @@ export default function IndexPage() {
             Stop building AI interfaces from scratch.
           </h2>
           <p className="mx-auto max-w-xl text-muted-foreground">
-            100+ production-ready stacks for chat, agents, tool calling,
+            {siteConfig.counts.stacks}+ production-ready stacks for chat, agents, tool calling,
             workflows, artifacts, and more. One CLI command away.
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">

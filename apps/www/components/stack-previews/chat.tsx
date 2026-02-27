@@ -52,14 +52,14 @@ export function BasicChatPreview() {
         ))}
         <div ref={bottomRef} />
       </div>
-      <div className="border-t border-border/40 p-4">
+      <div className="border-t border-border/60 p-4">
         <div className="flex gap-2">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder="Type a message..."
-            className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/40 focus:border-foreground/20"
+            className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/60 focus:border-foreground/20"
           />
           <button
             onClick={handleSend}
@@ -90,7 +90,7 @@ export function ReasoningChatPreview() {
       <div className="space-y-2">
         <button
           onClick={() => setShowThinking(!showThinking)}
-          className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40 transition-colors hover:text-muted-foreground"
+          className="flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-wider text-muted-foreground/60 transition-colors hover:text-muted-foreground"
         >
           <svg
             width="10"
@@ -104,12 +104,12 @@ export function ReasoningChatPreview() {
             <polyline points="6 9 12 15 18 9" />
           </svg>
           Thinking
-          <span className="font-normal text-muted-foreground/30">324ms</span>
+          <span className="font-normal text-muted-foreground/60">324ms</span>
         </button>
 
         {showThinking && (
-          <div className="border-l-2 border-border/30 pl-3">
-            <p className="text-xs leading-relaxed text-muted-foreground/60">
+          <div className="border-l-2 border-border/50 pl-3">
+            <p className="text-xs leading-relaxed text-muted-foreground">
               The user is asking for the square root of 144. I need to find a
               number that, when multiplied by itself, equals 144. I know that
               12 × 12 = 144, so the square root of 144 is 12. Let me verify:
@@ -146,31 +146,31 @@ export function SourcesChatPreview() {
         <div className="rounded-lg bg-muted/50 px-3 py-2 text-sm leading-relaxed text-foreground">
           The Transformer architecture, introduced in 2017, revolutionized NLP by
           replacing recurrence with self-attention mechanisms
-          <sup className="ml-0.5 text-[10px] text-muted-foreground">[1]</sup>.
+          <sup className="ml-0.5 text-[12px] text-muted-foreground">[1]</sup>.
           The key innovation is the multi-head attention mechanism that allows the
           model to attend to different positions simultaneously
-          <sup className="ml-0.5 text-[10px] text-muted-foreground">[2]</sup>.
+          <sup className="ml-0.5 text-[12px] text-muted-foreground">[2]</sup>.
           This approach was later extended by models like BERT
-          <sup className="ml-0.5 text-[10px] text-muted-foreground">[3]</sup>.
+          <sup className="ml-0.5 text-[12px] text-muted-foreground">[3]</sup>.
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground/60">
             Sources
           </span>
           {sources.map((source, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 rounded-md border border-border/40 px-3 py-2"
+              className="flex items-center gap-2 rounded-md border border-border/60 px-3 py-2"
             >
-              <span className="flex size-5 shrink-0 items-center justify-center rounded bg-muted text-[10px] font-medium text-muted-foreground">
+              <span className="flex size-5 shrink-0 items-center justify-center rounded bg-muted text-[12px] font-medium text-muted-foreground">
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-medium text-foreground">
                   {source.title}
                 </p>
-                <p className="text-[10px] text-muted-foreground/50">
+                <p className="text-[12px] text-muted-foreground">
                   {source.url} · {source.year}
                 </p>
               </div>
@@ -204,7 +204,7 @@ export function PlanDisplayPreview() {
         <span className="text-xs font-medium text-foreground">
           Execution Plan
         </span>
-        <span className="text-[10px] text-muted-foreground/40">
+        <span className="text-[12px] text-muted-foreground/60">
           {completedSteps}/{steps.length} completed
         </span>
       </div>
@@ -217,7 +217,7 @@ export function PlanDisplayPreview() {
             <button
               key={i}
               onClick={() => toggleStep(i)}
-              className="flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-muted/30"
+              className="flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
             >
               <div className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
                 {done ? (
@@ -252,7 +252,7 @@ export function PlanDisplayPreview() {
                 >
                   {step.title}
                 </p>
-                <p className="text-[11px] text-muted-foreground/50">
+                <p className="text-[13px] text-muted-foreground">
                   {step.detail}
                 </p>
               </div>
@@ -302,14 +302,14 @@ export function ToolApprovalPreview() {
             <span className="text-xs font-medium">Confirmation Required</span>
           </div>
 
-          <div className="mb-4 rounded-md bg-muted/30 p-3">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+          <div className="mb-4 rounded-md bg-muted/50 p-3">
+            <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground/60">
               Action
             </p>
             <p className="mt-1 text-xs text-foreground">
               deleteUsers({`{ where: { lastActive: { lt: "2024-01-01" } } }`})
             </p>
-            <p className="mt-2 text-[10px] text-muted-foreground/50">
+            <p className="mt-2 text-[12px] text-muted-foreground">
               This will permanently remove 847 inactive user records
             </p>
           </div>
@@ -363,7 +363,7 @@ export function ToolApprovalPreview() {
               )}
               <button
                 onClick={() => setStatus("pending")}
-                className="ml-auto text-[10px] text-muted-foreground/40 hover:text-muted-foreground"
+                className="ml-auto text-[12px] text-muted-foreground/60 hover:text-muted-foreground"
               >
                 Reset
               </button>
@@ -405,7 +405,7 @@ export function QueueDisplayPreview() {
     <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4 flex items-center justify-between">
         <span className="text-xs font-medium text-foreground">Task Queue</span>
-        <span className="text-[10px] text-muted-foreground/40">
+        <span className="text-[12px] text-muted-foreground/60">
           {tasks.filter((t) => t.status === "done").length}/{tasks.length}
         </span>
       </div>
@@ -440,7 +440,7 @@ export function QueueDisplayPreview() {
             <span
               className={`text-sm ${
                 task.status === "done"
-                  ? "text-muted-foreground/50 line-through"
+                  ? "text-muted-foreground line-through"
                   : task.status === "running"
                     ? "font-medium text-foreground"
                     : "text-muted-foreground"
@@ -449,7 +449,7 @@ export function QueueDisplayPreview() {
               {task.name}
             </span>
             {task.status === "running" && (
-              <span className="ml-auto text-[10px] text-muted-foreground/40">
+              <span className="ml-auto text-[12px] text-muted-foreground/60">
                 Processing...
               </span>
             )}

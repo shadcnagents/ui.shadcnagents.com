@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowRight, Check, Minus, Shield, Zap } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { siteConfig } from "@/config/site"
 
 export const metadata: Metadata = {
   title: "Pricing — Lifetime Access to 100+ AI Stacks",
@@ -21,7 +22,7 @@ const freePlan = {
   href: "/stacks",
   highlights: [
     "30+ free stacks (MIT licensed)",
-    "All SDK API basics (generateText, streamText, etc.)",
+    "All foundation stacks (generateText, streamText, etc.)",
     "Core chat UI components",
     "Basic agent patterns",
     "Theme customization",
@@ -41,7 +42,7 @@ const proPlan = {
   href: "#",
   highlights: [
     "Everything in Open Source, plus:",
-    "100+ pro stacks and growing",
+    `${siteConfig.counts.stacks}+ pro stacks and growing`,
     "All templates & full examples",
     "ChatGPT, Claude, Grok clones",
     "Advanced agent orchestration",
@@ -66,7 +67,7 @@ interface ComparisonCategory {
 
 const comparison: ComparisonCategory[] = [
   {
-    category: "SDK Basics",
+    category: "Foundations",
     features: [
       { name: "generateText / streamText", free: true, pro: true },
       { name: "Tool calling patterns", free: true, pro: true },
@@ -77,7 +78,7 @@ const comparison: ComparisonCategory[] = [
     ],
   },
   {
-    category: "Chat Interfaces",
+    category: "Chat Kit",
     features: [
       { name: "Basic streaming chat", free: true, pro: true },
       { name: "Reasoning display", free: true, pro: true },
@@ -92,7 +93,7 @@ const comparison: ComparisonCategory[] = [
     ],
   },
   {
-    category: "Agent Patterns",
+    category: "Agent Architecture",
     features: [
       { name: "Agent routing", free: true, pro: true },
       { name: "Parallel processing", free: true, pro: true },
@@ -106,7 +107,7 @@ const comparison: ComparisonCategory[] = [
     ],
   },
   {
-    category: "Tools & Integrations",
+    category: "Connectors",
     features: [
       { name: "Web search (Claude)", free: true, pro: true },
       { name: "Web search (Exa)", free: true, pro: true },
@@ -117,7 +118,7 @@ const comparison: ComparisonCategory[] = [
     ],
   },
   {
-    category: "Artifacts & Output",
+    category: "Rich Output",
     features: [
       { name: "Chart artifacts", free: true, pro: true },
       { name: "Table artifacts", free: true, pro: true },
@@ -127,14 +128,14 @@ const comparison: ComparisonCategory[] = [
     ],
   },
   {
-    category: "Workflows & Pipelines",
+    category: "Pipelines",
     features: [
       { name: "Basic workflow", free: true, pro: true },
       { name: "WDK pipeline stacks", free: false, pro: true },
     ],
   },
   {
-    category: "UI Components",
+    category: "Chat Kit Components",
     features: [
       { name: "Model selector", free: true, pro: true },
       { name: "Prompt suggestions", free: true, pro: true },
@@ -161,14 +162,14 @@ const comparison: ComparisonCategory[] = [
 /* ─────────────── Stack categories breakdown ─────────────── */
 
 const stackCategories = [
-  { name: "SDK API Basics", count: 7, color: "bg-blue-500" },
-  { name: "Chat & Conversations", count: 18, color: "bg-violet-500" },
-  { name: "Agent Patterns", count: 11, color: "bg-orange-500" },
-  { name: "Human-in-the-Loop", count: 5, color: "bg-emerald-500" },
-  { name: "Tools & Integrations", count: 8, color: "bg-cyan-500" },
-  { name: "Artifacts & Output", count: 6, color: "bg-amber-500" },
-  { name: "Workflows", count: 7, color: "bg-rose-500" },
-  { name: "Marketing UI", count: 12, color: "bg-pink-500" },
+  { name: "Foundations", count: 7, color: "bg-blue-500" },
+  { name: "Chat Kit", count: 18, color: "bg-violet-500" },
+  { name: "Agent Architecture", count: 11, color: "bg-orange-500" },
+  { name: "Human in the Loop", count: 5, color: "bg-emerald-500" },
+  { name: "Connectors", count: 8, color: "bg-cyan-500" },
+  { name: "Rich Output", count: 6, color: "bg-amber-500" },
+  { name: "Pipelines", count: 7, color: "bg-rose-500" },
+  { name: "Landing Blocks", count: 12, color: "bg-pink-500" },
 ]
 
 /* ─────────────── FAQ ─────────────── */
@@ -180,7 +181,7 @@ const faqs = [
   },
   {
     q: "What do I actually get?",
-    a: "Full source code for 100+ production-ready AI stacks. Each stack includes the UI components, API routes, TypeScript types, and all the wiring. Install any stack with a single CLI command and ship to production.",
+    a: `Full source code for ${siteConfig.counts.stacks}+ production-ready AI stacks. Each stack includes the UI components, API routes, TypeScript types, and all the wiring. Install any stack with a single CLI command and ship to production.`,
   },
   {
     q: "How do I install stacks?",

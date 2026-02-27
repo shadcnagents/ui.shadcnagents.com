@@ -30,7 +30,7 @@ function MorphingPlaceholder({ text }: { text: string }) {
       style={{ perspective: "400px" }}
     >
       <AnimatePresence mode="wait">
-        <motion.span key={text} className="flex text-[13px] text-muted-foreground">
+        <motion.span key={text} className="flex text-sm text-muted-foreground">
           {text.split("").map((char, i) => (
             <motion.span
               key={`${text}-${i}`}
@@ -155,14 +155,14 @@ export function GenerateTextPreview() {
       <style>{GT_KEYFRAMES}</style>
 
       {/* ── Input ── */}
-      <div className="flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/30 py-1.5 pl-3 pr-1.5">
+      <div className="flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 py-1.5 pl-3 pr-1.5">
         <div className="relative flex flex-1 items-center">
           <input
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
             disabled={isActive}
-            className="relative z-10 h-7 w-full bg-transparent text-[13px] text-foreground outline-none disabled:opacity-40"
+            className="relative z-10 h-7 w-full bg-transparent text-sm text-foreground outline-none disabled:opacity-40"
           />
           {!prompt && state === "idle" && (
             <MorphingPlaceholder text={GT_PLACEHOLDERS[phIdx]} />
@@ -215,7 +215,7 @@ export function GenerateTextPreview() {
             transition={{ type: "spring", duration: 0.5, bounce: 0 }}
             className="mt-4"
           >
-            <p className="whitespace-pre-wrap text-[13.5px] leading-[1.8] text-foreground/80">
+            <p className="whitespace-pre-wrap text-[15px] leading-[1.8] text-foreground">
               {displayed}
               {state === "streaming" && (
                 <span
@@ -228,12 +228,12 @@ export function GenerateTextPreview() {
             </p>
             {state === "complete" && (
               <div className="mt-3 flex items-center justify-between">
-                <span className="font-mono text-[10px] text-foreground/15">
+                <span className="font-mono text-[12px] text-muted-foreground">
                   {GT_TOKENS} tokens · {(elapsed / 1000).toFixed(1)}s
                 </span>
                 <button
                   onClick={reset}
-                  className="font-mono text-[10px] text-foreground/20 transition-colors hover:text-foreground/50"
+                  className="font-mono text-[12px] text-muted-foreground transition-colors hover:text-foreground/50"
                 >
                   clear
                 </button>
@@ -354,14 +354,14 @@ export function StreamTextPreview() {
       <style>{ST_KEYFRAMES}</style>
 
       {/* ── Input ── */}
-      <div className="flex items-center gap-1.5 rounded-full border border-border/40 bg-muted/30 py-1.5 pl-3 pr-1.5">
+      <div className="flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 py-1.5 pl-3 pr-1.5">
         <div className="relative flex flex-1 items-center">
           <input
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
             disabled={isStreaming}
-            className="relative z-10 h-7 w-full bg-transparent text-[13px] text-foreground outline-none disabled:opacity-40"
+            className="relative z-10 h-7 w-full bg-transparent text-sm text-foreground outline-none disabled:opacity-40"
           />
           {!prompt && state === "idle" && (
             <MorphingPlaceholder text={ST_PLACEHOLDERS[phIdx]} />
@@ -416,7 +416,7 @@ export function StreamTextPreview() {
             transition={{ type: "spring", duration: 0.5, bounce: 0 }}
             className="mt-4"
           >
-            <p className="whitespace-pre-wrap text-[13.5px] leading-[1.8] text-foreground/80">
+            <p className="whitespace-pre-wrap text-[15px] leading-[1.8] text-foreground">
               {displayed}
               {isStreaming && (
                 <span
@@ -430,7 +430,7 @@ export function StreamTextPreview() {
             {isStreaming && (
               <div className="mt-3 flex items-center gap-2">
                 <WaveDotsLoader />
-                <span className="font-mono text-[10px] tabular-nums text-foreground/20">
+                <span className="font-mono text-[12px] tabular-nums text-muted-foreground">
                   {tokenCount} tokens
                 </span>
               </div>
@@ -444,13 +444,13 @@ export function StreamTextPreview() {
                 transition={{ delay: 0.1 }}
                 className="mt-3 flex items-center justify-between"
               >
-                <span className="font-mono text-[10px] tabular-nums text-foreground/15">
+                <span className="font-mono text-[12px] tabular-nums text-muted-foreground">
                   {tokenCount} tokens · {(elapsed / 1000).toFixed(1)}s
                   {tps && <> · {tps} tok/s</>}
                 </span>
                 <button
                   onClick={reset}
-                  className="font-mono text-[10px] text-foreground/20 transition-colors hover:text-foreground/50"
+                  className="font-mono text-[12px] text-muted-foreground transition-colors hover:text-foreground/50"
                 >
                   clear
                 </button>
@@ -579,16 +579,16 @@ export function GenerateImagePreview() {
         disabled={state === "generating"}
         placeholder="A serene mountain landscape at golden hour, soft light filtering through clouds..."
         rows={3}
-        className="w-full resize-none rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5 text-[13px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/30 focus:border-foreground/10 disabled:opacity-40"
+        className="w-full resize-none rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-foreground/10 disabled:opacity-40"
       />
       <div className="mt-2 flex items-center justify-between">
-        <span className="font-mono text-[10px] text-foreground/15">
+        <span className="font-mono text-[12px] text-muted-foreground">
           512 × 512 · 4 variations
         </span>
         <button
           onClick={generate}
           disabled={!prompt.trim() || state === "generating"}
-          className="font-mono text-[11px] text-foreground/40 transition-colors hover:text-foreground disabled:opacity-20"
+          className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-foreground disabled:opacity-20"
         >
           {state === "generating" ? "imagining..." : "generate →"}
         </button>
@@ -604,7 +604,7 @@ export function GenerateImagePreview() {
             className="mt-6 flex items-center gap-2"
           >
             <WaveDotsLoader />
-            <span className="font-mono text-[10px] text-foreground/20">
+            <span className="font-mono text-[12px] text-muted-foreground">
               rendering 4 variations
             </span>
           </motion.div>
@@ -643,7 +643,7 @@ export function GenerateImagePreview() {
                   />
                   {v.shapes}
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/25 to-transparent px-2 pb-1.5 pt-4">
-                    <p className="font-mono text-[9px] text-white/70">
+                    <p className="font-mono text-[11px] text-white/80">
                       {v.label}
                     </p>
                   </div>
@@ -652,14 +652,14 @@ export function GenerateImagePreview() {
             </div>
 
             <div className="mt-3 flex items-center justify-between">
-              <span className="font-mono text-[10px] text-foreground/15">
+              <span className="font-mono text-[12px] text-muted-foreground">
                 {selectedIdx !== null
                   ? imageVariants[selectedIdx].label
                   : "select a variation"}
               </span>
               <button
                 onClick={reset}
-                className="font-mono text-[10px] text-foreground/20 transition-colors hover:text-foreground/50"
+                className="font-mono text-[12px] text-muted-foreground transition-colors hover:text-foreground/50"
               >
                 clear
               </button>
@@ -745,7 +745,7 @@ export function GenerateSpeechPreview() {
         disabled={state === "generating"}
         placeholder="Hello, welcome to our platform. We're glad to have you here."
         rows={3}
-        className="w-full resize-none rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5 text-[13px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/30 focus:border-foreground/10 disabled:opacity-40"
+        className="w-full resize-none rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-foreground/10 disabled:opacity-40"
       />
 
       {/* ── Voice picker + generate ── */}
@@ -755,7 +755,7 @@ export function GenerateSpeechPreview() {
             <button
               key={v}
               onClick={() => setVoice(v)}
-              className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] transition-colors ${
+              className={`rounded-full px-1.5 py-0.5 font-mono text-[12px] transition-colors ${
                 voice === v
                   ? "bg-foreground text-background"
                   : "text-foreground/25 hover:text-foreground/50"
@@ -768,7 +768,7 @@ export function GenerateSpeechPreview() {
         <button
           onClick={generate}
           disabled={!text.trim() || state === "generating"}
-          className="font-mono text-[11px] text-foreground/40 transition-colors hover:text-foreground disabled:opacity-20"
+          className="font-mono text-[13px] text-foreground/60 transition-colors hover:text-foreground disabled:opacity-20"
         >
           {state === "generating" ? "synthesizing..." : "speak →"}
         </button>
@@ -784,7 +784,7 @@ export function GenerateSpeechPreview() {
             className="mt-6 flex items-center gap-2"
           >
             <WaveDotsLoader />
-            <span className="font-mono text-[10px] text-foreground/20">
+            <span className="font-mono text-[12px] text-muted-foreground">
               generating with {voice}
             </span>
           </motion.div>
@@ -834,13 +834,13 @@ export function GenerateSpeechPreview() {
                     </svg>
                   )}
                 </button>
-                <span className="font-mono text-[10px] tabular-nums text-foreground/20">
+                <span className="font-mono text-[12px] tabular-nums text-muted-foreground">
                   0:{String(Math.floor((progress / 100) * 12)).padStart(2, "0")} / 0:12
                 </span>
               </div>
               <button
                 onClick={reset}
-                className="font-mono text-[10px] text-foreground/20 transition-colors hover:text-foreground/50"
+                className="font-mono text-[12px] text-muted-foreground transition-colors hover:text-foreground/50"
               >
                 clear
               </button>
@@ -899,7 +899,7 @@ export function TranscribePreview() {
         className={`flex h-28 cursor-pointer flex-col items-center justify-center rounded-lg border transition-all ${
           dragging
             ? "border-foreground/20 bg-muted/40"
-            : "border-border/40 bg-muted/10 hover:bg-muted/20"
+            : "border-border/60 bg-muted/10 hover:bg-muted/40"
         }`}
       >
         <svg
@@ -911,16 +911,16 @@ export function TranscribePreview() {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-foreground/20"
+          className="text-muted-foreground"
         >
           <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
           <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
           <line x1="12" x2="12" y1="19" y2="22" />
         </svg>
-        <p className="mt-2 text-[11px] text-foreground/20">
+        <p className="mt-2 text-[13px] text-muted-foreground">
           Drop audio or click to upload
         </p>
-        <p className="mt-0.5 font-mono text-[9px] text-foreground/10">
+        <p className="mt-0.5 font-mono text-[11px] text-foreground/10">
           MP3 · WAV · M4A · up to 25 MB
         </p>
       </div>
@@ -935,7 +935,7 @@ export function TranscribePreview() {
             className="mt-5 flex items-center gap-2"
           >
             <WaveDotsLoader />
-            <span className="font-mono text-[10px] text-foreground/20">
+            <span className="font-mono text-[12px] text-muted-foreground">
               transcribing with whisper-large-v3
             </span>
           </motion.div>
@@ -951,16 +951,16 @@ export function TranscribePreview() {
             transition={{ type: "spring", duration: 0.5, bounce: 0 }}
             className="mt-5"
           >
-            <p className="whitespace-pre-wrap text-[13.5px] leading-[1.8] text-foreground/80">
+            <p className="whitespace-pre-wrap text-[15px] leading-[1.8] text-foreground">
               {result}
             </p>
             <div className="mt-3 flex items-center justify-between">
-              <span className="font-mono text-[10px] text-foreground/15">
+              <span className="font-mono text-[12px] text-muted-foreground">
                 {result.split(/\s+/).length} words · whisper-large-v3
               </span>
               <button
                 onClick={reset}
-                className="font-mono text-[10px] text-foreground/20 transition-colors hover:text-foreground/50"
+                className="font-mono text-[12px] text-muted-foreground transition-colors hover:text-foreground/50"
               >
                 clear
               </button>
@@ -1008,12 +1008,12 @@ export function ToolCallingPreview() {
       <style>{GT_KEYFRAMES}</style>
 
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] text-foreground/20">
+        <span className="font-mono text-[12px] text-muted-foreground">
           tool execution
         </span>
         <button
           onClick={() => setStep(0)}
-          className="font-mono text-[10px] text-foreground/20 transition-colors hover:text-foreground/50"
+          className="font-mono text-[12px] text-muted-foreground transition-colors hover:text-foreground/50"
         >
           replay
         </button>
@@ -1029,13 +1029,13 @@ export function ToolCallingPreview() {
           >
             {s.type === "user" && (
               <div className="flex justify-end">
-                <div className="rounded-full bg-foreground/5 px-3 py-1.5 text-[13px] text-foreground">
+                <div className="rounded-full bg-foreground/5 px-3 py-1.5 text-sm text-foreground">
                   {s.content}
                 </div>
               </div>
             )}
             {s.type === "tool_call" && (
-              <div className="rounded-lg bg-muted/30 px-3 py-2.5">
+              <div className="rounded-lg bg-muted/50 px-3 py-2.5">
                 <div className="flex items-center gap-1.5">
                   <svg
                     width="10"
@@ -1048,27 +1048,27 @@ export function ToolCallingPreview() {
                   >
                     <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                   </svg>
-                  <span className="font-mono text-[10px] text-foreground/25">
+                  <span className="font-mono text-[12px] text-foreground/25">
                     {s.name}
                   </span>
                 </div>
-                <pre className="mt-1 font-mono text-[11px] text-foreground/40">
+                <pre className="mt-1 font-mono text-[13px] text-foreground/60">
                   {s.args}
                 </pre>
               </div>
             )}
             {s.type === "tool_result" && (
-              <div className="rounded-lg border border-dashed border-border/30 px-3 py-2.5">
-                <span className="font-mono text-[10px] text-foreground/20">
+              <div className="rounded-lg border border-dashed border-border/50 px-3 py-2.5">
+                <span className="font-mono text-[12px] text-muted-foreground">
                   result
                 </span>
-                <pre className="mt-1 font-mono text-[11px] text-foreground/40">
+                <pre className="mt-1 font-mono text-[13px] text-foreground/60">
                   {s.content}
                 </pre>
               </div>
             )}
             {s.type === "assistant" && (
-              <p className="text-[13.5px] leading-[1.8] text-foreground/80">
+              <p className="text-[15px] leading-[1.8] text-foreground">
                 {s.content}
               </p>
             )}
@@ -1114,12 +1114,12 @@ export function AgentSetupPreview() {
       <style>{GT_KEYFRAMES}</style>
 
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[10px] text-foreground/20">
+        <span className="font-mono text-[12px] text-muted-foreground">
           agent execution
         </span>
         <button
           onClick={() => setStep(0)}
-          className="font-mono text-[10px] text-foreground/20 transition-colors hover:text-foreground/50"
+          className="font-mono text-[12px] text-muted-foreground transition-colors hover:text-foreground/50"
         >
           replay
         </button>
@@ -1157,7 +1157,7 @@ export function AgentSetupPreview() {
               </div>
               <div className="-mt-0.5">
                 <p
-                  className={`text-[12px] transition-colors duration-300 ${
+                  className={`text-[13px] transition-colors duration-300 ${
                     isCurrent
                       ? "font-medium text-foreground"
                       : "text-foreground/50"
@@ -1165,7 +1165,7 @@ export function AgentSetupPreview() {
                 >
                   {s.label}
                 </p>
-                <p className="font-mono text-[10px] text-foreground/20">
+                <p className="font-mono text-[12px] text-muted-foreground">
                   {s.detail}
                 </p>
               </div>
@@ -1177,7 +1177,7 @@ export function AgentSetupPreview() {
       {step > 0 && step < AGENT_STEPS.length && (
         <div className="mt-3 flex items-center gap-2">
           <WaveDotsLoader />
-          <span className="font-mono text-[10px] text-foreground/20">
+          <span className="font-mono text-[12px] text-muted-foreground">
             processing...
           </span>
         </div>
@@ -1189,7 +1189,7 @@ export function AgentSetupPreview() {
           animate={{ opacity: 1 }}
           className="mt-3"
         >
-          <span className="font-mono text-[10px] text-foreground/15">
+          <span className="font-mono text-[12px] text-muted-foreground">
             6 steps · completed
           </span>
         </motion.div>

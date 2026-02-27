@@ -12,9 +12,12 @@
   100% { transform: translateX(-50%); }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* --- Theme tokens (OKLCH) --- */
 :root {
-	--rail-w: clamp(12px, 3vw, 40px);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0 0);
 
@@ -177,6 +180,12 @@
 	);
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
+
+	/* Code blocks */
+	--code: oklch(0.935 0.005 257);
+	--code-foreground: oklch(0.25 0 0);
+	--code-number: oklch(0.55 0 0);
+	--code-highlight: oklch(0.90 0.03 257);
 }
 
 .dark {
@@ -224,6 +233,12 @@
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(1 0 0 / 10%);
 	--sidebar-ring: oklch(0.556 0 0);
+
+	/* Code blocks */
+	--code: oklch(0.22 0.005 257);
+	--code-foreground: oklch(0.85 0 0);
+	--code-number: oklch(0.45 0 0);
+	--code-highlight: oklch(0.28 0.03 257);
 }
 
 /* --- Tailwind theme mapping (v4) --- */
@@ -288,6 +303,12 @@
 	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
+
+	/* Code blocks */
+	--color-code: var(--code);
+	--color-code-foreground: var(--code-foreground);
+	--color-code-number: var(--code-number);
+	--color-code-highlight: var(--code-highlight);
 
 	/* Radii */
 	--radius-sm: calc(var(--radius) - 4px);
@@ -497,57 +518,8 @@
 	}
 }
 
-/* ── Smooth page-chrome transitions (landing ↔ stacks) ── */
-.crosshatch-rail {
-	transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.ticker-banner {
-	max-height: 60px;
-	transition:
-		max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-		opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-		border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.nav-inset {
-	margin-left: var(--rail-w);
-	margin-right: var(--rail-w);
-	transition: margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.content-inset {
-	margin-left: var(--rail-w);
-	margin-right: var(--rail-w);
-	transition: margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.noise-overlay {
-	transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Stacks workspace — animated hide */
-html[data-stacks] .crosshatch-rail {
-	opacity: 0 !important;
-	pointer-events: none !important;
-}
-html[data-stacks] .ticker-banner {
-	max-height: 0 !important;
-	opacity: 0 !important;
-	border-color: transparent !important;
-	overflow: hidden !important;
-}
-html[data-stacks] .nav-inset,
-html[data-stacks] .content-inset {
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-}
-html[data-stacks] .noise-overlay {
-	opacity: 0 !important;
-}
-
-/* Stacks workspace — local noise texture on chrome areas only.
-   The pseudo-element sits at z-0 behind sidebar/main (z-1).
-   The preview frame's solid bg-background covers it, keeping the
-   component render area clean while sidebar + toolbar stay textured. */
-.stacks-workspace::before,
-html[data-stacks] .nav-frame::before {
+/* Stacks workspace — noise texture on chrome areas */
+.stacks-workspace::before {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -558,8 +530,7 @@ html[data-stacks] .nav-frame::before {
 	mix-blend-mode: multiply;
 	opacity: 0.07;
 }
-html:is(.dark) .stacks-workspace::before,
-html:is(.dark) .nav-frame::before {
+html:is(.dark) .stacks-workspace::before {
 	background-image: url("/page-background/bg-paper-texture.webp");
 	mix-blend-mode: screen;
 	opacity: 0.05;
@@ -874,7 +845,7 @@ html:is(.dark) .nav-frame::before {
 		background-color: var(--color-code);
 		color: var(--color-code-foreground);
 		border-radius: var(--radius-lg);
-		border-width: 0px;
+		border-width: 1px;
 		border-color: var(--border);
 		margin-top: calc(var(--spacing) * 6);
 		overflow: hidden;

@@ -6,6 +6,12 @@ export const siteConfig = {
   url: "https://shadcnagents.com",
   ogImage: "https://shadcnagents.com/og.png",
 
+  /* ───────────────── Counts (single source of truth) ───────────────── */
+  counts: {
+    stacks: 100,
+    uiComponents: 117,
+  },
+
   /* ───────────────── Social links ───────────────── */
   links: {
     twitter: "https://x.com/shadcnagents",

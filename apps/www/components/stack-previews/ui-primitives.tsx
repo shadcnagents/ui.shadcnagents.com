@@ -101,15 +101,15 @@ export function ArtifactCanvasPreview() {
       <style>{KEYFRAMES}</style>
 
       {/* ── Left: Chat panel ── */}
-      <div className="flex w-[40%] min-w-0 flex-col border-r border-border/40">
-        <div className="flex h-9 shrink-0 items-center border-b border-border/30 px-3">
-          <span className="text-[10px] font-medium text-muted-foreground">Chat</span>
+      <div className="flex w-[40%] min-w-0 flex-col border-r border-border/60">
+        <div className="flex h-9 shrink-0 items-center border-b border-border/50 px-3">
+          <span className="text-[12px] font-medium text-muted-foreground">Chat</span>
         </div>
 
         <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
           {/* User message always visible */}
           <div className="flex justify-end">
-            <div className="max-w-[90%] rounded-xl rounded-br-sm bg-foreground px-3 py-2 text-[11px] text-background">
+            <div className="max-w-[90%] rounded-xl rounded-br-sm bg-foreground px-3 py-2 text-[13px] text-background">
               Build a pricing card component with a features list
             </div>
           </div>
@@ -122,7 +122,7 @@ export function ArtifactCanvasPreview() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex justify-start"
               >
-                <div className="max-w-[90%] rounded-xl rounded-bl-sm bg-muted/50 px-3 py-2 text-[11px] text-foreground">
+                <div className="max-w-[90%] rounded-xl rounded-bl-sm bg-muted/50 px-3 py-2 text-[13px] text-foreground">
                   {chatText}
                   {phase === "chat" && (
                     <span className="ml-0.5 inline-block h-2.5 w-px animate-pulse bg-foreground/60 align-middle" />
@@ -137,7 +137,7 @@ export function ArtifactCanvasPreview() {
             {(phase === "idle" || phase === "done") && (
               <button
                 onClick={run}
-                className="rounded-full bg-foreground px-4 py-1.5 text-[10px] font-medium text-background transition-opacity hover:opacity-80"
+                className="rounded-full bg-foreground px-4 py-1.5 text-[12px] font-medium text-background transition-opacity hover:opacity-80"
               >
                 {phase === "idle" ? "Try demo →" : "Run again"}
               </button>
@@ -146,11 +146,11 @@ export function ArtifactCanvasPreview() {
         </div>
 
         {/* Input bar */}
-        <div className="border-t border-border/30 p-2.5">
-          <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/20 px-2.5 py-1.5">
-            <span className="flex-1 text-[11px] text-muted-foreground/30">Ask Claude to build…</span>
+        <div className="border-t border-border/50 p-2.5">
+          <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-2.5 py-1.5">
+            <span className="flex-1 text-[13px] text-muted-foreground/60">Ask Claude to build…</span>
             <div className="flex size-5 items-center justify-center rounded-full bg-muted/60">
-              <svg viewBox="0 0 24 24" className="size-3 text-muted-foreground/40">
+              <svg viewBox="0 0 24 24" className="size-3 text-muted-foreground/60">
                 <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
@@ -161,13 +161,13 @@ export function ArtifactCanvasPreview() {
       {/* ── Right: Artifact panel ── */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Tab bar */}
-        <div className="flex h-9 shrink-0 items-center gap-0 border-b border-border/30 px-1">
+        <div className="flex h-9 shrink-0 items-center gap-0 border-b border-border/50 px-1">
           {(["code", "preview"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={cn(
-                "px-3 py-1.5 text-[11px] font-medium capitalize transition-colors",
+                "px-3 py-1.5 text-[13px] font-medium capitalize transition-colors",
                 tab === t
                   ? "border-b-2 border-foreground text-foreground"
                   : "text-muted-foreground hover:text-foreground",
@@ -178,13 +178,13 @@ export function ArtifactCanvasPreview() {
           ))}
           <div className="ml-auto flex items-center gap-1.5 pr-2">
             {phase === "code" && (
-              <span className="flex items-center gap-1 text-[9px] text-muted-foreground">
+              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
                 <span className="size-1.5 animate-pulse rounded-full bg-orange-400" />
                 Generating
               </span>
             )}
             {phase === "done" && (
-              <span className="text-[9px] text-muted-foreground/40">TypeScript • React</span>
+              <span className="text-[11px] text-muted-foreground/60">TypeScript • React</span>
             )}
           </div>
         </div>
@@ -192,7 +192,7 @@ export function ArtifactCanvasPreview() {
         {/* Content */}
         <div className="flex-1 overflow-auto">
           {tab === "code" && (
-            <pre className="h-full p-3 font-mono text-[10px] leading-relaxed">
+            <pre className="h-full p-3 font-mono text-[12px] leading-relaxed">
               {codeText ? (
                 lines.map((line, i) => (
                   <div key={i}>
@@ -216,13 +216,13 @@ export function ArtifactCanvasPreview() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="w-full max-w-[200px] rounded-xl border border-border/60 p-5 shadow-sm"
                 >
-                  <p className="text-[11px] font-semibold">Pro</p>
+                  <p className="text-[13px] font-semibold">Pro</p>
                   <p className="mt-1.5 text-[22px] font-bold leading-none">
-                    $29<span className="text-[11px] font-normal text-muted-foreground">/mo</span>
+                    $29<span className="text-[13px] font-normal text-muted-foreground">/mo</span>
                   </p>
                   <ul className="mt-3.5 space-y-2">
                     {CANVAS_FEATURES.map((f) => (
-                      <li key={f} className="flex items-center gap-1.5 text-[10px]">
+                      <li key={f} className="flex items-center gap-1.5 text-[12px]">
                         <svg viewBox="0 0 24 24" className="size-3 shrink-0 text-green-500">
                           <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -230,12 +230,12 @@ export function ArtifactCanvasPreview() {
                       </li>
                     ))}
                   </ul>
-                  <button className="mt-4 w-full rounded-md bg-foreground py-1.5 text-[10px] font-medium text-background">
+                  <button className="mt-4 w-full rounded-md bg-foreground py-1.5 text-[12px] font-medium text-background">
                     Get started
                   </button>
                 </motion.div>
               ) : (
-                <span className="text-[11px] text-muted-foreground/30">
+                <span className="text-[13px] text-muted-foreground/60">
                   Preview appears after generation
                 </span>
               )}
@@ -250,9 +250,9 @@ export function ArtifactCanvasPreview() {
 /* Minimal syntax coloring for the canvas code view */
 function CodeLine({ line }: { line: string }) {
   if (line.trim().startsWith("//"))
-    return <span className="text-muted-foreground/40">{line}</span>
+    return <span className="text-muted-foreground/60">{line}</span>
   if (line.trim().startsWith("export") || line.trim().startsWith("return") || line.trim().startsWith("import"))
-    return <span><span className="text-violet-400">{line.match(/^(\s*\w+)/)?.[1]}</span>{line.slice((line.match(/^(\s*\w+)/)?.[1] ?? "").length)}</span>
+    return <span><span className="text-violet-600 dark:text-violet-400">{line.match(/^(\s*\w+)/)?.[1]}</span>{line.slice((line.match(/^(\s*\w+)/)?.[1] ?? "").length)}</span>
   if (line.includes("className="))
     return <span>{line.replace(/className="([^"]+)"/, (_, c) => `className=<span style="color:var(--muted-foreground,#888)">"${c}"</span>`)}</span>
   return <span>{line}</span>
@@ -338,7 +338,7 @@ export function VoiceInputPreview() {
             "relative flex size-16 items-center justify-center rounded-full border-2 transition-all duration-300",
             state === "idle" && "cursor-pointer border-border hover:border-foreground/40",
             state === "listening" && "border-foreground bg-foreground",
-            state === "processing" && "border-border/40 bg-muted/30",
+            state === "processing" && "border-border/60 bg-muted/50",
             state === "done" && "cursor-pointer border-green-500/60 bg-green-500/10",
           )}
         >
@@ -374,7 +374,7 @@ export function VoiceInputPreview() {
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -4 }}
-          className="text-[12px] text-muted-foreground"
+          className="text-[13px] text-muted-foreground"
         >
           {STATE_LABELS[state]}
         </motion.p>
@@ -387,7 +387,7 @@ export function VoiceInputPreview() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="w-full rounded-lg border border-border/40 bg-muted/20 px-4 py-2.5 text-[11px] text-foreground"
+            className="w-full rounded-lg border border-border/60 bg-muted/40 px-4 py-2.5 text-[13px] text-foreground"
           >
             "Build a pricing card component with three tiers"
           </motion.div>
@@ -468,7 +468,7 @@ export function StreamingMarkdownPreview() {
         <div className="flex justify-center pt-4">
           <button
             onClick={start}
-            className="rounded-full bg-foreground px-5 py-2 text-[11px] font-medium text-background"
+            className="rounded-full bg-foreground px-5 py-2 text-[13px] font-medium text-background"
           >
             Stream markdown →
           </button>
@@ -492,7 +492,7 @@ export function StreamingMarkdownPreview() {
       {!running && revealed >= MD_BLOCKS.length && (
         <button
           onClick={start}
-          className="mt-2 self-start text-[10px] text-muted-foreground hover:text-foreground"
+          className="mt-2 self-start text-[12px] text-muted-foreground hover:text-foreground"
         >
           Stream again
         </button>
@@ -522,20 +522,20 @@ function MDBlock({
     <span className="ml-px inline-block h-3 w-px animate-pulse bg-foreground/60 align-middle" />
   ) : null
 
-  if (block.type === "h1") return <h1 className="text-[16px] font-bold">{visibleText}{cursor}</h1>
-  if (block.type === "h2") return <h2 className="text-[13px] font-semibold text-foreground/80">{visibleText}{cursor}</h2>
+  if (block.type === "h1") return <h1 className="text-base font-bold">{visibleText}{cursor}</h1>
+  if (block.type === "h2") return <h2 className="text-sm font-semibold text-foreground">{visibleText}{cursor}</h2>
 
   if (block.type === "p" && "parts" in block) {
     let remaining = visibleText
     return (
-      <p className="text-[12.5px] leading-[1.75] text-foreground/80">
+      <p className="text-[13px] leading-[1.75] text-foreground">
         {block.parts.map((part, i) => {
           if (remaining.length === 0) return null
           const slice = remaining.slice(0, part.t.length)
           remaining = remaining.slice(part.t.length)
           if (!slice) return null
           if (part.bold) return <strong key={i} className="font-semibold text-foreground">{slice}</strong>
-          if (part.code) return <code key={i} className="rounded bg-muted/60 px-1 py-0.5 font-mono text-[11px]">{slice}</code>
+          if (part.code) return <code key={i} className="rounded bg-muted/60 px-1 py-0.5 font-mono text-[13px]">{slice}</code>
           return <span key={i}>{slice}</span>
         })}
         {cursor}
@@ -546,13 +546,13 @@ function MDBlock({
   if (block.type === "code") {
     const lines = visibleText.split("\n")
     return (
-      <div className="overflow-hidden rounded-md border border-border/40 bg-muted/30">
-        <div className="flex items-center justify-between border-b border-border/30 px-3 py-1.5">
-          <span className="font-mono text-[9px] text-muted-foreground/40">typescript</span>
+      <div className="overflow-hidden rounded-md border border-border/60 bg-muted/50">
+        <div className="flex items-center justify-between border-b border-border/50 px-3 py-1.5">
+          <span className="font-mono text-[11px] text-muted-foreground/60">typescript</span>
         </div>
         <pre className="overflow-x-auto p-3 font-mono text-[10.5px] leading-[1.7]">
           {lines.map((line, i) => (
-            <div key={i} className={cn(line.includes("return") || line.startsWith("function") ? "text-violet-400" : "text-foreground/80")}>
+            <div key={i} className={cn(line.includes("return") || line.startsWith("function") ? "text-violet-600 dark:text-violet-400" : "text-foreground")}>
               {line}
             </div>
           ))}
@@ -567,7 +567,7 @@ function MDBlock({
     return (
       <ul className="space-y-1 pl-1">
         {visibleItems.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-[12px] text-foreground/70">
+          <li key={i} className="flex items-start gap-2 text-[13px] text-foreground/70">
             <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-muted-foreground/40" />
             {item}
             {isActive && i === visibleItems.length - 1 && cursor}
@@ -629,11 +629,11 @@ export function ModelSelectorPreview() {
       {/* Trigger */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5 transition-colors hover:border-foreground/20"
+        className="flex w-full items-center justify-between rounded-lg border border-border/60 bg-muted/40 px-3 py-2.5 transition-colors hover:border-foreground/20"
       >
         <div className="flex items-center gap-2.5">
           <span className={cn("size-2 rounded-full", selectedColor)} />
-          <span className="text-[12.5px]">{selected.name}</span>
+          <span className="text-[13px]">{selected.name}</span>
         </div>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronIcon className="size-3.5 text-muted-foreground" />
@@ -651,13 +651,13 @@ export function ModelSelectorPreview() {
             className="w-full overflow-hidden rounded-lg border border-border/60 bg-background shadow-lg"
           >
             {/* Search */}
-            <div className="border-b border-border/30 px-3 py-2">
+            <div className="border-b border-border/50 px-3 py-2">
               <input
                 ref={inputRef}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search models…"
-                className="w-full bg-transparent text-[11.5px] outline-none placeholder:text-muted-foreground/40"
+                className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted-foreground/60"
               />
             </div>
 
@@ -665,7 +665,7 @@ export function ModelSelectorPreview() {
             <div className="max-h-52 overflow-y-auto py-1">
               {filtered.map((g) => (
                 <div key={g.group}>
-                  <p className="px-3 py-1.5 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/40">
+                  <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
                     {g.group}
                   </p>
                   {g.models.map((name) => (
@@ -674,11 +674,11 @@ export function ModelSelectorPreview() {
                       onClick={() => pick(g.group, name)}
                       className={cn(
                         "flex w-full items-center gap-2.5 px-3 py-1.5 text-left transition-colors hover:bg-muted/40",
-                        selected.name === name && "bg-muted/30",
+                        selected.name === name && "bg-muted/50",
                       )}
                     >
                       <span className={cn("size-1.5 rounded-full", g.color)} />
-                      <span className="text-[12px]">{name}</span>
+                      <span className="text-[13px]">{name}</span>
                       {selected.name === name && (
                         <svg viewBox="0 0 24 24" className="ml-auto size-3 text-foreground">
                           <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -689,7 +689,7 @@ export function ModelSelectorPreview() {
                 </div>
               ))}
               {filtered.length === 0 && (
-                <p className="px-3 py-4 text-center text-[11px] text-muted-foreground/40">
+                <p className="px-3 py-4 text-center text-[13px] text-muted-foreground/60">
                   No models found
                 </p>
               )}
@@ -699,7 +699,7 @@ export function ModelSelectorPreview() {
       </AnimatePresence>
 
       {!open && (
-        <p className="text-[10.5px] text-muted-foreground/50">
+        <p className="text-[10.5px] text-muted-foreground">
           Using <span className="text-foreground/70">{selected.name}</span> · {selected.group}
         </p>
       )}
@@ -733,7 +733,7 @@ export function PromptSuggestionsPreview() {
       {/* Brand */}
       <div className="text-center">
         <p className="text-[18px] font-semibold tracking-tight">What can I help you build?</p>
-        <p className="mt-1 text-[11px] text-muted-foreground/60">
+        <p className="mt-1 text-[13px] text-muted-foreground">
           Select a suggestion or type your own
         </p>
       </div>
@@ -749,23 +749,23 @@ export function PromptSuggestionsPreview() {
               "flex flex-col items-start rounded-xl border p-3 text-left transition-all",
               selected === s.text
                 ? "border-foreground/30 bg-muted/50"
-                : "border-border/40 hover:border-foreground/20 hover:bg-muted/30",
+                : "border-border/60 hover:border-foreground/20 hover:bg-muted/50",
             )}
           >
-            <span className="text-[16px]">{s.icon}</span>
+            <span className="text-base">{s.icon}</span>
             <span className="mt-1.5 text-[10.5px] font-medium leading-snug">{s.text}</span>
-            <span className="mt-0.5 text-[9px] text-muted-foreground/40">{s.label}</span>
+            <span className="mt-0.5 text-[11px] text-muted-foreground/60">{s.label}</span>
           </motion.button>
         ))}
       </div>
 
       {/* Input */}
-      <div className="flex w-full items-center gap-2 rounded-full border border-border/40 bg-muted/20 py-2 pl-4 pr-2">
+      <div className="flex w-full items-center gap-2 rounded-full border border-border/60 bg-muted/40 py-2 pl-4 pr-2">
         <input
           value={input}
           onChange={(e) => { setInput(e.target.value); setSelected(null) }}
           placeholder="Or ask anything…"
-          className="flex-1 bg-transparent text-[12px] outline-none placeholder:text-muted-foreground/30"
+          className="flex-1 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground/60"
         />
         <motion.button
           whileTap={{ scale: 0.9 }}
@@ -775,7 +775,7 @@ export function PromptSuggestionsPreview() {
             input.trim() ? "bg-foreground" : "bg-muted/50",
           )}
         >
-          <svg viewBox="0 0 24 24" className={cn("size-3.5", input.trim() ? "text-background" : "text-muted-foreground/40")}>
+          <svg viewBox="0 0 24 24" className={cn("size-3.5", input.trim() ? "text-background" : "text-muted-foreground/60")}>
             <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </motion.button>
@@ -807,8 +807,8 @@ export function TokenCounterPreview() {
   const circ = 2 * Math.PI * R
   const dash = (pct / 100) * circ
 
-  const colorClass = pct < 50 ? "text-emerald-500" : pct < 80 ? "text-amber-500" : "text-red-500"
-  const strokeClass = pct < 50 ? "stroke-emerald-500" : pct < 80 ? "stroke-amber-500" : "stroke-red-500"
+  const colorClass = pct < 50 ? "text-emerald-600 dark:text-emerald-400" : pct < 80 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+  const strokeClass = pct < 50 ? "stroke-emerald-600 dark:stroke-emerald-400" : pct < 80 ? "stroke-amber-600 dark:stroke-amber-400" : "stroke-red-600 dark:stroke-red-400"
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col gap-4 p-6">
@@ -817,10 +817,10 @@ export function TokenCounterPreview() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setModelIdx((i) => (i + 1) % MODEL_LIMITS.length)}
-            className="flex items-center gap-1.5 rounded-md border border-border/40 bg-muted/20 px-2.5 py-1 text-[11px] transition-colors hover:bg-muted/40"
+            className="flex items-center gap-1.5 rounded-md border border-border/60 bg-muted/40 px-2.5 py-1 text-[13px] transition-colors hover:bg-muted/40"
           >
             <span>{model.name}</span>
-            <ChevronIcon className="size-3 text-muted-foreground/50" />
+            <ChevronIcon className="size-3 text-muted-foreground" />
           </button>
         </div>
 
@@ -840,10 +840,10 @@ export function TokenCounterPreview() {
             />
           </svg>
           <div className="text-right">
-            <p className={cn("font-mono text-[13px] font-medium", colorClass)}>
+            <p className={cn("font-mono text-sm font-medium", colorClass)}>
               {tokens.toLocaleString()}
             </p>
-            <p className="font-mono text-[9px] text-muted-foreground/40">
+            <p className="font-mono text-[11px] text-muted-foreground/60">
               / {(model.limit / 1000).toFixed(0)}k
             </p>
           </div>
@@ -856,11 +856,11 @@ export function TokenCounterPreview() {
         onChange={(e) => setText(e.target.value)}
         placeholder="Paste your prompt here to count tokens in real-time…"
         rows={5}
-        className="w-full resize-none rounded-lg border border-border/40 bg-muted/20 p-3 text-[12px] leading-relaxed outline-none placeholder:text-muted-foreground/30 focus:border-foreground/20"
+        className="w-full resize-none rounded-lg border border-border/60 bg-muted/40 p-3 text-[13px] leading-relaxed outline-none placeholder:text-muted-foreground/60 focus:border-foreground/20"
       />
 
       {/* Footer stats */}
-      <div className="flex items-center justify-between text-[9.5px] text-muted-foreground/40">
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground/60">
         <span>{text.length} chars</span>
         <span>{pct.toFixed(1)}% context used</span>
         <span>{Math.max(0, model.limit - tokens).toLocaleString()} remaining</span>
@@ -889,13 +889,13 @@ export function AILoadingStatesPreview() {
   return (
     <div className="mx-auto flex w-full max-w-xs flex-col items-center gap-6 p-6">
       {/* Tab switcher */}
-      <div className="flex items-center gap-1 rounded-lg border border-border/40 bg-muted/20 p-1">
+      <div className="flex items-center gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setActive(t.id)}
             className={cn(
-              "rounded-md px-3 py-1 text-[11px] font-medium transition-all",
+              "rounded-md px-3 py-1 text-[13px] font-medium transition-all",
               active === t.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -905,7 +905,7 @@ export function AILoadingStatesPreview() {
       </div>
 
       {/* Animation area */}
-      <div className="flex h-28 w-full items-center justify-center rounded-xl border border-border/30 bg-muted/10">
+      <div className="flex h-28 w-full items-center justify-center rounded-xl border border-border/50 bg-muted/10">
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
@@ -924,7 +924,7 @@ export function AILoadingStatesPreview() {
       </div>
 
       {/* Label */}
-      <p className="text-[10px] text-muted-foreground/40">
+      <p className="text-[12px] text-muted-foreground/60">
         {active === "wave" && "Ellipse wave — 5-row dot grid"}
         {active === "orb" && "Pulsing orb — glow + scale"}
         {active === "shimmer" && "Shimmer skeleton — streaming"}
@@ -1040,18 +1040,18 @@ export function StructuredOutputPreview() {
     <div className="mx-auto flex w-full max-w-sm flex-col gap-3 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium">Structured Output</span>
-        <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 font-mono text-[9px] text-emerald-600">
+        <span className="text-[13px] font-medium">Structured Output</span>
+        <span className="rounded-full bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
           confidence: 96%
         </span>
       </div>
 
       {/* JSON tree */}
-      <div className="rounded-lg border border-border/40 bg-muted/20 p-3 font-mono text-[11px]">
+      <div className="rounded-lg border border-border/60 bg-muted/40 p-3 font-mono text-[13px]">
         <JSONNode label="root" value={EXTRACTED} expanded={expanded} toggle={toggle} path="root" depth={0} />
       </div>
 
-      <p className="text-[9.5px] text-muted-foreground/40">
+      <p className="text-[11px] text-muted-foreground/60">
         Generated with generateObject() + Zod schema
       </p>
     </div>
@@ -1082,12 +1082,12 @@ function JSONNode({
     return (
       <div>
         <button onClick={() => toggle(path)} className="flex items-center gap-1 hover:text-foreground">
-          <span className="text-muted-foreground/40">{isExpanded ? "▾" : "▸"}</span>
-          <span className="text-foreground/70">{label === "root" ? "" : <><span className="text-sky-500">{label}</span>: </>}</span>
-          {!isExpanded && <span className="text-muted-foreground/40">{"{"}{Object.keys(value as object).length} fields{"}"}</span>}
+          <span className="text-muted-foreground/60">{isExpanded ? "▾" : "▸"}</span>
+          <span className="text-foreground/70">{label === "root" ? "" : <><span className="text-sky-600 dark:text-sky-400">{label}</span>: </>}</span>
+          {!isExpanded && <span className="text-muted-foreground/60">{"{"}{Object.keys(value as object).length} fields{"}"}</span>}
         </button>
         {isExpanded && (
-          <div className="ml-3 border-l border-border/30 pl-3">
+          <div className="ml-3 border-l border-border/50 pl-3">
             {entries.map(([k, v]) => (
               <JSONNode key={k} label={k} value={v} expanded={expanded} toggle={toggle} path={`${path}.${k}`} depth={depth + 1} />
             ))}
@@ -1101,17 +1101,17 @@ function JSONNode({
     return (
       <div>
         <button onClick={() => toggle(path)} className="flex items-center gap-1 hover:text-foreground">
-          <span className="text-muted-foreground/40">{isExpanded ? "▾" : "▸"}</span>
-          <span className="text-sky-500">{label}</span>
-          <span className="text-foreground/50">:</span>
-          {!isExpanded && <span className="text-muted-foreground/40">[{(value as unknown[]).length} items]</span>}
+          <span className="text-muted-foreground/60">{isExpanded ? "▾" : "▸"}</span>
+          <span className="text-sky-600 dark:text-sky-400">{label}</span>
+          <span className="text-foreground/70">:</span>
+          {!isExpanded && <span className="text-muted-foreground/60">[{(value as unknown[]).length} items]</span>}
         </button>
         {isExpanded && (
-          <div className="ml-3 border-l border-border/30 pl-3">
+          <div className="ml-3 border-l border-border/50 pl-3">
             {(value as unknown[]).map((v, i) => (
               <div key={i} className="flex gap-1">
-                <span className="text-muted-foreground/30">{i}:</span>
-                <span className="text-amber-500">"{String(v)}"</span>
+                <span className="text-muted-foreground/60">{i}:</span>
+                <span className="text-amber-600 dark:text-amber-400">"{String(v)}"</span>
               </div>
             ))}
           </div>
@@ -1122,11 +1122,11 @@ function JSONNode({
 
   return (
     <div className="flex gap-1">
-      <span className="text-sky-500">{label}</span>
-      <span className="text-foreground/40">:</span>
-      {typeof value === "string" && <span className="text-amber-500">"{value}"</span>}
-      {typeof value === "number" && <span className="text-emerald-500">{String(value)}</span>}
-      {typeof value === "boolean" && <span className="text-violet-400">{String(value)}</span>}
+      <span className="text-sky-600 dark:text-sky-400">{label}</span>
+      <span className="text-foreground/60">:</span>
+      {typeof value === "string" && <span className="text-amber-600 dark:text-amber-400">"{value}"</span>}
+      {typeof value === "number" && <span className="text-emerald-600 dark:text-emerald-400">{String(value)}</span>}
+      {typeof value === "boolean" && <span className="text-violet-600 dark:text-violet-400">{String(value)}</span>}
     </div>
   )
 }
@@ -1181,14 +1181,14 @@ export function AIImageOutputPreview() {
     <div className="mx-auto flex w-full max-w-xs flex-col gap-4 p-6">
       {/* Prompt input */}
       <div className="flex items-end gap-2">
-        <div className="flex-1 rounded-lg border border-border/40 bg-muted/20 px-3 py-2">
-          <p className="text-[11px] text-muted-foreground/60">Prompt</p>
-          <p className="mt-0.5 text-[12px] leading-snug">{prompt}</p>
+        <div className="flex-1 rounded-lg border border-border/60 bg-muted/40 px-3 py-2">
+          <p className="text-[13px] text-muted-foreground">Prompt</p>
+          <p className="mt-0.5 text-[13px] leading-snug">{prompt}</p>
         </div>
         <button
           onClick={generate}
           disabled={phase === "generating"}
-          className="shrink-0 rounded-lg bg-foreground px-3 py-2 text-[11px] font-medium text-background disabled:opacity-40"
+          className="shrink-0 rounded-lg bg-foreground px-3 py-2 text-[13px] font-medium text-background disabled:opacity-40"
         >
           Generate
         </button>
@@ -1199,10 +1199,10 @@ export function AIImageOutputPreview() {
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="overflow-hidden rounded-xl border border-border/40"
+          className="overflow-hidden rounded-xl border border-border/60"
         >
           {/* Image area */}
-          <div className="relative h-44 w-full bg-muted/30">
+          <div className="relative h-44 w-full bg-muted/50">
             {phase === "generating" && (
               <div className="absolute inset-0 overflow-hidden">
                 <div
@@ -1211,7 +1211,7 @@ export function AIImageOutputPreview() {
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                   <OrbAnimation />
-                  <p className="text-[10px] text-muted-foreground/60">Generating… {elapsed.toFixed(1)}s</p>
+                  <p className="text-[12px] text-muted-foreground">Generating… {elapsed.toFixed(1)}s</p>
                 </div>
               </div>
             )}
@@ -1222,13 +1222,13 @@ export function AIImageOutputPreview() {
                 className="absolute inset-0 flex items-center justify-center"
               >
                 {/* Simulated gradient art */}
-                <div className="h-full w-full bg-gradient-to-br from-violet-900/40 via-indigo-800/30 to-sky-900/40" />
+                <div className="h-full w-full bg-gradient-to-br from-violet-200 via-indigo-200 to-sky-200 dark:from-violet-900/40 dark:via-indigo-800/30 dark:to-sky-900/40" />
                 <div className="absolute inset-0 flex items-end p-3">
                   <div className="flex w-full items-center justify-between">
-                    <span className="rounded-full bg-background/60 px-2 py-0.5 font-mono text-[9px] backdrop-blur-sm">
+                    <span className="rounded-full bg-background/60 px-2 py-0.5 font-mono text-[11px] backdrop-blur-sm">
                       1024 × 1024
                     </span>
-                    <button className="rounded-full bg-background/60 px-2 py-0.5 font-mono text-[9px] backdrop-blur-sm">
+                    <button className="rounded-full bg-background/60 px-2 py-0.5 font-mono text-[11px] backdrop-blur-sm">
                       ↓ Save
                     </button>
                   </div>
@@ -1239,9 +1239,9 @@ export function AIImageOutputPreview() {
 
           {/* Metadata */}
           {phase === "done" && (
-            <div className="flex items-center justify-between border-t border-border/30 px-3 py-2">
-              <span className="font-mono text-[9px] text-muted-foreground/40">dall-e-3 · 3.2s</span>
-              <button onClick={next} className="text-[9px] text-muted-foreground/40 hover:text-foreground">
+            <div className="flex items-center justify-between border-t border-border/50 px-3 py-2">
+              <span className="font-mono text-[11px] text-muted-foreground/60">dall-e-3 · 3.2s</span>
+              <button onClick={next} className="text-[11px] text-muted-foreground/60 hover:text-foreground">
                 New prompt →
               </button>
             </div>
@@ -1250,8 +1250,8 @@ export function AIImageOutputPreview() {
       )}
 
       {phase === "idle" && (
-        <div className="flex h-44 items-center justify-center rounded-xl border border-dashed border-border/40">
-          <p className="text-[11px] text-muted-foreground/30">Image will appear here</p>
+        <div className="flex h-44 items-center justify-center rounded-xl border border-dashed border-border/60">
+          <p className="text-[13px] text-muted-foreground/60">Image will appear here</p>
         </div>
       )}
     </div>

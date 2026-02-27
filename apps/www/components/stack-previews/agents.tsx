@@ -33,7 +33,7 @@ export function RoutingPatternPreview() {
       <div className="flex items-start justify-between gap-8">
         {/* Input */}
         <div className="w-40 space-y-2">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
             Incoming
           </span>
           {routes.map((route) => (
@@ -42,7 +42,7 @@ export function RoutingPatternPreview() {
               className={`rounded-md border px-3 py-2 text-xs transition-all ${
                 activeRoute === route.agent
                   ? "border-foreground/20 bg-foreground/[0.03] text-foreground"
-                  : "border-border/30 text-muted-foreground/50"
+                  : "border-border/50 text-muted-foreground"
               }`}
             >
               {route.input}
@@ -53,7 +53,7 @@ export function RoutingPatternPreview() {
         {/* Router */}
         <div className="flex flex-col items-center gap-2 pt-12">
           <div className="h-px w-12 bg-border/40" />
-          <div className="rounded-md border border-border/40 px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
+          <div className="rounded-md border border-border/60 px-3 py-1.5 text-[12px] font-medium text-muted-foreground">
             Router
           </div>
           <div className="h-px w-12 bg-border/40" />
@@ -61,7 +61,7 @@ export function RoutingPatternPreview() {
 
         {/* Agents */}
         <div className="w-36 space-y-2">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
             Agents
           </span>
           {routes.map((route) => (
@@ -70,7 +70,7 @@ export function RoutingPatternPreview() {
               className={`rounded-md border px-3 py-2 text-xs transition-all ${
                 activeRoute === route.agent
                   ? "border-foreground/20 bg-foreground/[0.03] font-medium text-foreground"
-                  : "border-border/30 text-muted-foreground/50"
+                  : "border-border/50 text-muted-foreground"
               }`}
             >
               {route.agent}
@@ -112,7 +112,7 @@ export function ParallelProcessingPreview() {
         <span className="text-xs font-medium text-foreground">
           Parallel Agent Execution
         </span>
-        <p className="mt-1 text-[11px] text-muted-foreground/50">
+        <p className="mt-1 text-[13px] text-muted-foreground">
           Processing document across 3 agents simultaneously
         </p>
       </div>
@@ -127,7 +127,7 @@ export function ParallelProcessingPreview() {
                 <span className="text-xs font-medium text-foreground">
                   {task.name}
                 </span>
-                <span className="text-[10px] tabular-nums text-muted-foreground/40">
+                <span className="text-[12px] tabular-nums text-muted-foreground">
                   {done ? "Complete" : `${pct}%`}
                 </span>
               </div>
@@ -143,8 +143,8 @@ export function ParallelProcessingPreview() {
       </div>
 
       {progress.every((p, i) => p >= tasks[i].target) && (
-        <div className="mt-6 rounded-md border border-border/40 bg-muted/30 p-4">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+        <div className="mt-6 rounded-md border border-border/60 bg-muted/50 p-4">
+          <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
             Combined Result
           </p>
           <div className="mt-2 space-y-1 text-xs text-muted-foreground">
@@ -165,8 +165,8 @@ export function HumanInTheLoopPreview() {
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 p-8">
       <div className="space-y-3">
-        <div className="rounded-md border border-border/40 bg-muted/30 p-4">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+        <div className="rounded-md border border-border/60 bg-muted/50 p-4">
+          <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
             Agent Request
           </p>
           <p className="mt-2 text-sm text-foreground">
@@ -203,7 +203,7 @@ export function HumanInTheLoopPreview() {
             </button>
           </div>
         ) : (
-          <div className="flex items-center justify-between rounded-md border border-border/40 p-3">
+          <div className="flex items-center justify-between rounded-md border border-border/60 p-3">
             <div className="flex items-center gap-2 text-xs">
               {approved ? (
                 <>
@@ -224,7 +224,7 @@ export function HumanInTheLoopPreview() {
             </div>
             <button
               onClick={() => setApproved(null)}
-              className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground"
+              className="text-[12px] text-muted-foreground hover:text-muted-foreground"
             >
               Reset
             </button>
@@ -268,7 +268,7 @@ export function URLAnalysisPreview() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://example.com/article"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground/40 focus:border-foreground/20"
+          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
         />
         <button
           onClick={handleAnalyze}
@@ -300,7 +300,7 @@ export function URLAnalysisPreview() {
               </div>
               <div>
                 <p className="text-xs font-medium text-foreground">{s.name}</p>
-                <p className="text-[10px] text-muted-foreground/50">{s.detail}</p>
+                <p className="text-[12px] text-muted-foreground">{s.detail}</p>
               </div>
             </div>
           ))}
@@ -308,8 +308,8 @@ export function URLAnalysisPreview() {
       )}
 
       {step >= steps.length - 1 && (
-        <div className="rounded-md border border-border/40 bg-muted/30 p-4">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/40">
+        <div className="rounded-md border border-border/60 bg-muted/50 p-4">
+          <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
             Analysis Result
           </p>
           <div className="mt-2 space-y-2 text-xs text-muted-foreground">
