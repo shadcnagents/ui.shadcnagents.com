@@ -28,7 +28,7 @@ import {
   type MouseEvent,
 } from "react"
 import Image, { type StaticImageData } from "next/image"
-import cult from "@/assets/cults.png"
+import showcase from "@/assets/showcase.png"
 import clsx from "clsx"
 import {
   AnimatePresence,
@@ -661,7 +661,7 @@ export function FeatureCarousel({
           /**
            * Layout: Final showcase layout
            * - Container: Centered, 60% width on desktop
-           * - Image (cult): 90% width, positioned slightly up
+           * - Image (showcase): 90% width, positioned slightly up
            * Animation:
            * - Container fades in and scales up
            * - Image follows with 0.1s delay
@@ -678,7 +678,7 @@ export function FeatureCarousel({
               <AnimatedStepImage
                 alt={image.alt}
                 className="pointer-events-none top-[50%] w-[90%] overflow-hidden rounded-2xl border border-neutral-100/10 dark:border-zinc-700 md:left-[35px] md:top-[30%] md:w-full"
-                src={cult}
+                src={showcase}
                 preset="fadeInScale"
                 delay={0.1}
               />

@@ -29,7 +29,7 @@ export default function HoverVideoPlayerDemo() {
       >
         <HoverVideoPlayer
           videoSrc="https://player.vimeo.com/video/1037289858"
-          thumbnailSrc="/placeholders/newcopy-thumbnail.png"
+          thumbnailSrc="/placeholders/demo-thumbnail.png"
           enableControls
           style={{
             width: "100%",
@@ -40,7 +40,7 @@ export default function HoverVideoPlayerDemo() {
       </motion.div>
 
       <a href="https://www.shadcnagents.com" target="_blank">
-        newcopy.ai
+        shadcnagents.com
       </a>
     </div>
   )

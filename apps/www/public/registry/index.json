@@ -1,6 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
-  "name": "cult/ui",
+  "name": "shadcnagents",
   "homepage": "https://shadcnagents.com",
   "items": [
     {
