@@ -30,8 +30,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma client
+        run: pnpm --filter www exec prisma generate
+
       - name: Build
         run: pnpm build
         env:
-          # Suppress Turbopack telemetry in CI
           NEXT_TELEMETRY_DISABLED: 1
