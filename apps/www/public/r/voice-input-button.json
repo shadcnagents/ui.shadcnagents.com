@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "voice-input-button",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "voice-input.tsx",
+      "type": "registry:component",
+      "target": "voice-input.tsx",
+      "content": "\"use client\"\n\nimport { useState, useRef } from \"react\"\nimport { Mic, Square, Loader2, Check } from \"lucide-react\"\nimport { cn } from \"@/lib/utils\"\n\ntype State = \"idle\" | \"listening\" | \"processing\" | \"done\"\n\nexport function VoiceInput({\n  onTranscript,\n}: {\n  onTranscript: (text: string) => void\n}) {\n  const [state, setState] = useState<State>(\"idle\")\n  const mediaRef = useRef<MediaRecorder | null>(null)\n  const chunksRef = useRef<Blob[]>([])\n\n  async function startRecording() {\n    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })\n    const recorder = new MediaRecorder(stream)\n    mediaRef.current = recorder\n    chunksRef.current = []\n\n    recorder.ondataavailable = (e) => chunksRef.current.push(e.data)\n    recorder.onstop = async () => {\n      setState(\"processing\")\n      const blob = new Blob(chunksRef.current, { type: \"audio/webm\" })\n      const form = new FormData()\n      form.append(\"audio\", blob, \"recording.webm\")\n\n      const res = await fetch(\"/api/transcribe\", { method: \"POST\", body: form })\n      const { text } = await res.json()\n      onTranscript(text)\n      setState(\"done\")\n      setTimeout(() => setState(\"idle\"), 2000)\n    }\n\n    recorder.start()\n    setState(\"listening\")\n  }\n\n  function stopRecording() {\n    mediaRef.current?.stop()\n    mediaRef.current?.stream.getTracks().forEach((t) => t.stop())\n  }\n\n  return (\n    <button\n      onClick={state === \"listening\" ? stopRecording : startRecording}\n      className={cn(\n        \"flex size-14 items-center justify-center rounded-full border-2 transition-all\",\n        state === \"idle\" && \"border-border hover:border-foreground/40\",\n        state === \"listening\" && \"border-foreground bg-foreground\",\n        state === \"processing\" && \"border-border/40 bg-muted/30\",\n        state === \"done\" && \"border-green-500/60 bg-green-500/10\",\n      )}\n    >\n      {state === \"idle\" && <Mic className=\"size-6\" />}\n      {state === \"listening\" && <Square className=\"size-5 text-background\" />}\n      {state === \"processing\" && <Loader2 className=\"size-5 animate-spin text-muted-foreground\" />}\n      {state === \"done\" && <Check className=\"size-6 text-green-500\" />}\n    </button>\n  )\n}"
+    },
+    {
+      "path": "app/api/transcribe/route.ts",
+      "type": "registry:file",
+      "target": "app/api/transcribe/route.ts",
+      "content": "import { transcribe } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nexport async function POST(req: Request) {\n  const form = await req.formData()\n  const audio = form.get(\"audio\") as File\n\n  const { text } = await transcribe({\n    model: openai.transcription(\"whisper-1\"),\n    audio,\n  })\n\n  return Response.json({ text })\n}"
+    }
+  ]
+}

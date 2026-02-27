@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "marketing-feature-code-block-3",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/anthropic",
+    "zod"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "component.tsx",
+      "type": "registry:component",
+      "target": "component.tsx",
+      "content": "export function FeatureCodeBlockDark() {\n  return (\n    <section className=\"py-24\">\n      <div className=\"mx-auto max-w-3xl px-6 text-center\">\n        <h2 className=\"text-2xl font-semibold tracking-tight\">\n          Agent Architecture\n        </h2>\n        <div className=\"mt-8 overflow-hidden rounded-xl bg-[#0a0a0a] text-left text-white\">\n          <div className=\"flex items-center justify-between border-b border-white/[0.06] px-4 py-2\">\n            <div className=\"flex items-center gap-2\">\n              <div className=\"flex gap-1.5\">\n                <div className=\"size-2.5 rounded-full bg-white/10\" />\n                <div className=\"size-2.5 rounded-full bg-white/10\" />\n                <div className=\"size-2.5 rounded-full bg-white/10\" />\n              </div>\n              <span className=\"ml-2 text-xs text-white/30\">agent.ts</span>\n            </div>\n          </div>\n          <pre className=\"p-4 text-xs leading-relaxed\">\n{`import { generateText, tool } from \"ai\"\nimport { anthropic } from \"@ai-sdk/anthropic\"\nimport { z } from \"zod\"\n\nconst result = await generateText({\n  model: anthropic(\"claude-sonnet-4-20250514\"),\n  maxSteps: 5,\n  tools: {\n    search: tool({\n      description: \"Search the web\",\n      parameters: z.object({ query: z.string() }),\n      execute: async ({ query }) => searchWeb(query),\n    }),\n  },\n  prompt: \"Research the latest AI trends\",\n})`}\n          </pre>\n        </div>\n      </div>\n    </section>\n  )\n}"
+    }
+  ]
+}

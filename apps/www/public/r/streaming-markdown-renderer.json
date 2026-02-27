@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "streaming-markdown-renderer",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "@ai-sdk/react"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "streaming-markdown.tsx",
+      "type": "registry:component",
+      "target": "streaming-markdown.tsx",
+      "content": "\"use client\"\n\nimport { useChat } from \"@ai-sdk/react\"\nimport ReactMarkdown from \"react-markdown\"\nimport remarkGfm from \"remark-gfm\"\nimport { Prism as SyntaxHighlighter } from \"react-syntax-highlighter\"\n\nexport function StreamingMarkdown() {\n  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat()\n\n  return (\n    <div className=\"mx-auto max-w-2xl space-y-6 p-6\">\n      {messages.map((m) => (\n        <div key={m.id} className={m.role === \"user\" ? \"text-right\" : \"\"}>\n          <div\n            className={\n              m.role === \"user\"\n                ? \"inline-block rounded-xl bg-foreground px-4 py-2 text-sm text-background\"\n                : \"prose prose-sm dark:prose-invert max-w-none\"\n            }\n          >\n            <ReactMarkdown\n              remarkPlugins={[remarkGfm]}\n              components={{\n                code({ node, inline, className, children, ...props }) {\n                  const match = /language-(\\w+)/.exec(className || \"\")\n                  return !inline && match ? (\n                    <SyntaxHighlighter language={match[1]} PreTag=\"div\" {...props}>\n                      {String(children).replace(/\\n$/, \"\")}\n                    </SyntaxHighlighter>\n                  ) : (\n                    <code className=\"rounded bg-muted px-1 py-0.5 font-mono text-sm\" {...props}>\n                      {children}\n                    </code>\n                  )\n                },\n              }}\n            >\n              {m.content}\n            </ReactMarkdown>\n          </div>\n        </div>\n      ))}\n\n      <form onSubmit={handleSubmit} className=\"flex gap-2\">\n        <input\n          value={input}\n          onChange={handleInputChange}\n          placeholder=\"Ask something…\"\n          className=\"flex-1 rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm outline-none\"\n        />\n        <button\n          type=\"submit\"\n          disabled={isLoading}\n          className=\"rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-40\"\n        >\n          Send\n        </button>\n      </form>\n    </div>\n  )\n}"
+    },
+    {
+      "path": "app/api/chat/route.ts",
+      "type": "registry:file",
+      "target": "app/api/chat/route.ts",
+      "content": "import { streamText } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nexport async function POST(req: Request) {\n  const { messages } = await req.json()\n\n  const result = streamText({\n    model: openai(\"gpt-4o\"),\n    system: \"You are a helpful assistant. Format responses with markdown — use headings, code blocks with language tags, bold/italic, and lists where appropriate.\",\n    messages,\n  })\n\n  return result.toDataStreamResponse()\n}"
+    }
+  ]
+}

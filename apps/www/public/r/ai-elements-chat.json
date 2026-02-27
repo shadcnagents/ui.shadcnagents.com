@@ -1,0 +1,33 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-elements-chat",
+  "type": "registry:block",
+  "description": "Full-screen streaming chat UI with GPT-4o using the Vercel AI SDK useChat hook.",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "@ai-sdk/react"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "app/page.tsx",
+      "type": "registry:page",
+      "target": "app/page.tsx",
+      "content": "\"use client\"\n\nimport { useChat } from \"@ai-sdk/react\"\nimport { useEffect, useRef } from \"react\"\n\nexport default function Chat() {\n  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat()\n  const bottomRef = useRef<HTMLDivElement>(null)\n\n  useEffect(() => {\n    bottomRef.current?.scrollIntoView({ behavior: \"smooth\" })\n  }, [messages])\n\n  return (\n    <div className=\"mx-auto flex h-screen max-w-2xl flex-col\">\n      {/* Header */}\n      <div className=\"shrink-0 border-b px-6 py-4\">\n        <h1 className=\"text-sm font-semibold\">Chat</h1>\n        <p className=\"text-xs text-muted-foreground\">Powered by GPT-4o</p>\n      </div>\n\n      {/* Messages */}\n      <div className=\"flex-1 overflow-y-auto px-6 py-4\">\n        {messages.length === 0 && (\n          <div className=\"flex h-full items-center justify-center\">\n            <p className=\"text-sm text-muted-foreground/50\">Start a conversation…</p>\n          </div>\n        )}\n        <div className=\"space-y-4\">\n          {messages.map((m) => (\n            <div\n              key={m.id}\n              className={`flex ${m.role === \"user\" ? \"justify-end\" : \"justify-start\"}`}\n            >\n              <div\n                className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${\n                  m.role === \"user\"\n                    ? \"rounded-br-sm bg-primary text-primary-foreground\"\n                    : \"rounded-bl-sm bg-muted text-foreground/85\"\n                }`}\n              >\n                {m.content}\n              </div>\n            </div>\n          ))}\n          {isLoading && (\n            <div className=\"flex justify-start\">\n              <div className=\"rounded-2xl rounded-bl-sm bg-muted px-4 py-3\">\n                <div className=\"flex gap-1\">\n                  {[0, 1, 2].map((i) => (\n                    <div\n                      key={i}\n                      className=\"size-1.5 animate-bounce rounded-full bg-muted-foreground/40\"\n                      style={{ animationDelay: `${i * 150}ms` }}\n                    />\n                  ))}\n                </div>\n              </div>\n            </div>\n          )}\n          <div ref={bottomRef} />\n        </div>\n      </div>\n\n      {/* Input */}\n      <div className=\"shrink-0 border-t px-6 py-4\">\n        {error && (\n          <p className=\"mb-2 text-xs text-destructive\">{error.message}</p>\n        )}\n        <form onSubmit={handleSubmit} className=\"flex gap-2\">\n          <input\n            value={input}\n            onChange={handleInputChange}\n            placeholder=\"Type a message…\"\n            disabled={isLoading}\n            className=\"flex-1 rounded-xl border border-input bg-transparent px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50\"\n          />\n          <button\n            type=\"submit\"\n            disabled={isLoading || !input.trim()}\n            className=\"inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50\"\n          >\n            Send\n          </button>\n        </form>\n      </div>\n    </div>\n  )\n}\n"
+    },
+    {
+      "path": "app/layout.tsx",
+      "type": "registry:page",
+      "target": "app/layout.tsx",
+      "content": "import type { Metadata } from \"next\"\nimport { Inter } from \"next/font/google\"\nimport type { ReactNode } from \"react\"\nimport { cn } from \"@/lib/utils\"\n\nconst inter = Inter({ subsets: [\"latin\"] })\n\nexport const metadata: Metadata = {\n  title: \"Chat — AI SDK Demo\",\n  description: \"Streaming chat interface powered by GPT-4o and the Vercel AI SDK.\",\n}\n\nexport default function RootLayout({ children }: { children: ReactNode }) {\n  return (\n    <html lang=\"en\" suppressHydrationWarning>\n      <body className={cn(\"min-h-svh bg-background font-sans antialiased\", inter.className)}>\n        {children}\n      </body>\n    </html>\n  )\n}\n"
+    },
+    {
+      "path": "app/api/chat/route.ts",
+      "type": "registry:file",
+      "target": "app/api/chat/route.ts",
+      "content": "import { streamText } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nexport async function POST(req: Request) {\n  try {\n    const { messages } = await req.json()\n\n    const result = streamText({\n      model: openai(\"gpt-4o\"),\n      system: \"You are a helpful assistant. Keep responses concise and friendly.\",\n      messages,\n    })\n\n    return result.toDataStreamResponse()\n  } catch (error) {\n    console.error(\"[chat]\", error)\n    return Response.json({ error: \"Failed to process chat\" }, { status: 500 })\n  }\n}\n"
+    }
+  ]
+}

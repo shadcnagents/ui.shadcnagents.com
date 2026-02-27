@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "cheerio-scraper",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "zod"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText, tool } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\nimport * as cheerio from \"cheerio\"\nimport { z } from \"zod\"\n\nexport default async function Page() {\n  const { text } = await generateText({\n    model: openai(\"gpt-4o\"),\n    prompt: \"Scrape example.com and tell me what it contains\",\n    tools: {\n      scrapeUrl: tool({\n        description: \"Scrape a URL and extract its text content\",\n        parameters: z.object({ url: z.string().url() }),\n        execute: async ({ url }) => {\n          const html = await fetch(url).then((r) => r.text())\n          const $ = cheerio.load(html)\n\n          // Remove scripts and styles\n          $(\"script, style, nav, footer\").remove()\n\n          const title = $(\"title\").text()\n          const body = $(\"body\").text().replace(/\\s+/g, \" \").trim()\n\n          return { title, body: body.slice(0, 2000) }\n        },\n      }),\n    },\n    maxSteps: 2,\n  })\n\n  return (\n    <div className=\"mx-auto max-w-xl p-8\">\n      <p className=\"text-sm\">{text}</p>\n    </div>\n  )\n}"
+    }
+  ]
+}

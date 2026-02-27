@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "marketing-feature-code-block-1",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "component.tsx",
+      "type": "registry:component",
+      "target": "component.tsx",
+      "content": "export function FeatureCodeBlock() {\n  return (\n    <section className=\"py-24\">\n      <div className=\"mx-auto max-w-3xl px-6 text-center\">\n        <h2 className=\"text-2xl font-semibold tracking-tight\">\n          Start Building in Minutes\n        </h2>\n        <p className=\"mt-3 text-muted-foreground\">\n          Simple, intuitive API that works with any language model\n        </p>\n        <div className=\"mt-8 overflow-hidden rounded-lg border text-left\">\n          <div className=\"border-b bg-muted/30 px-4 py-2\">\n            <span className=\"text-xs text-muted-foreground\">page.tsx</span>\n          </div>\n          <pre className=\"overflow-x-auto p-4 text-sm\">\n{`import { generateText } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nconst { text } = await generateText({\n  model: openai(\"gpt-4o\"),\n  prompt: \"Explain quantum computing\",\n})`}\n          </pre>\n        </div>\n      </div>\n    </section>\n  )\n}"
+    }
+  ]
+}

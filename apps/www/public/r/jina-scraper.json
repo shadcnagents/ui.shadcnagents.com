@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "jina-scraper",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "zod"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText, tool } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\nimport { z } from \"zod\"\n\nexport default async function Page() {\n  const { text } = await generateText({\n    model: openai(\"gpt-4o\"),\n    prompt: \"Extract the main content from https://example.com\",\n    tools: {\n      jinaReader: tool({\n        description: \"Use Jina AI Reader to extract content from a URL\",\n        parameters: z.object({ url: z.string().url() }),\n        execute: async ({ url }) => {\n          const response = await fetch(`https://r.jina.ai/${url}`, {\n            headers: {\n              Authorization: `Bearer ${process.env.JINA_API_KEY}`,\n              Accept: \"application/json\",\n            },\n          })\n          const data = await response.json()\n          return {\n            title: data.data?.title,\n            content: data.data?.content?.slice(0, 3000),\n          }\n        },\n      }),\n    },\n    maxSteps: 2,\n  })\n\n  return (\n    <div className=\"mx-auto max-w-xl p-8\">\n      <p className=\"text-sm\">{text}</p>\n    </div>\n  )\n}"
+    }
+  ]
+}

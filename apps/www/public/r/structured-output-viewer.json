@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "structured-output-viewer",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "zod"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "structured-output-viewer.tsx",
+      "type": "registry:component",
+      "target": "structured-output-viewer.tsx",
+      "content": "\"use client\"\n\nimport { useState } from \"react\"\nimport { cn } from \"@/lib/utils\"\n\ntype JSONValue = string | number | boolean | null | JSONValue[] | { [k: string]: JSONValue }\n\nfunction JSONNode({\n  label,\n  value,\n  depth = 0,\n}: {\n  label?: string\n  value: JSONValue\n  depth?: number\n}) {\n  const [open, setOpen] = useState(depth < 2)\n\n  const isObj = typeof value === \"object\" && value !== null && !Array.isArray(value)\n  const isArr = Array.isArray(value)\n\n  if (isObj) {\n    const entries = Object.entries(value as Record<string, JSONValue>)\n    return (\n      <div>\n        <button onClick={() => setOpen((o) => !o)} className=\"flex items-center gap-1 font-mono text-xs hover:text-foreground\">\n          <span className=\"text-muted-foreground/40\">{open ? \"▾\" : \"▸\"}</span>\n          {label && <><span className=\"text-sky-500\">{label}</span><span className=\"text-foreground/40\">:</span></>}\n          {!open && <span className=\"text-muted-foreground/40\">{\"{\"}{entries.length}{\"}\"}</span>}\n        </button>\n        {open && (\n          <div className=\"ml-4 border-l border-border/30 pl-3\">\n            {entries.map(([k, v]) => <JSONNode key={k} label={k} value={v} depth={depth + 1} />)}\n          </div>\n        )}\n      </div>\n    )\n  }\n\n  if (isArr) {\n    return (\n      <div>\n        <button onClick={() => setOpen((o) => !o)} className=\"flex items-center gap-1 font-mono text-xs hover:text-foreground\">\n          <span className=\"text-muted-foreground/40\">{open ? \"▾\" : \"▸\"}</span>\n          {label && <><span className=\"text-sky-500\">{label}</span><span className=\"text-foreground/40\">:</span></>}\n          {!open && <span className=\"text-muted-foreground/40\">[{(value as JSONValue[]).length}]</span>}\n        </button>\n        {open && (\n          <div className=\"ml-4 border-l border-border/30 pl-3\">\n            {(value as JSONValue[]).map((v, i) => <JSONNode key={i} label={String(i)} value={v} depth={depth + 1} />)}\n          </div>\n        )}\n      </div>\n    )\n  }\n\n  return (\n    <div className=\"flex gap-1 font-mono text-xs\">\n      {label && <><span className=\"text-sky-500\">{label}</span><span className=\"text-foreground/40\">:</span></>}\n      {typeof value === \"string\" && <span className=\"text-amber-500\">\"{value}\"</span>}\n      {typeof value === \"number\" && <span className=\"text-emerald-500\">{value}</span>}\n      {typeof value === \"boolean\" && <span className=\"text-violet-400\">{String(value)}</span>}\n      {value === null && <span className=\"text-muted-foreground\">null</span>}\n    </div>\n  )\n}\n\nexport function StructuredOutputViewer({ data }: { data: JSONValue }) {\n  return (\n    <div className=\"rounded-lg border border-border/40 bg-muted/20 p-4\">\n      <JSONNode value={data} />\n    </div>\n  )\n}"
+    },
+    {
+      "path": "app/api/extract/route.ts",
+      "type": "registry:file",
+      "target": "app/api/extract/route.ts",
+      "content": "import { generateObject } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\nimport { z } from \"zod\"\n\nconst schema = z.object({\n  title: z.string(),\n  salary: z.object({ min: z.number(), max: z.number(), currency: z.string() }),\n  skills: z.array(z.string()),\n  metadata: z.object({ source: z.string(), confidence: z.number() }),\n})\n\nexport async function POST(req: Request) {\n  const { text } = await req.json()\n\n  const { object } = await generateObject({\n    model: openai(\"gpt-4o\"),\n    schema,\n    prompt: `Extract structured job posting data from: ${text}`,\n  })\n\n  return Response.json(object)\n}"
+    }
+  ]
+}

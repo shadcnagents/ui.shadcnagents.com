@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-elements-queue",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "\"use client\"\n\nimport { useState, useEffect } from \"react\"\n\ninterface Task {\n  id: string\n  name: string\n  status: \"queued\" | \"running\" | \"done\" | \"failed\"\n}\n\nexport default function QueueDisplay() {\n  const [tasks, setTasks] = useState<Task[]>([\n    { id: \"1\", name: \"Fetch data\", status: \"done\" },\n    { id: \"2\", name: \"Process records\", status: \"running\" },\n    { id: \"3\", name: \"Generate report\", status: \"queued\" },\n    { id: \"4\", name: \"Send notifications\", status: \"queued\" },\n  ])\n\n  useEffect(() => {\n    const interval = setInterval(() => {\n      setTasks((prev) => {\n        const running = prev.findIndex((t) => t.status === \"running\")\n        if (running === -1) return prev\n        const next = [...prev]\n        next[running] = { ...next[running], status: \"done\" }\n        if (running + 1 < next.length) {\n          next[running + 1] = { ...next[running + 1], status: \"running\" }\n        }\n        return next\n      })\n    }, 2000)\n    return () => clearInterval(interval)\n  }, [])\n\n  return (\n    <div className=\"mx-auto max-w-md p-8\">\n      <h2 className=\"text-sm font-medium\">Task Queue</h2>\n      <div className=\"mt-4 space-y-2\">\n        {tasks.map((task) => (\n          <div key={task.id} className=\"flex items-center gap-3 rounded border p-3\">\n            <StatusDot status={task.status} />\n            <span className=\"text-sm\">{task.name}</span>\n            <span className=\"ml-auto text-xs text-muted-foreground\">\n              {task.status}\n            </span>\n          </div>\n        ))}\n      </div>\n    </div>\n  )\n}\n\nfunction StatusDot({ status }: { status: string }) {\n  const colors: Record<string, string> = {\n    done: \"bg-green-500\",\n    running: \"bg-blue-500 animate-pulse\",\n    queued: \"bg-muted-foreground/30\",\n    failed: \"bg-red-500\",\n  }\n  return <div className={`size-2 rounded-full ${colors[status]}`} />\n}"
+    }
+  ]
+}

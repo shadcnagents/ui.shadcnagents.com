@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-elements-reasoning-chat",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/react",
+    "@ai-sdk/anthropic"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "\"use client\"\n\nimport { useChat } from \"@ai-sdk/react\"\nimport { useState } from \"react\"\n\nexport default function ReasoningChat() {\n  const { messages, input, handleInputChange, handleSubmit } = useChat()\n\n  return (\n    <div className=\"mx-auto flex h-screen max-w-xl flex-col\">\n      <div className=\"flex-1 space-y-4 overflow-y-auto p-4\">\n        {messages.map((m) => (\n          <div key={m.id}>\n            {m.parts?.map((part, i) => {\n              if (part.type === \"reasoning\") {\n                return <ReasoningBlock key={i} content={part.reasoning} />\n              }\n              if (part.type === \"text\") {\n                return (\n                  <div key={i} className=\"rounded-lg bg-muted px-3 py-2 text-sm\">\n                    {part.text}\n                  </div>\n                )\n              }\n              return null\n            })}\n          </div>\n        ))}\n      </div>\n      <form onSubmit={handleSubmit} className=\"border-t p-4\">\n        <input\n          value={input}\n          onChange={handleInputChange}\n          placeholder=\"Ask something...\"\n          className=\"w-full rounded-md border px-3 py-2 text-sm\"\n        />\n      </form>\n    </div>\n  )\n}\n\nfunction ReasoningBlock({ content }: { content: string }) {\n  const [open, setOpen] = useState(false)\n  return (\n    <div className=\"mb-2\">\n      <button onClick={() => setOpen(!open)} className=\"text-xs text-muted-foreground\">\n        {open ? \"Hide\" : \"Show\"} reasoning\n      </button>\n      {open && (\n        <div className=\"mt-1 border-l-2 pl-3 text-xs text-muted-foreground\">\n          {content}\n        </div>\n      )}\n    </div>\n  )\n}"
+    },
+    {
+      "path": "api/chat/route.ts",
+      "type": "registry:file",
+      "target": "api/chat/route.ts",
+      "content": "import { streamText } from \"ai\"\nimport { anthropic } from \"@ai-sdk/anthropic\"\n\nexport async function POST(req: Request) {\n  const { messages } = await req.json()\n\n  const result = streamText({\n    model: anthropic(\"claude-sonnet-4-20250514\"),\n    messages,\n    providerOptions: {\n      anthropic: { thinking: { type: \"enabled\", budgetTokens: 5000 } },\n    },\n  })\n\n  return result.toDataStreamResponse()\n}"
+    }
+  ]
+}

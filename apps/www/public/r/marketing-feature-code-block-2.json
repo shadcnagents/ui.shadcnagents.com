@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "marketing-feature-code-block-2",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "@ai-sdk/react"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "component.tsx",
+      "type": "registry:component",
+      "target": "component.tsx",
+      "content": "export function FeatureCodeBlockSplit() {\n  return (\n    <section className=\"py-24\">\n      <div className=\"mx-auto max-w-4xl px-6\">\n        <h2 className=\"text-center text-2xl font-semibold tracking-tight\">\n          Server & Client, Unified\n        </h2>\n        <div className=\"mt-8 grid gap-4 md:grid-cols-2\">\n          <div className=\"overflow-hidden rounded-lg border\">\n            <div className=\"border-b bg-muted/30 px-4 py-2\">\n              <span className=\"text-xs text-muted-foreground\">actions.ts</span>\n            </div>\n            <pre className=\"p-4 text-xs\">\n{`\"use server\"\nimport { streamText } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\n\nexport async function chat(messages) {\n  const result = streamText({\n    model: openai(\"gpt-4o\"),\n    messages,\n  })\n  return result.toDataStreamResponse()\n}`}\n            </pre>\n          </div>\n          <div className=\"overflow-hidden rounded-lg border\">\n            <div className=\"border-b bg-muted/30 px-4 py-2\">\n              <span className=\"text-xs text-muted-foreground\">page.tsx</span>\n            </div>\n            <pre className=\"p-4 text-xs\">\n{`\"use client\"\nimport { useChat } from \"@ai-sdk/react\"\n\nexport default function Chat() {\n  const { messages, input,\n    handleSubmit } = useChat()\n  return (\n    <div>\n      {messages.map(m => (\n        <div key={m.id}>{m.content}</div>\n      ))}\n    </div>\n  )\n}`}\n            </pre>\n          </div>\n        </div>\n      </div>\n    </section>\n  )\n}"
+    }
+  ]
+}

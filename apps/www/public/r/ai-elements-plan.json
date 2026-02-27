@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-elements-plan",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "@ai-sdk/react"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "\"use client\"\n\nimport { useChat } from \"@ai-sdk/react\"\n\ninterface Step {\n  title: string\n  description: string\n  status: \"pending\" | \"running\" | \"done\"\n}\n\nexport default function PlanDisplay() {\n  const { messages, input, handleInputChange, handleSubmit } = useChat()\n\n  return (\n    <div className=\"mx-auto flex h-screen max-w-xl flex-col\">\n      <div className=\"flex-1 space-y-4 overflow-y-auto p-4\">\n        {messages.map((m) => (\n          <div key={m.id}>\n            {m.parts?.map((part, i) => {\n              if (part.type === \"tool-invocation\" && part.toolName === \"createPlan\") {\n                const steps: Step[] = part.result?.steps ?? []\n                return (\n                  <div key={i} className=\"space-y-1 rounded-md border p-3\">\n                    <p className=\"text-xs font-medium\">Execution Plan</p>\n                    {steps.map((step, j) => (\n                      <div key={j} className=\"flex items-center gap-2 py-1\">\n                        <StatusIcon status={step.status} />\n                        <span className=\"text-sm\">{step.title}</span>\n                      </div>\n                    ))}\n                  </div>\n                )\n              }\n              return null\n            })}\n          </div>\n        ))}\n      </div>\n      <form onSubmit={handleSubmit} className=\"border-t p-4\">\n        <input\n          value={input}\n          onChange={handleInputChange}\n          className=\"w-full rounded-md border px-3 py-2 text-sm\"\n        />\n      </form>\n    </div>\n  )\n}\n\nfunction StatusIcon({ status }: { status: string }) {\n  if (status === \"done\") return <span className=\"text-green-500\">✓</span>\n  if (status === \"running\") return <span className=\"animate-spin\">⟳</span>\n  return <span className=\"text-muted-foreground\">○</span>\n}"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "marketing-feature-grid-1",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "component.tsx",
+      "type": "registry:component",
+      "target": "component.tsx",
+      "content": "const features = [\n  {\n    title: \"Streaming\",\n    description: \"Real-time token streaming with backpressure handling\",\n  },\n  {\n    title: \"Tool Calling\",\n    description: \"Type-safe function invocation with automatic validation\",\n  },\n  {\n    title: \"Multi-modal\",\n    description: \"Text, image, audio, and video generation in one API\",\n  },\n  {\n    title: \"Provider Agnostic\",\n    description: \"Switch between OpenAI, Anthropic, Google with one line\",\n  },\n  {\n    title: \"Edge Ready\",\n    description: \"Deploy to Vercel Edge, Cloudflare Workers, or Deno\",\n  },\n  {\n    title: \"Type Safe\",\n    description: \"Full TypeScript support with inferred types\",\n  },\n]\n\nexport function FeatureGrid() {\n  return (\n    <section className=\"py-24\">\n      <div className=\"mx-auto max-w-4xl px-6\">\n        <h2 className=\"text-center text-2xl font-semibold tracking-tight\">\n          Everything You Need\n        </h2>\n        <p className=\"mt-3 text-center text-muted-foreground\">\n          Built for modern AI applications\n        </p>\n        <div className=\"mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3\">\n          {features.map((f) => (\n            <div key={f.title} className=\"rounded-lg border p-5\">\n              <h3 className=\"text-sm font-medium\">{f.title}</h3>\n              <p className=\"mt-1.5 text-xs text-muted-foreground\">\n                {f.description}\n              </p>\n            </div>\n          ))}\n        </div>\n      </div>\n    </section>\n  )\n}"
+    }
+  ]
+}

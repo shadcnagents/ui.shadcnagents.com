@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "token-counter",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "token-counter.tsx",
+      "type": "registry:component",
+      "target": "token-counter.tsx",
+      "content": "\"use client\"\n\nimport { useState } from \"react\"\nimport { cn } from \"@/lib/utils\"\n\nconst MODEL_LIMITS: Record<string, number> = {\n  \"claude-sonnet-4-5\": 200000,\n  \"gpt-4o\": 128000,\n  \"gemini-1.5-pro\": 1000000,\n}\n\n// Rough estimate: 1 token ≈ 4 chars for English\nfunction estimateTokens(text: string) {\n  return Math.round(text.length / 4)\n}\n\nexport function TokenCounter({\n  model = \"gpt-4o\",\n  value,\n  onChange,\n}: {\n  model?: string\n  value: string\n  onChange: (v: string) => void\n}) {\n  const limit = MODEL_LIMITS[model] ?? 128000\n  const tokens = estimateTokens(value)\n  const pct = Math.min((tokens / limit) * 100, 100)\n\n  const R = 18\n  const circ = 2 * Math.PI * R\n  const dash = (pct / 100) * circ\n\n  const color =\n    pct < 50 ? \"text-emerald-500 stroke-emerald-500\"\n    : pct < 80 ? \"text-amber-500 stroke-amber-500\"\n    : \"text-red-500 stroke-red-500\"\n\n  return (\n    <div className=\"space-y-2\">\n      <div className=\"flex items-center justify-between\">\n        <span className=\"text-xs text-muted-foreground\">Context window</span>\n        <div className=\"flex items-center gap-2\">\n          <svg width=\"32\" height=\"32\" className=\"-rotate-90\">\n            <circle cx=\"16\" cy=\"16\" r={R} className=\"stroke-border/40\" strokeWidth=\"3\" fill=\"none\" />\n            <circle\n              cx=\"16\" cy=\"16\" r={R}\n              className={color.split(\" \")[1]}\n              strokeWidth=\"3\" fill=\"none\"\n              strokeDasharray={`${dash} ${circ}`}\n              strokeLinecap=\"round\"\n              style={{ transition: \"stroke-dasharray 0.2s ease\" }}\n            />\n          </svg>\n          <span className={cn(\"font-mono text-xs\", color.split(\" \")[0])}>\n            {tokens.toLocaleString()} / {(limit / 1000).toFixed(0)}k\n          </span>\n        </div>\n      </div>\n\n      <textarea\n        value={value}\n        onChange={(e) => onChange(e.target.value)}\n        placeholder=\"Type your prompt…\"\n        className=\"h-32 w-full resize-none rounded-lg border border-border/40 bg-muted/20 p-3 text-sm outline-none placeholder:text-muted-foreground/30\"\n      />\n    </div>\n  )\n}"
+    }
+  ]
+}

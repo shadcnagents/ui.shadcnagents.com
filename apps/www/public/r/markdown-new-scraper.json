@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "markdown-new-scraper",
+  "type": "registry:block",
+  "description": "",
+  "dependencies": [
+    "ai",
+    "@ai-sdk/openai",
+    "zod"
+  ],
+  "devDependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "page.tsx",
+      "type": "registry:page",
+      "target": "page.tsx",
+      "content": "import { generateText, tool } from \"ai\"\nimport { openai } from \"@ai-sdk/openai\"\nimport { z } from \"zod\"\nimport TurndownService from \"turndown\"\n\nconst turndown = new TurndownService({\n  headingStyle: \"atx\",\n  codeBlockStyle: \"fenced\",\n})\n\nexport default async function Page() {\n  const { text } = await generateText({\n    model: openai(\"gpt-4o\"),\n    prompt: \"Convert https://example.com to markdown and summarize it\",\n    tools: {\n      urlToMarkdown: tool({\n        description: \"Convert a URL to markdown\",\n        parameters: z.object({ url: z.string().url() }),\n        execute: async ({ url }) => {\n          const html = await fetch(url).then((r) => r.text())\n          const markdown = turndown.turndown(html)\n          return { markdown: markdown.slice(0, 5000) }\n        },\n      }),\n    },\n    maxSteps: 2,\n  })\n\n  return (\n    <div className=\"mx-auto max-w-xl p-8\">\n      <p className=\"text-sm\">{text}</p>\n    </div>\n  )\n}"
+    }
+  ]
+}
