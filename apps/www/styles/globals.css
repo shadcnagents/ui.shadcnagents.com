@@ -6,8 +6,15 @@
 /* Dark variant like your working sample */
 @custom-variant dark (&:is(.dark *));
 
+/* Ticker marquee animation */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* --- Theme tokens (OKLCH) --- */
 :root {
+	--rail-w: clamp(12px, 3vw, 40px);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0 0);
 
@@ -223,6 +230,10 @@
 @theme inline {
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
+	--font-editorial: var(--font-playfair);
+	--font-display: var(--font-boldonse);
+	--font-heading: var(--font-pattaya);
+	--font-script: var(--font-oooh-baby);
 	--font-pixel-square: var(--font-geist-pixel-square);
 	--font-pixel-grid: var(--font-geist-pixel-grid);
 	--font-pixel-circle: var(--font-geist-pixel-circle);
@@ -486,6 +497,74 @@
 	}
 }
 
+/* ── Smooth page-chrome transitions (landing ↔ stacks) ── */
+.crosshatch-rail {
+	transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ticker-banner {
+	max-height: 60px;
+	transition:
+		max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+		opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+		border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-inset {
+	margin-left: var(--rail-w);
+	margin-right: var(--rail-w);
+	transition: margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.content-inset {
+	margin-left: var(--rail-w);
+	margin-right: var(--rail-w);
+	transition: margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.noise-overlay {
+	transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stacks workspace — animated hide */
+html[data-stacks] .crosshatch-rail {
+	opacity: 0 !important;
+	pointer-events: none !important;
+}
+html[data-stacks] .ticker-banner {
+	max-height: 0 !important;
+	opacity: 0 !important;
+	border-color: transparent !important;
+	overflow: hidden !important;
+}
+html[data-stacks] .nav-inset,
+html[data-stacks] .content-inset {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+html[data-stacks] .noise-overlay {
+	opacity: 0 !important;
+}
+
+/* Stacks workspace — local noise texture on chrome areas only.
+   The pseudo-element sits at z-0 behind sidebar/main (z-1).
+   The preview frame's solid bg-background covers it, keeping the
+   component render area clean while sidebar + toolbar stay textured. */
+.stacks-workspace::before,
+html[data-stacks] .nav-frame::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image: url("/page-background/light-bg-paper-texture.webp");
+	background-size: 200px 200px;
+	mix-blend-mode: multiply;
+	opacity: 0.07;
+}
+html:is(.dark) .stacks-workspace::before,
+html:is(.dark) .nav-frame::before {
+	background-image: url("/page-background/bg-paper-texture.webp");
+	mix-blend-mode: screen;
+	opacity: 0.05;
+}
+
 /* Container utility (keeps your v3 container behavior) */
 @utility container {
 	@apply mx-auto px-8;
@@ -704,6 +783,16 @@
 	}
 	html[data-stacks] footer {
 		display: none !important;
+	}
+
+	/* ── Shiki dual-theme ────────────────────────────────────────────────────
+	   Uses defaultColor:false so shiki sets --shiki-light and --shiki-dark
+	   as CSS variables per span (no inline color). CSS applies them.        */
+	.shiki-pre span {
+		color: var(--shiki-light);
+	}
+	.dark .shiki-pre span {
+		color: var(--shiki-dark) !important;
 	}
 
 	.scrollbar-hide {
