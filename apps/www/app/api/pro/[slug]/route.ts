@@ -1,13 +1,73 @@
+import { promises as fs } from "fs"
+import path from "path"
+
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 
-const PRIVATE_REPO = process.env.PRO_GITHUB_REPO ?? "shadcnagents/pro.shadcnagents.com"
+const DEV_PRO_PATH = process.env.DEV_PRO_PATH
+const PRIVATE_REPO =
+  process.env.PRO_GITHUB_REPO ?? "shadcnagents/pro.shadcnagents.com"
 const GITHUB_API = "https://api.github.com"
+
+/** Recursively read all files from a directory, returning relative paths. */
+async function readDirRecursive(
+  dir: string,
+  base: string = dir
+): Promise<{ name: string; code: string }[]> {
+  const entries = await fs.readdir(dir, { withFileTypes: true })
+  const results: { name: string; code: string }[] = []
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      results.push(...(await readDirRecursive(fullPath, base)))
+    } else if (entry.isFile()) {
+      const code = await fs.readFile(fullPath, "utf-8")
+      results.push({ name: path.relative(base, fullPath), code })
+    }
+  }
+
+  return results
+}
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params
+
+  // Validate slug — prevent path traversal
+  if (!/^[a-z0-9-]+$/.test(slug)) {
+    return Response.json({ error: "Invalid slug" }, { status: 400 })
+  }
+
+  // ── Dev mode: read from local filesystem ──
+  if (DEV_PRO_PATH) {
+    const stackDir = path.join(DEV_PRO_PATH, "stacks", slug)
+
+    try {
+      const stat = await fs.stat(stackDir)
+      if (!stat.isDirectory()) {
+        return Response.json({ error: "Stack not found" }, { status: 404 })
+      }
+    } catch {
+      return Response.json({ error: "Stack not found" }, { status: 404 })
+    }
+
+    try {
+      const files = await readDirRecursive(stackDir)
+      return Response.json({ files })
+    } catch (error) {
+      console.error("[pro/source] Error reading local files:", error)
+      return Response.json(
+        { error: "Failed to read source" },
+        { status: 500 }
+      )
+    }
+  }
+
+  // ── Production: auth + GitHub API ──
+
   // 1. Auth check
   const session = await auth()
   if (!session?.user?.id) {
@@ -21,17 +81,14 @@ export async function GET(
   })
 
   if (!user?.isPro) {
-    return Response.json({ error: "Pro subscription required" }, { status: 403 })
-  }
-
-  // 3. Validate slug — prevent path traversal attacks
-  const { slug } = await params
-  if (!/^[a-z0-9-]+$/.test(slug)) {
-    return Response.json({ error: "Invalid slug" }, { status: 400 })
+    return Response.json(
+      { error: "Pro subscription required" },
+      { status: 403 }
+    )
   }
 
   try {
-    // 4. List files in the private GitHub repo for this stack
+    // 3. List files in the private GitHub repo for this stack
     const listRes = await fetch(
       `${GITHUB_API}/repos/${PRIVATE_REPO}/contents/stacks/${slug}`,
       {
@@ -39,7 +96,7 @@ export async function GET(
           Authorization: `Bearer ${process.env.GITHUB_PRIVATE_TOKEN}`,
           Accept: "application/vnd.github.v3+json",
         },
-        next: { revalidate: 3600 }, // Cache for 1 hour
+        next: { revalidate: 3600 },
       }
     )
 
@@ -49,7 +106,7 @@ export async function GET(
 
     const files = await listRes.json()
 
-    // 5. Fetch each file's content in parallel (decode from base64)
+    // 4. Fetch each file's content in parallel (decode from base64)
     const filesWithContent = await Promise.all(
       (Array.isArray(files) ? files : [])
         .filter((f: { type: string }) => f.type === "file")
@@ -71,6 +128,9 @@ export async function GET(
     return Response.json({ files: filesWithContent })
   } catch (error) {
     console.error("[pro/source] Error fetching from GitHub:", error)
-    return Response.json({ error: "Failed to fetch source" }, { status: 500 })
+    return Response.json(
+      { error: "Failed to fetch source" },
+      { status: 500 }
+    )
   }
 }

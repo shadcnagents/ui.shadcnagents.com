@@ -16,6 +16,7 @@
 		"registry:build": "tsx --tsconfig ./tsconfig.scripts.json ./scripts/build-registry.mts && prettier --log-level silent --write \"registry/**/*.{ts,tsx,json,mdx}\" --cache",
 		"registry:build:stacks": "tsx --tsconfig ./tsconfig.scripts.json ./scripts/build-stacks-registry.mts",
 		"migrate:stacks": "tsx --tsconfig ./tsconfig.scripts.json ./scripts/migrate-stacks.mts",
+		"new-pro-stack": "tsx --tsconfig ./tsconfig.scripts.json ./scripts/new-pro-stack.mts",
 		"registry:capture": "tsx --tsconfig ./tsconfig.scripts.json ./scripts/capture-registry.mts",
 		"validate:registries": "tsx --tsconfig ./tsconfig.scripts.json ./scripts/validate-registries.mts",
 		"postinstall": "fumadocs-mdx"

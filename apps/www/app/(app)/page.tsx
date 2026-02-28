@@ -278,8 +278,13 @@ export default function IndexPage() {
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             What you can build
           </p>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            8 categories. {siteConfig.counts.stacks}+ stacks. Every AI pattern you need.
+          <h2 className="text-2xl tracking-tight md:text-3xl">
+            <span className="block font-heading text-[1.1em]">
+              Every AI Pattern You Need.
+            </span>
+            <span className="block font-mono font-medium tracking-[-0.07em]">
+              8 categories. {siteConfig.counts.stacks}+ stacks.
+            </span>
           </h2>
         </div>
 
@@ -316,8 +321,13 @@ export default function IndexPage() {
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             Why shadcnagents
           </p>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Not another pattern library.
+          <h2 className="text-2xl tracking-tight md:text-3xl">
+            <span className="block font-heading text-[1.1em]">
+              Not Another Pattern Library.
+            </span>
+            <span className="block font-mono font-medium tracking-[-0.07em]">
+              Full-stack stacks you actually ship.
+            </span>
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
             Most AI component libraries give you code blocks to copy. We give
@@ -404,8 +414,13 @@ export default function IndexPage() {
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             Pricing
           </p>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Start free. Go pro when you&apos;re ready.
+          <h2 className="text-2xl tracking-tight md:text-3xl">
+            <span className="block font-heading text-[1.1em]">
+              Start Free.
+            </span>
+            <span className="block font-mono font-medium tracking-[-0.07em]">
+              Go pro when you&apos;re ready.
+            </span>
           </h2>
         </div>
 
@@ -471,8 +486,13 @@ export default function IndexPage() {
 
       {/* ═══════════════ FAQ ═══════════════ */}
       <section className="mx-auto max-w-3xl px-4 py-12 md:py-20">
-        <h2 className="mb-10 text-center text-2xl font-bold tracking-tight md:text-3xl">
-          Frequently Asked Questions
+        <h2 className="mb-10 text-center text-2xl tracking-tight md:text-3xl">
+          <span className="block font-heading text-[1.1em]">
+            Questions?
+          </span>
+          <span className="block font-mono font-medium tracking-[-0.07em]">
+            We&apos;ve got answers.
+          </span>
         </h2>
 
         <div className="divide-y divide-border border border-border">
@@ -506,8 +526,13 @@ export default function IndexPage() {
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             Ready to build?
           </p>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Stop building AI interfaces from scratch.
+          <h2 className="text-2xl tracking-tight md:text-3xl">
+            <span className="block font-heading text-[1.1em]">
+              Stop Building From Scratch.
+            </span>
+            <span className="block font-mono font-medium tracking-[-0.07em]">
+              One CLI command away.
+            </span>
           </h2>
           <p className="mx-auto max-w-xl text-muted-foreground">
             {siteConfig.counts.stacks}+ production-ready stacks for chat, agents, tool calling,

@@ -1,10 +1,12 @@
 export type StackTier = "free" | "pro"
+export type ComponentStyle = "default" | "outlined" | "elevated"
 
 export interface StackItem {
   text: string
   description: string
   link: string
   tier: StackTier
+  style?: ComponentStyle
 }
 
 export interface StackSubCategory {
@@ -36,6 +38,18 @@ export const stacksConfig: StackCategory[] = [
             text: "Generate Text",
             description: "Basic text generation with AI models",
             link: "/stacks/basics-generate-text",
+            tier: "free",
+          },
+          {
+            text: "Multi-Model",
+            description: "Compare responses across GPT-4o, Claude, and Gemini",
+            link: "/stacks/basics-generate-text-multi-model",
+            tier: "free",
+          },
+          {
+            text: "Prompt Engineering",
+            description: "System prompts and temperature control",
+            link: "/stacks/basics-generate-text-prompt",
             tier: "free",
           },
         ],
@@ -332,7 +346,7 @@ export const stacksConfig: StackCategory[] = [
         text: "Structured Output",
         description: "Collapsible JSON tree viewer for generateObject responses",
         link: "/stacks/structured-output-viewer",
-        tier: "free",
+        tier: "pro",
       },
       {
         text: "Web Preview",
@@ -394,7 +408,7 @@ export const stacksConfig: StackCategory[] = [
             text: "Markdown Scraper",
             description: "URL to markdown conversion",
             link: "/stacks/markdown-new-scraper",
-            tier: "free",
+            tier: "pro",
           },
         ],
       },
@@ -561,7 +575,7 @@ export const stacksConfig: StackCategory[] = [
             text: "Voice Input Button",
             description: "Mic button with recording states and waveform",
             link: "/stacks/voice-input-button",
-            tier: "free",
+            tier: "pro",
           },
           {
             text: "Model Selector",
@@ -573,7 +587,7 @@ export const stacksConfig: StackCategory[] = [
             text: "Token Counter",
             description: "Context window meter with circular progress ring",
             link: "/stacks/token-counter",
-            tier: "free",
+            tier: "pro",
           },
         ],
       },
@@ -619,7 +633,7 @@ export const stacksConfig: StackCategory[] = [
             text: "Token Stream Effect",
             description: "Smooth token-by-token text animation for LLM output",
             link: "/stacks/ai-token-stream",
-            tier: "free",
+            tier: "pro",
           },
         ],
       },
@@ -654,7 +668,7 @@ export const stacksConfig: StackCategory[] = [
             text: "Feature Grid",
             description: "Grid feature layout",
             link: "/stacks/marketing-feature-grid-1",
-            tier: "free",
+            tier: "pro",
           },
         ],
       },
