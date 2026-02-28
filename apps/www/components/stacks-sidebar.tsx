@@ -85,24 +85,31 @@ function SubCategorySection({
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="group flex w-full items-center gap-1.5 rounded-md px-2 py-[7px] text-[15px] font-medium text-foreground/90 transition-colors hover:text-foreground"
+        className="group flex w-full items-center gap-1.5 rounded-md py-[7px] pl-3.5 pr-2 text-left font-mono text-[15px] font-medium text-foreground/70 transition-colors hover:text-foreground"
       >
+        <span className="min-w-0 flex-1 truncate">{sub.text}</span>
         <ChevronDown
           className={cn(
-            "size-3.5 shrink-0 text-foreground/40 transition-transform duration-150",
+            "ml-auto size-3.5 shrink-0 text-foreground/40 transition-transform duration-150",
             !isOpen && "-rotate-90"
           )}
         />
-        <span>{sub.text}</span>
       </button>
 
-      {isOpen && (
-        <div className="ml-[15px] border-l border-border/50 pl-2">
-          {sub.children.map((child) => (
-            <ItemLink key={child.link} item={child} pathname={pathname} />
-          ))}
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows] duration-200 ease-out",
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="ml-5 border-l border-foreground/[0.08] pl-2">
+            {sub.children.map((child) => (
+              <ItemLink key={child.link} item={child} pathname={pathname} nested />
+            ))}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -110,9 +117,11 @@ function SubCategorySection({
 function ItemLink({
   item,
   pathname,
+  nested,
 }: {
   item: StackItem
   pathname: string
+  nested?: boolean
 }) {
   const isActive = pathname === item.link
 
@@ -121,16 +130,13 @@ function ItemLink({
       href={item.link}
       scroll={false}
       className={cn(
-        "group flex w-full items-center gap-2 rounded-md px-2 py-[7px] text-[15px] transition-colors",
+        "group flex w-full items-center gap-2 rounded-md pr-2 font-mono transition-colors",
+        nested ? "py-[5px] pl-3 text-[13.5px]" : "py-[7px] pl-3.5 text-[15px]",
         isActive
-          ? "text-foreground font-medium"
-          : "text-foreground/80 hover:text-foreground"
+          ? "bg-foreground/[0.06] text-foreground font-medium"
+          : "text-foreground/60 hover:bg-foreground/[0.03] hover:text-foreground"
       )}
     >
-      {/* Left accent bar for active state only */}
-      {isActive && (
-        <span className="h-4 w-[3px] shrink-0 rounded-full bg-primary" />
-      )}
       <span className="truncate">{item.text}</span>
       {item.tier === "pro" && (
         <Lock className="ml-auto size-3 shrink-0 text-primary/40" />
