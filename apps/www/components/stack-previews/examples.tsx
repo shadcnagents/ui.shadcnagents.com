@@ -11,18 +11,18 @@ export function ButtonInputGroupPreview() {
     <div className="mx-auto w-full max-w-lg space-y-8 p-8">
       {/* Button Group */}
       <div className="space-y-3">
-        <span className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground">
+        <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Button Group
         </span>
         <div className="flex">
           {["Day", "Week", "Month", "Year"].map((label, i, arr) => (
             <button
               key={label}
-              className={`h-8 border border-border/60 px-4 text-xs font-medium transition-colors first:rounded-l-md last:rounded-r-md ${
+              className={`h-8 border border-border px-4 text-sm font-medium transition-colors first:rounded-l-md last:rounded-r-md ${
                 i > 0 ? "-ml-px" : ""
               } ${
                 label === "Week"
-                  ? "z-10 bg-foreground text-background"
+                  ? "z-10 bg-primary text-primary-foreground"
                   : "bg-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -34,15 +34,15 @@ export function ButtonInputGroupPreview() {
 
       {/* Segmented Control */}
       <div className="space-y-3">
-        <span className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground">
+        <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Segmented Control
         </span>
-        <div className="inline-flex rounded-md bg-muted/50 p-0.5">
+        <div className="inline-flex rounded-md bg-card p-0.5">
           {["sm", "md", "lg", "xl"].map((size) => (
             <button
               key={size}
               onClick={() => setSelectedSize(size)}
-              className={`rounded-[5px] px-4 py-1.5 text-xs font-medium transition-colors ${
+              className={`rounded-[5px] px-4 py-1.5 text-sm font-medium transition-colors ${
                 selectedSize === size
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -56,20 +56,20 @@ export function ButtonInputGroupPreview() {
 
       {/* Input Group */}
       <div className="space-y-3">
-        <span className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground">
+        <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Input Group
         </span>
         <div className="flex">
-          <span className="flex h-9 items-center rounded-l-md border border-r-0 border-border/60 bg-muted/50 px-3 text-xs text-muted-foreground">
+          <span className="flex h-9 items-center rounded-l-md border border-r-0 border-border bg-card px-3 text-sm text-muted-foreground">
             https://
           </span>
           <input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="example.com"
-            className="h-9 flex-1 border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/40"
+            className="h-9 flex-1 border border-border bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/60"
           />
-          <button className="h-9 rounded-r-md border border-l-0 border-border/60 bg-foreground px-4 text-xs font-medium text-background">
+          <button className="h-9 rounded-r-md border border-l-0 border-border bg-foreground px-4 text-sm font-medium text-background">
             Go
           </button>
         </div>
@@ -77,7 +77,7 @@ export function ButtonInputGroupPreview() {
 
       {/* Input with Icon */}
       <div className="space-y-3">
-        <span className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground">
+        <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Search Input
         </span>
         <div className="relative">
@@ -95,9 +95,9 @@ export function ButtonInputGroupPreview() {
           </svg>
           <input
             placeholder="Search patterns..."
-            className="h-9 w-full rounded-md border border-border/60 bg-transparent pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/40"
+            className="h-9 w-full rounded-md border border-border bg-transparent pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/60"
           />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-border/60 bg-muted/50 px-1.5 py-0.5 text-[13px] text-muted-foreground">
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-border bg-card px-1.5 py-0.5 text-sm text-muted-foreground">
             /
           </kbd>
         </div>

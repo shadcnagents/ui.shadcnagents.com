@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+import { SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ─── Table Editor ─── */
 export function TableEditorPreview() {
@@ -25,22 +27,27 @@ export function TableEditorPreview() {
   return (
     <div className="mx-auto w-full max-w-2xl p-6">
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-xs font-medium text-foreground">
+        <span className="text-sm font-semibold text-foreground">
           AI Model Comparison
         </span>
-        <span className="text-[13px] text-muted-foreground">
-          Click cells to edit
+        <span className="font-mono text-xs text-muted-foreground">
+          Click to edit
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-border/60">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...SPRING }}
+        className="overflow-hidden rounded-xl border border-border"
+      >
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border/60 bg-muted/50">
+            <tr className="border-b border-border bg-card">
               {columns.map((col) => (
                 <th
                   key={col}
-                  className="px-4 py-2 text-left text-[13px] font-medium uppercase tracking-wider text-muted-foreground"
+                  className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground"
                 >
                   {col}
                 </th>
@@ -51,7 +58,7 @@ export function TableEditorPreview() {
             {data.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-border/60 last:border-0"
+                className="border-b border-border last:border-0 transition-all duration-150 hover:bg-card/50"
               >
                 {columns.map((col) => (
                   <td key={col} className="px-4 py-2">
@@ -69,12 +76,16 @@ export function TableEditorPreview() {
                             setEditing(null)
                           }
                         }}
-                        className="h-6 w-full rounded border border-foreground/40 bg-transparent px-1 text-xs outline-none"
+                        className="h-7 w-full rounded-md border border-primary bg-transparent px-1.5 text-sm outline-none"
                       />
                     ) : (
                       <button
                         onClick={() => setEditing({ row: row.id, col })}
-                        className="w-full text-left text-xs text-foreground hover:underline"
+                        className={`w-full text-left text-sm transition-all duration-150 hover:text-primary ${
+                          col === "latency" || col === "cost"
+                            ? "font-mono tabular-nums text-foreground"
+                            : "text-foreground"
+                        }`}
                       >
                         {row[col]}
                       </button>
@@ -85,7 +96,7 @@ export function TableEditorPreview() {
             ))}
           </tbody>
         </table>
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -108,19 +119,19 @@ export function ChartGenerationPreview() {
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <span className="text-xs font-medium text-foreground">
+      <div className="mb-5 flex items-center justify-between">
+        <span className="text-sm font-semibold text-foreground">
           API Usage Over Time
         </span>
-        <div className="flex gap-1">
+        <div className="flex gap-0.5 rounded-lg border border-border p-0.5">
           {(["bar", "line"] as const).map((type) => (
             <button
               key={type}
               onClick={() => setChartType(type)}
-              className={`rounded-md px-2 py-1 text-[13px] font-medium transition-colors ${
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-all duration-150 ${
                 chartType === type
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:text-muted-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -130,22 +141,30 @@ export function ChartGenerationPreview() {
       </div>
 
       {/* Chart */}
-      <div className="relative h-48">
+      <motion.div
+        key={chartType}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
+        className="relative h-48"
+      >
         {chartType === "bar" ? (
           <div className="flex h-full items-end gap-3">
-            {data.map((d) => (
+            {data.map((d, i) => (
               <div
                 key={d.label}
                 className="flex flex-1 flex-col items-center gap-1"
               >
-                <span className="text-[13px] tabular-nums text-muted-foreground">
+                <span className="font-mono text-xs tabular-nums text-muted-foreground">
                   {d.value}k
                 </span>
-                <div
-                  className="w-full rounded-t bg-foreground transition-all duration-500"
-                  style={{ height: `${(d.value / max) * 100}%` }}
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: `${(d.value / max) * 100}%` }}
+                  transition={{ ...SPRING, delay: i * 0.05 }}
+                  className="w-full rounded-t bg-primary"
                 />
-                <span className="text-[13px] text-muted-foreground">
+                <span className="font-mono text-xs text-muted-foreground">
                   {d.label}
                 </span>
               </div>
@@ -162,9 +181,19 @@ export function ChartGenerationPreview() {
                 x2="280"
                 y2={i * 40}
                 stroke="currentColor"
-                strokeOpacity="0.06"
+                strokeOpacity="0.12"
               />
             ))}
+            {/* Area fill */}
+            <path
+              d={`M10,${160 - (data[0].value / max) * 140} ${data
+                .map(
+                  (d, i) =>
+                    `L${(i / (data.length - 1)) * 260 + 10},${160 - (d.value / max) * 140}`
+                )
+                .join(" ")} L270,160 L10,160 Z`}
+              className="fill-primary/10"
+            />
             {/* Line */}
             <polyline
               points={data
@@ -173,9 +202,8 @@ export function ChartGenerationPreview() {
                     `${(i / (data.length - 1)) * 260 + 10},${160 - (d.value / max) * 140}`
                 )
                 .join(" ")}
-              stroke="currentColor"
+              className="stroke-primary"
               strokeWidth="1.5"
-              strokeOpacity="0.7"
               fill="none"
             />
             {/* Dots */}
@@ -185,13 +213,12 @@ export function ChartGenerationPreview() {
                 cx={(i / (data.length - 1)) * 260 + 10}
                 cy={160 - (d.value / max) * 140}
                 r="3"
-                fill="currentColor"
-                fillOpacity="0.8"
+                className="fill-primary"
               />
             ))}
           </svg>
         )}
-      </div>
+      </motion.div>
     </div>
   )
 }
