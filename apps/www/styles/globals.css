@@ -189,32 +189,32 @@ html {
 }
 
 .dark {
-	--background: oklch(0.145 0 0);
+	--background: oklch(0.106 0 0);
 	--foreground: oklch(0.985 0 0);
 
-	--card: oklch(0.205 0 0);
+	--card: oklch(0.15 0 0);
 	--card-foreground: oklch(0.985 0 0);
 
-	--popover: oklch(0.205 0 0);
+	--popover: oklch(0.15 0 0);
 	--popover-foreground: oklch(0.985 0 0);
 
 	--primary: oklch(0.656 0.201 257.3);
 	--primary-foreground: oklch(1 0 0);
 
-	--secondary: oklch(0.269 0 0);
+	--secondary: oklch(0.20 0 0);
 	--secondary-foreground: oklch(0.985 0 0);
 
-	--muted: oklch(0.269 0 0);
+	--muted: oklch(0.20 0 0);
 	--muted-foreground: oklch(0.708 0 0);
 
-	--accent: oklch(0.269 0 0);
+	--accent: oklch(0.20 0 0);
 	--accent-foreground: oklch(0.985 0 0);
 
 	--destructive: oklch(0.704 0.191 22.216);
 	--destructive-foreground: oklch(0.637 0.237 25.331);
 
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
+	--border: oklch(1 0 0 / 8%);
+	--input: oklch(1 0 0 / 12%);
 	--ring: oklch(0.656 0.201 257.3);
 
 	--chart-1: oklch(0.488 0.243 264.376);
@@ -223,15 +223,15 @@ html {
 	--chart-4: oklch(0.627 0.265 303.9);
 	--chart-5: oklch(0.645 0.246 16.439);
 
-	--chrome: oklch(0.185 0 0);
+	--chrome: oklch(0.12 0 0);
 
-	--sidebar: oklch(0.205 0 0);
+	--sidebar: oklch(0.12 0 0);
 	--sidebar-foreground: oklch(0.985 0 0);
 	--sidebar-primary: oklch(0.656 0.201 257.3);
 	--sidebar-primary-foreground: oklch(1 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
+	--sidebar-accent: oklch(0.20 0 0);
 	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
+	--sidebar-border: oklch(1 0 0 / 8%);
 	--sidebar-ring: oklch(0.556 0 0);
 
 	/* Code blocks */
@@ -247,7 +247,7 @@ html {
 	--font-mono: var(--font-geist-mono);
 	--font-editorial: var(--font-playfair);
 	--font-display: var(--font-boldonse);
-	--font-heading: var(--font-pattaya);
+	--font-heading: var(--font-playfair);
 	--font-script: var(--font-oooh-baby);
 	--font-pixel-square: var(--font-geist-pixel-square);
 	--font-pixel-grid: var(--font-geist-pixel-grid);
@@ -257,6 +257,10 @@ html {
 
 	/* App shell chrome color — use bg-chrome / bg-chrome/90 in components */
 	--color-chrome: var(--chrome);
+
+	/* Base colors — required for bg-white / bg-black utilities in Tailwind v4 */
+	--color-white: #fff;
+	--color-black: #000;
 
 	/* Map tokens directly (OKLCH-ready) */
 	--color-background: var(--background);
@@ -518,23 +522,11 @@ html {
 	}
 }
 
-/* Stacks workspace — noise texture on chrome areas */
-.stacks-workspace::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background-image: url("/page-background/light-bg-paper-texture.webp");
-	background-size: 200px 200px;
-	mix-blend-mode: multiply;
-	opacity: 0.07;
+/* Stacks workspace — clean muted background, no texture */
+[data-stacks] .noise-overlay {
+	display: none;
 }
-html:is(.dark) .stacks-workspace::before {
-	background-image: url("/page-background/bg-paper-texture.webp");
-	mix-blend-mode: screen;
-	opacity: 0.05;
-}
+
 
 /* Container utility (keeps your v3 container behavior) */
 @utility container {
@@ -999,4 +991,218 @@ html:is(.dark) .stacks-workspace::before {
 	to {
 		clip-path: polygon(171% 50%, 50% 171%, -50% 71%, 50% -71%);
 	}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Component Style Themes
+   Three distinct visual systems: Default (no overrides), Outlined, Elevated
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── OUTLINED ───────────────────────────────────────────────────────
+   Wireframe • Blueprint • Developer Aesthetic
+   Transparent surfaces, dashed borders, flat, sharp corners,
+   dot-grid backdrop. Like viewing a technical schematic.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Dot-grid background pattern across the entire preview area */
+[data-component-style="outlined"] {
+	background-image: radial-gradient(
+		circle,
+		oklch(from var(--foreground) l c h / 0.08) 1px,
+		transparent 1px
+	);
+	background-size: 20px 20px;
+	letter-spacing: 0.01em;
+}
+
+/* ── Kill ALL shadows — completely flat ── */
+[data-component-style="outlined"] .shadow-sm,
+[data-component-style="outlined"] .shadow-md,
+[data-component-style="outlined"] .shadow-lg {
+	box-shadow: none;
+}
+[data-component-style="outlined"] .focus-within\:shadow-md:focus-within {
+	box-shadow: none;
+}
+
+/* ── All borders → dashed + stronger opacity ── */
+[data-component-style="outlined"] .border-foreground\/15,
+[data-component-style="outlined"] .border-foreground\/20 {
+	border-style: dashed;
+	border-color: oklch(from var(--foreground) l c h / 0.35);
+}
+[data-component-style="outlined"] .border-foreground\/30,
+[data-component-style="outlined"] .border-foreground\/40,
+[data-component-style="outlined"] .border-foreground\/50,
+[data-component-style="outlined"] .border-foreground\/60 {
+	border-style: dashed;
+	border-color: oklch(from var(--foreground) l c h / 0.45);
+}
+[data-component-style="outlined"] .border-border {
+	border-style: dashed;
+	border-color: oklch(from var(--foreground) l c h / 0.25);
+}
+[data-component-style="outlined"] .border-border\/40,
+[data-component-style="outlined"] .border-border\/60 {
+	border-style: dashed;
+	border-color: oklch(from var(--foreground) l c h / 0.20);
+}
+[data-component-style="outlined"] .focus-within\:border-foreground\/30:focus-within {
+	border-style: dashed;
+	border-color: oklch(from var(--foreground) l c h / 0.50);
+}
+
+/* ── Sharpen ALL border radii — technical/precise ── */
+[data-component-style="outlined"] .rounded-2xl {
+	border-radius: 6px;
+}
+[data-component-style="outlined"] .rounded-xl {
+	border-radius: 4px;
+}
+[data-component-style="outlined"] .rounded-lg {
+	border-radius: 3px;
+}
+[data-component-style="outlined"] .rounded-md {
+	border-radius: 2px;
+}
+/* Pill containers (with borders) → sharp rectangles */
+[data-component-style="outlined"] .rounded-full[class*="border"] {
+	border-radius: 6px;
+}
+
+/* ── Strip ALL muted/subtle backgrounds → transparent wireframe ── */
+[data-component-style="outlined"] .bg-muted,
+[data-component-style="outlined"] .bg-muted\/30,
+[data-component-style="outlined"] .bg-muted\/40,
+[data-component-style="outlined"] .bg-muted\/50,
+[data-component-style="outlined"] .bg-muted\/60,
+[data-component-style="outlined"] .bg-muted\/70 {
+	background-color: transparent;
+}
+[data-component-style="outlined"] .bg-foreground\/10,
+[data-component-style="outlined"] .bg-foreground\/15,
+[data-component-style="outlined"] .bg-foreground\/20 {
+	background-color: transparent;
+}
+[data-component-style="outlined"] [class*="bg-foreground\\/\\["] {
+	background-color: transparent;
+}
+
+/* ── Primary buttons → outlined ghost with inset border ── */
+[data-component-style="outlined"] .bg-primary {
+	background-color: transparent;
+	box-shadow: inset 0 0 0 1.5px oklch(from var(--primary) l c h / 0.6);
+}
+[data-component-style="outlined"] .bg-primary.text-primary-foreground {
+	color: var(--primary);
+	background-color: transparent;
+	box-shadow: inset 0 0 0 1.5px oklch(from var(--primary) l c h / 0.6);
+}
+
+/* ── Lighter font weights for wireframe feel ── */
+[data-component-style="outlined"] .font-semibold {
+	font-weight: 500;
+}
+[data-component-style="outlined"] .font-bold {
+	font-weight: 600;
+}
+
+
+/* ── ELEVATED ───────────────────────────────────────────────────────
+   Glass • Depth • Material Design • Premium App Aesthetic
+   Rich multi-layer shadows, glass fills, pill-like radii,
+   near-invisible borders, confident depth like macOS / Linear.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Subtle ambient primary glow at top of preview */
+[data-component-style="elevated"] {
+	background: radial-gradient(
+		ellipse at 50% 0%,
+		oklch(from var(--primary) l c h / 0.04) 0%,
+		transparent 50%
+	);
+}
+
+/* ── Multi-layer deep shadows — rich depth ── */
+[data-component-style="elevated"] .shadow-sm {
+	box-shadow:
+		0 1px 2px oklch(0 0 0 / 0.04),
+		0 4px 8px -2px oklch(0 0 0 / 0.06),
+		0 12px 24px -4px oklch(0 0 0 / 0.08);
+}
+[data-component-style="elevated"] .shadow-md {
+	box-shadow:
+		0 2px 4px oklch(0 0 0 / 0.04),
+		0 8px 16px -4px oklch(0 0 0 / 0.08),
+		0 24px 48px -8px oklch(0 0 0 / 0.10);
+}
+[data-component-style="elevated"] .focus-within\:shadow-md:focus-within {
+	box-shadow:
+		0 2px 4px oklch(0 0 0 / 0.04),
+		0 8px 16px -4px oklch(0 0 0 / 0.08),
+		0 24px 48px -8px oklch(0 0 0 / 0.10);
+}
+
+/* ── Increase radii → pill-like, softer ── */
+[data-component-style="elevated"] .rounded-2xl {
+	border-radius: 1.5rem;
+}
+[data-component-style="elevated"] .rounded-xl {
+	border-radius: 1.125rem;
+}
+[data-component-style="elevated"] .rounded-lg {
+	border-radius: 0.875rem;
+}
+[data-component-style="elevated"] .rounded-md {
+	border-radius: 0.625rem;
+}
+
+/* ── Borders → nearly invisible, shadows define edges ── */
+[data-component-style="elevated"] .border-foreground\/15,
+[data-component-style="elevated"] .border-foreground\/20 {
+	border-color: oklch(from var(--foreground) l c h / 0.06);
+}
+[data-component-style="elevated"] .border-foreground\/30,
+[data-component-style="elevated"] .border-foreground\/40 {
+	border-color: oklch(from var(--foreground) l c h / 0.08);
+}
+[data-component-style="elevated"] .focus-within\:border-foreground\/30:focus-within {
+	border-color: oklch(from var(--foreground) l c h / 0.10);
+}
+
+/* ── Glass-like fills on muted backgrounds ── */
+[data-component-style="elevated"] .bg-muted\/30,
+[data-component-style="elevated"] .bg-muted\/40,
+[data-component-style="elevated"] .bg-muted\/50,
+[data-component-style="elevated"] .bg-muted\/60,
+[data-component-style="elevated"] .bg-muted\/70 {
+	background-color: oklch(from var(--muted) l c h / 0.5);
+	backdrop-filter: blur(12px);
+}
+[data-component-style="elevated"] .bg-muted {
+	background-color: oklch(from var(--muted) l c h / 0.5);
+	backdrop-filter: blur(12px);
+}
+
+/* Subtle recessed fill for foreground-opacity backgrounds */
+[data-component-style="elevated"] .bg-foreground\/10,
+[data-component-style="elevated"] .bg-foreground\/15 {
+	background-color: oklch(from var(--foreground) l c h / 0.05);
+	box-shadow: inset 0 1px 3px oklch(0 0 0 / 0.06);
+}
+
+/* ── Primary buttons → depth effect with colored glow ── */
+[data-component-style="elevated"] .bg-primary {
+	box-shadow:
+		0 1px 2px oklch(from var(--primary) l c h / 0.3),
+		0 4px 12px -2px oklch(from var(--primary) l c h / 0.25),
+		inset 0 1px 0 oklch(1 0 0 / 0.15);
+}
+
+/* ── Bolder text weights for premium feel ── */
+[data-component-style="elevated"] .font-medium {
+	font-weight: 600;
+}
+[data-component-style="elevated"] .font-semibold {
+	font-weight: 700;
 }
