@@ -98,7 +98,7 @@ function PreviewCard({ stack, index }: { stack: FlatStack; index: number }) {
                 transform: "scale(0.5)",
               }}
             >
-              <div className="flex h-full w-full items-start justify-center p-6">
+              <div className="flex h-full w-full items-center justify-center p-6">
                 <PreviewComponent />
               </div>
             </div>
