@@ -1,80 +1,91 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+import { WaveDotsLoader, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ─── Routing Pattern ─── */
 export function RoutingPatternPreview() {
-  const [activeRoute, setActiveRoute] = useState<string | null>(null)
+  const [activeIdx, setActiveIdx] = useState(0)
 
   const routes = [
-    { input: "Write a poem about rain", agent: "Creative Writer", color: "foreground" },
-    { input: "Translate to Spanish", agent: "Translator", color: "foreground" },
-    { input: "Fix this bug in my code", agent: "Code Assistant", color: "foreground" },
-    { input: "Summarize this article", agent: "Summarizer", color: "foreground" },
+    { input: "Write a poem about rain", agent: "Creative Writer" },
+    { input: "Translate to Spanish", agent: "Translator" },
+    { input: "Fix this bug in my code", agent: "Code Assistant" },
+    { input: "Summarize this article", agent: "Summarizer" },
   ]
 
   useEffect(() => {
-    let i = 0
     const timer = setInterval(() => {
-      setActiveRoute(routes[i % routes.length].agent)
-      i++
-    }, 1500)
+      setActiveIdx((i) => (i + 1) % routes.length)
+    }, 2000)
     return () => clearInterval(timer)
-  }, [])
+  }, [routes.length])
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
-      <div className="mb-6 text-center">
-        <span className="text-xs font-medium text-muted-foreground">
-          Request Router
-        </span>
+    <div className="mx-auto w-full max-w-xl p-6">
+      <div className="mb-5 text-center">
+        <span className="text-sm font-semibold text-foreground">Request Router</span>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          Intelligent routing to specialized agents
+        </p>
       </div>
 
-      <div className="flex items-start justify-between gap-8">
-        {/* Input */}
-        <div className="w-40 space-y-2">
-          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
+      <div className="flex items-start justify-between gap-4">
+        {/* Incoming requests */}
+        <div className="w-[160px] space-y-1.5">
+          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Incoming
           </span>
-          {routes.map((route) => (
-            <div
+          {routes.map((route, i) => (
+            <motion.div
               key={route.agent}
-              className={`rounded-md border px-3 py-2 text-xs transition-all ${
-                activeRoute === route.agent
-                  ? "border-foreground/20 bg-foreground/[0.03] text-foreground"
-                  : "border-border/50 text-muted-foreground"
-              }`}
+              animate={{
+                backgroundColor: activeIdx === i ? "var(--color-primary)" : "transparent",
+                color: activeIdx === i ? "var(--color-primary-foreground)" : "var(--color-muted-foreground)",
+              }}
+              transition={{ duration: 0.15 }}
+              className="rounded-lg border border-border px-2.5 py-2 text-xs leading-snug"
             >
               {route.input}
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        {/* Router */}
-        <div className="flex flex-col items-center gap-2 pt-12">
-          <div className="h-px w-12 bg-border/40" />
-          <div className="rounded-md border border-border/60 px-3 py-1.5 text-[12px] font-medium text-muted-foreground">
+        {/* Router connector */}
+        <div className="flex flex-col items-center gap-1.5 pt-10">
+          <div className="h-px w-8 bg-border" />
+          <motion.div
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary"
+          >
             Router
-          </div>
-          <div className="h-px w-12 bg-border/40" />
+          </motion.div>
+          <div className="h-px w-8 bg-border" />
         </div>
 
         {/* Agents */}
-        <div className="w-36 space-y-2">
-          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
+        <div className="w-[140px] space-y-1.5">
+          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Agents
           </span>
-          {routes.map((route) => (
-            <div
+          {routes.map((route, i) => (
+            <motion.div
               key={route.agent}
-              className={`rounded-md border px-3 py-2 text-xs transition-all ${
-                activeRoute === route.agent
-                  ? "border-foreground/20 bg-foreground/[0.03] font-medium text-foreground"
-                  : "border-border/50 text-muted-foreground"
+              animate={{
+                borderColor: activeIdx === i ? "var(--color-primary)" : "var(--color-border)",
+                backgroundColor: activeIdx === i ? "oklch(from var(--primary) l c h / 0.1)" : "transparent",
+              }}
+              transition={{ duration: 0.15 }}
+              className={`rounded-lg border px-2.5 py-2 text-xs transition-all duration-150 ${
+                activeIdx === i
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground"
               }`}
             >
               {route.agent}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -106,13 +117,17 @@ export function ParallelProcessingPreview() {
     }
   }, [])
 
+  const allDone = progress.every((p, i) => p >= tasks[i].target)
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
-      <div className="mb-6">
-        <span className="text-xs font-medium text-foreground">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="mb-5">
+        <span className="text-sm font-semibold text-foreground">
           Parallel Agent Execution
         </span>
-        <p className="mt-1 text-[13px] text-muted-foreground">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Processing document across 3 agents simultaneously
         </p>
       </div>
@@ -122,38 +137,72 @@ export function ParallelProcessingPreview() {
           const pct = Math.round(progress[i])
           const done = pct >= task.target
           return (
-            <div key={task.name} className="space-y-1.5">
+            <motion.div
+              key={task.name}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...SPRING, delay: i * 0.08 }}
+              className="space-y-1.5"
+            >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-foreground">
-                  {task.name}
-                </span>
-                <span className="text-[12px] tabular-nums text-muted-foreground">
-                  {done ? "Complete" : `${pct}%`}
+                <div className="flex items-center gap-2">
+                  {done ? (
+                    <motion.svg
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ ...SPRING }}
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      className="text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </motion.svg>
+                  ) : (
+                    <WaveDotsLoader />
+                  )}
+                  <span className="text-sm font-medium text-foreground">
+                    {task.name}
+                  </span>
+                </div>
+                <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                  {done ? "done" : `${pct}%`}
                 </span>
               </div>
               <div className="h-1 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-foreground/60 transition-all duration-200"
-                  style={{ width: `${pct}%` }}
+                <motion.div
+                  className="h-full rounded-full bg-primary"
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.2 }}
                 />
               </div>
-            </div>
+            </motion.div>
           )
         })}
       </div>
 
-      {progress.every((p, i) => p >= tasks[i].target) && (
-        <div className="mt-6 rounded-md border border-border/60 bg-muted/50 p-4">
-          <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
-            Combined Result
-          </p>
-          <div className="mt-2 space-y-1 text-xs text-muted-foreground">
-            <p>Sentiment: Positive (0.87)</p>
-            <p>Entities: 4 organizations, 2 people, 3 locations</p>
-            <p>Topics: Technology, AI Research, Machine Learning</p>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {allDone && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="mt-5 rounded-xl border border-border bg-card p-4"
+          >
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Combined Result
+            </p>
+            <div className="mt-2 space-y-1 font-mono text-sm text-muted-foreground">
+              <p>Sentiment: <span className="text-foreground">Positive (0.87)</span></p>
+              <p>Entities: <span className="text-foreground">4 orgs, 2 people, 3 locations</span></p>
+              <p>Topics: <span className="text-foreground">Technology, AI Research, ML</span></p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -163,58 +212,84 @@ export function HumanInTheLoopPreview() {
   const [approved, setApproved] = useState<boolean | null>(null)
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      <div className="space-y-3">
-        <div className="rounded-md border border-border/60 bg-muted/50 p-4">
-          <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
-            Agent Request
-          </p>
-          <p className="mt-2 text-sm text-foreground">
-            The agent wants to execute the following action:
-          </p>
-          <div className="mt-3 rounded-md bg-muted/50 p-3">
-            <code className="text-xs text-foreground">
-              sendEmail({`{`}
-              <br />
-              {"  "}to: &quot;team@company.com&quot;,
-              <br />
-              {"  "}subject: &quot;Weekly Report&quot;,
-              <br />
-              {"  "}body: &quot;...generated content...&quot;
-              <br />
-              {`}`})
-            </code>
+    <div className="mx-auto w-full max-w-lg space-y-3 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...SPRING }}
+        className="rounded-xl border border-border bg-card p-4"
+      >
+        <div className="mb-3 flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Agent Request</p>
+            <p className="text-xs text-muted-foreground">Email Agent wants to execute</p>
           </div>
         </div>
 
+        <div className="rounded-lg bg-muted/50 p-3">
+          <code className="font-mono text-xs text-foreground">
+            sendEmail({`{`}
+            <br />
+            {"  "}to: &quot;team@company.com&quot;,
+            <br />
+            {"  "}subject: &quot;Weekly Report&quot;,
+            <br />
+            {"  "}body: &quot;...generated content...&quot;
+            <br />
+            {`}`})
+          </code>
+        </div>
+      </motion.div>
+
+      <AnimatePresence mode="wait">
         {approved === null ? (
-          <div className="flex gap-2">
-            <button
+          <motion.div
+            key="buttons"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            className="flex gap-2"
+          >
+            <motion.button
               onClick={() => setApproved(true)}
-              className="h-8 flex-1 rounded-md bg-foreground text-xs font-medium text-background"
+              whileTap={{ scale: 0.97 }}
+              className="h-9 flex-1 rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-all duration-150 hover:bg-primary/90"
             >
               Approve & Execute
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => setApproved(false)}
-              className="h-8 flex-1 rounded-md border border-border/60 text-xs font-medium text-muted-foreground"
+              whileTap={{ scale: 0.97 }}
+              className="h-9 flex-1 rounded-lg border border-border text-sm font-medium text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:text-foreground"
             >
               Reject
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         ) : (
-          <div className="flex items-center justify-between rounded-md border border-border/60 p-3">
-            <div className="flex items-center gap-2 text-xs">
+          <motion.div
+            key="result"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center justify-between rounded-xl border border-border px-4 py-3"
+          >
+            <div className="flex items-center gap-2 text-sm">
               {approved ? (
                 <>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  <span className="text-foreground">Action approved and executed</span>
+                  <span className="font-medium text-foreground">Approved and executed</span>
                 </>
               ) : (
                 <>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-destructive">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
@@ -224,13 +299,13 @@ export function HumanInTheLoopPreview() {
             </div>
             <button
               onClick={() => setApproved(null)}
-              className="text-[12px] text-muted-foreground hover:text-muted-foreground"
+              className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
             >
-              Reset
+              reset
             </button>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   )
 }
@@ -258,68 +333,124 @@ export function URLAnalysisPreview() {
       } else {
         clearInterval(timer)
       }
-    }, 1000)
+    }, 1200)
+  }
+
+  function reset() {
+    setStep(-1)
+    setUrl("")
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      <div className="flex gap-2">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-background px-3 py-2 transition-all duration-150 focus-within:border-foreground/30 focus-within:shadow-md">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
           placeholder="https://example.com/article"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
+          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
-        <button
+        <motion.button
           onClick={handleAnalyze}
-          className="h-9 rounded-md bg-foreground px-4 text-xs font-medium text-background"
+          disabled={!url.trim() || step >= 0}
+          whileTap={{ scale: 0.95 }}
+          className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
+            url.trim() && step < 0
+              ? "bg-primary text-primary-foreground"
+              : "bg-foreground/10 text-muted-foreground/50"
+          }`}
         >
           Analyze
-        </button>
+        </motion.button>
       </div>
 
-      {step >= 0 && (
-        <div className="space-y-1">
-          {steps.map((s, i) => (
-            <div
-              key={s.name}
-              className={`flex items-center gap-3 rounded-md px-3 py-2 transition-opacity ${
-                i <= step ? "opacity-100" : "opacity-30"
-              }`}
-            >
-              <div className="flex size-4 shrink-0 items-center justify-center">
-                {i < step ? (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-foreground/50">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                ) : i === step ? (
-                  <div className="size-3 animate-spin rounded-full border border-foreground/20 border-t-foreground" />
-                ) : (
-                  <div className="size-2 rounded-full bg-border" />
+      <AnimatePresence>
+        {step >= 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ ...SPRING }}
+            className="space-y-0.5 overflow-hidden"
+          >
+            {steps.map((s, i) => (
+              <motion.div
+                key={s.name}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{
+                  opacity: i <= step ? 1 : 0.3,
+                  x: 0,
+                }}
+                transition={{ ...SPRING, delay: i * 0.06 }}
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+              >
+                <div className="flex size-5 shrink-0 items-center justify-center">
+                  {i < step ? (
+                    <motion.svg
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ ...SPRING }}
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      className="text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </motion.svg>
+                  ) : i === step ? (
+                    <WaveDotsLoader />
+                  ) : (
+                    <div className="size-2 rounded-full bg-foreground/15" />
+                  )}
+                </div>
+                <div>
+                  <p className={`text-sm ${i <= step ? "font-medium text-foreground" : "text-muted-foreground/60"}`}>
+                    {s.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground/60">{s.detail}</p>
+                </div>
+                {i === step && step < steps.length - 1 && (
+                  <span className="ml-auto font-mono text-[10px] text-muted-foreground/40">running</span>
                 )}
-              </div>
-              <div>
-                <p className="text-xs font-medium text-foreground">{s.name}</p>
-                <p className="text-[12px] text-muted-foreground">{s.detail}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {step >= steps.length - 1 && (
-        <div className="rounded-md border border-border/60 bg-muted/50 p-4">
-          <p className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
-            Analysis Result
-          </p>
-          <div className="mt-2 space-y-2 text-xs text-muted-foreground">
-            <p><span className="font-medium text-foreground">Title:</span> Example Article</p>
-            <p><span className="font-medium text-foreground">Word Count:</span> 1,247</p>
-            <p><span className="font-medium text-foreground">Reading Time:</span> 5 min</p>
-            <p><span className="font-medium text-foreground">Summary:</span> This article covers the fundamentals of modern web development practices and emerging trends in the industry.</p>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {step >= steps.length - 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="rounded-xl border border-border bg-card p-4"
+          >
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Analysis Result
+            </p>
+            <div className="mt-2 space-y-1.5 text-sm">
+              <p className="text-muted-foreground">Title: <span className="font-medium text-foreground">Example Article</span></p>
+              <p className="text-muted-foreground">Words: <span className="font-mono text-foreground">1,247</span></p>
+              <p className="text-muted-foreground">Reading: <span className="font-mono text-foreground">5 min</span></p>
+              <p className="text-muted-foreground">Summary: <span className="text-foreground">Covers fundamentals of modern web development and emerging industry trends.</span></p>
+            </div>
+            <div className="mt-3 border-t border-border pt-2">
+              <button
+                onClick={reset}
+                className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
+              >
+                reset
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

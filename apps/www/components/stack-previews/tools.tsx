@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+import { WaveDotsLoader, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ─── Claude Web Search ─── */
 export function ClaudeWebSearchPreview() {
@@ -48,78 +50,118 @@ export function ClaudeWebSearchPreview() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      <div className="flex gap-2">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-background px-3 py-2 transition-all duration-150 focus-within:border-foreground/30 focus-within:shadow-md">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           placeholder="Search the web..."
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
+          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
-        <button
+        <motion.button
           onClick={handleSearch}
           disabled={phase === "searching" || phase === "reading"}
-          className="h-9 rounded-md bg-foreground px-4 text-xs font-medium text-background transition-opacity disabled:opacity-50"
+          whileTap={{ scale: 0.95 }}
+          className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
+            query.trim() && phase === "idle"
+              ? "bg-primary text-primary-foreground"
+              : "bg-foreground/10 text-muted-foreground/50"
+          }`}
         >
           Search
-        </button>
+        </motion.button>
       </div>
 
       {/* Searching state */}
-      {phase === "searching" && (
-        <div className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/40 p-3">
-          <div className="size-4 animate-spin rounded-full border-2 border-foreground/15 border-t-foreground" />
-          <div>
-            <p className="text-xs font-medium text-foreground">Searching the web...</p>
-            <p className="text-[12px] text-muted-foreground">Querying multiple sources</p>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {phase === "searching" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+          >
+            <WaveDotsLoader />
+            <div>
+              <p className="text-sm font-medium text-foreground">Searching the web...</p>
+              <p className="text-xs text-muted-foreground">Querying multiple sources</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Reading/revealing results */}
-      {(phase === "reading" || phase === "done") && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {phase === "reading" && (
-                <div className="size-3 animate-spin rounded-full border border-foreground/20 border-t-foreground" />
-              )}
-              {phase === "done" && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-600 dark:text-emerald-400">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              )}
-              <span className="text-[12px] text-muted-foreground">
-                {phase === "reading" ? `Reading sources... (${visibleResults}/${results.length})` : `${results.length} results found`}
-              </span>
-            </div>
-            {phase === "done" && (
-              <button onClick={() => { setPhase("idle"); setVisibleResults(0) }} className="text-[12px] text-muted-foreground hover:text-muted-foreground">
-                Clear
-              </button>
-            )}
-          </div>
-          {results.slice(0, visibleResults).map((result, i) => (
-            <div key={i} className="animate-in fade-in slide-in-from-bottom-1 rounded-md border border-border/60 p-3 duration-300">
-              <div className="flex items-start gap-2.5">
-                <span className="mt-0.5 text-sm">{result.favicon}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-foreground">
-                    {result.title}
-                  </p>
-                  <p className="mt-0.5 text-[12px] text-muted-foreground">
-                    {result.url}
-                  </p>
-                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                    {result.snippet}
-                  </p>
-                </div>
+      <AnimatePresence>
+        {(phase === "reading" || phase === "done") && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-2"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {phase === "reading" && <WaveDotsLoader />}
+                {phase === "done" && (
+                  <motion.svg
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ ...SPRING }}
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className="text-primary"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </motion.svg>
+                )}
+                <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                  {phase === "reading" ? `Reading sources ${visibleResults}/${results.length}` : `${results.length} results`}
+                </span>
               </div>
+              {phase === "done" && (
+                <button
+                  onClick={() => { setPhase("idle"); setVisibleResults(0) }}
+                  className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
+                >
+                  clear
+                </button>
+              )}
             </div>
-          ))}
-        </div>
-      )}
+
+            {results.slice(0, visibleResults).map((result, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...SPRING }}
+                className="rounded-xl border border-border p-3 transition-all duration-150 hover:bg-card"
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="mt-0.5 text-sm">{result.favicon}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {result.title}
+                    </p>
+                    <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                      {result.url}
+                    </p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                      {result.snippet}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -127,7 +169,7 @@ export function ClaudeWebSearchPreview() {
 /* ─── Exa Web Search ─── */
 export function ExaWebSearchPreview() {
   const [query, setQuery] = useState("")
-  const [searched, setSearched] = useState(false)
+  const [phase, setPhase] = useState<"idle" | "searching" | "done">("idle")
 
   const results = [
     {
@@ -150,58 +192,92 @@ export function ExaWebSearchPreview() {
     },
   ]
 
+  function handleSearch() {
+    if (!query.trim() || phase === "searching") return
+    setPhase("searching")
+    setTimeout(() => setPhase("done"), 1500)
+  }
+
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      <div className="space-y-2">
-        <label className="text-xs font-medium text-muted-foreground">
-          Neural Search Query
-        </label>
-        <div className="flex gap-2">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") setSearched(true)
-            }}
-            placeholder="Find papers about neural information retrieval"
-            className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
-          />
-          <button
-            onClick={() => setSearched(true)}
-            className="h-9 rounded-md bg-foreground px-4 text-xs font-medium text-background"
-          >
-            Search
-          </button>
-        </div>
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-background px-3 py-2 transition-all duration-150 focus-within:border-foreground/30 focus-within:shadow-md">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder="Find papers about neural information retrieval"
+          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        />
+        <motion.button
+          onClick={handleSearch}
+          disabled={phase === "searching"}
+          whileTap={{ scale: 0.95 }}
+          className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
+            query.trim() && phase !== "searching"
+              ? "bg-primary text-primary-foreground"
+              : "bg-foreground/10 text-muted-foreground/50"
+          }`}
+        >
+          Search
+        </motion.button>
       </div>
 
-      {searched && (
-        <div className="space-y-2">
-          {results.map((result, i) => (
-            <div
-              key={i}
-              className="flex gap-3 rounded-md border border-border/60 p-3"
-            >
-              <div className="shrink-0">
-                <div className="flex size-8 items-center justify-center rounded-md bg-muted text-[12px] font-medium tabular-nums text-muted-foreground">
-                  {result.score}
-                </div>
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-foreground">
-                  {result.title}
-                </p>
-                <p className="text-[12px] text-muted-foreground">
-                  {result.url}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {result.snippet}
-                </p>
-              </div>
+      <AnimatePresence>
+        {phase === "searching" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+          >
+            <WaveDotsLoader />
+            <div>
+              <p className="text-sm font-medium text-foreground">Neural search...</p>
+              <p className="text-xs text-muted-foreground">Computing semantic embeddings</p>
             </div>
-          ))}
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {phase === "done" && (
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={{ animate: { ...STAGGER } }}
+            className="space-y-2"
+          >
+            {results.map((result, i) => (
+              <motion.div
+                key={i}
+                variants={FADE_UP}
+                transition={{ ...SPRING }}
+                className="flex gap-3 rounded-xl border border-border p-3 transition-all duration-150 hover:bg-card"
+              >
+                <div className="shrink-0">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 font-mono text-xs font-semibold tabular-nums text-primary">
+                    {result.score}
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {result.title}
+                  </p>
+                  <p className="font-mono text-xs text-muted-foreground">
+                    {result.url}
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    {result.snippet}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -209,7 +285,7 @@ export function ExaWebSearchPreview() {
 /* ─── Cheerio Scraper ─── */
 export function CheerioScraperPreview() {
   const [url, setUrl] = useState("")
-  const [scraped, setScraped] = useState(false)
+  const [phase, setPhase] = useState<"idle" | "scraping" | "done">("idle")
 
   const domTree = [
     { tag: "html", indent: 0 },
@@ -225,48 +301,102 @@ export function CheerioScraperPreview() {
     { tag: "footer", indent: 2, text: "Copyright 2025" },
   ]
 
+  function handleScrape() {
+    if (!url.trim() || phase !== "idle") return
+    setPhase("scraping")
+    setTimeout(() => setPhase("done"), 1400)
+  }
+
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      <div className="flex gap-2">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-background px-3 py-2 transition-all duration-150 focus-within:border-foreground/30 focus-within:shadow-md">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleScrape()}
           placeholder="https://example.com"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
+          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
-        <button
-          onClick={() => setScraped(true)}
-          className="h-9 rounded-md bg-foreground px-4 text-xs font-medium text-background"
+        <motion.button
+          onClick={handleScrape}
+          whileTap={{ scale: 0.95 }}
+          className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
+            url.trim() && phase === "idle"
+              ? "bg-primary text-primary-foreground"
+              : "bg-foreground/10 text-muted-foreground/50"
+          }`}
         >
           Scrape
-        </button>
+        </motion.button>
       </div>
 
-      {scraped && (
-        <div className="rounded-md border border-border/60 bg-muted/40 p-4">
-          <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
-            DOM Structure
-          </span>
-          <div className="mt-2 space-y-0.5 font-mono">
-            {domTree.map((node, i) => (
-              <div
-                key={i}
-                className="flex items-baseline gap-1"
-                style={{ paddingLeft: `${node.indent * 16}px` }}
+      <AnimatePresence>
+        {phase === "scraping" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+          >
+            <WaveDotsLoader />
+            <div>
+              <p className="text-sm font-medium text-foreground">Scraping page...</p>
+              <p className="text-xs text-muted-foreground">Parsing DOM structure</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {phase === "done" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="rounded-xl border border-border bg-card p-4"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                DOM Structure
+              </span>
+              <button
+                onClick={() => { setPhase("idle"); setUrl("") }}
+                className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
               >
-                <span className="text-[13px] text-muted-foreground">
-                  &lt;{node.tag}&gt;
-                </span>
-                {node.text && (
-                  <span className="text-[13px] text-foreground/70">
-                    {node.text}
+                clear
+              </button>
+            </div>
+            <motion.div
+              initial="initial"
+              animate="animate"
+              variants={{ animate: { ...STAGGER } }}
+              className="space-y-0.5 font-mono"
+            >
+              {domTree.map((node, i) => (
+                <motion.div
+                  key={i}
+                  variants={FADE_UP}
+                  transition={{ ...SPRING }}
+                  className="flex items-baseline gap-1"
+                  style={{ paddingLeft: `${node.indent * 16}px` }}
+                >
+                  <span className="text-xs text-primary">
+                    &lt;{node.tag}&gt;
                   </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+                  {node.text && (
+                    <span className="text-xs text-foreground">
+                      {node.text}
+                    </span>
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -274,64 +404,119 @@ export function CheerioScraperPreview() {
 /* ─── Jina AI Scraper ─── */
 export function JinaScraperPreview() {
   const [url, setUrl] = useState("")
-  const [scraped, setScraped] = useState(false)
+  const [phase, setPhase] = useState<"idle" | "extracting" | "done">("idle")
+
+  function handleExtract() {
+    if (!url.trim() || phase !== "idle") return
+    setPhase("extracting")
+    setTimeout(() => setPhase("done"), 1400)
+  }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      <div className="flex gap-2">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-background px-3 py-2 transition-all duration-150 focus-within:border-foreground/30 focus-within:shadow-md">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleExtract()}
           placeholder="https://example.com/blog/post"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
+          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
-        <button
-          onClick={() => setScraped(true)}
-          className="h-9 rounded-md bg-foreground px-4 text-xs font-medium text-background"
+        <motion.button
+          onClick={handleExtract}
+          whileTap={{ scale: 0.95 }}
+          className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
+            url.trim() && phase === "idle"
+              ? "bg-primary text-primary-foreground"
+              : "bg-foreground/10 text-muted-foreground/50"
+          }`}
         >
           Extract
-        </button>
+        </motion.button>
       </div>
 
-      {scraped && (
-        <div className="space-y-3">
-          <div className="rounded-md border border-border/60 p-3">
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div>
-                <span className="text-muted-foreground">Title</span>
-                <p className="mt-0.5 font-medium text-foreground">
-                  Building AI-Powered Apps
-                </p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Author</span>
-                <p className="mt-0.5 font-medium text-foreground">Jane Smith</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Published</span>
-                <p className="mt-0.5 text-foreground">2025-01-15</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Word Count</span>
-                <p className="mt-0.5 text-foreground">2,340</p>
-              </div>
+      <AnimatePresence>
+        {phase === "extracting" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+          >
+            <WaveDotsLoader />
+            <div>
+              <p className="text-sm font-medium text-foreground">Extracting content...</p>
+              <p className="text-xs text-muted-foreground">Reader API processing</p>
             </div>
-          </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <div className="rounded-md border border-border/60 bg-muted/40 p-4">
-            <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
-              Extracted Content
-            </span>
-            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Building AI-powered applications has become more accessible with
-              modern frameworks and APIs. This guide walks through the process
-              of integrating language models into production applications,
-              covering topics like streaming responses, tool calling, and
-              agent orchestration...
-            </p>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {phase === "done" && (
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={{ animate: { ...STAGGER } }}
+            className="space-y-3"
+          >
+            <motion.div
+              variants={FADE_UP}
+              transition={{ ...SPRING }}
+              className="rounded-xl border border-border p-3"
+            >
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="text-xs text-muted-foreground">Title</span>
+                  <p className="mt-0.5 font-medium text-foreground">
+                    Building AI-Powered Apps
+                  </p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Author</span>
+                  <p className="mt-0.5 font-medium text-foreground">Jane Smith</p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Published</span>
+                  <p className="mt-0.5 font-mono text-xs text-foreground">2025-01-15</p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Word Count</span>
+                  <p className="mt-0.5 font-mono text-xs text-foreground">2,340</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              variants={FADE_UP}
+              transition={{ ...SPRING }}
+              className="rounded-xl border border-border bg-card p-4"
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Extracted Content
+                </span>
+                <button
+                  onClick={() => { setPhase("idle"); setUrl("") }}
+                  className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
+                >
+                  clear
+                </button>
+              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Building AI-powered applications has become more accessible with
+                modern frameworks and APIs. This guide walks through the process
+                of integrating language models into production applications,
+                covering topics like streaming responses, tool calling, and
+                agent orchestration...
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -339,8 +524,7 @@ export function JinaScraperPreview() {
 /* ─── Markdown Scraper ─── */
 export function MarkdownScraperPreview() {
   const [url, setUrl] = useState("")
-  const [converting, setConverting] = useState(false)
-  const [converted, setConverted] = useState(false)
+  const [phase, setPhase] = useState<"idle" | "converting" | "done">("idle")
   const [copied, setCopied] = useState(false)
 
   const markdown = `# Building AI Applications
@@ -370,14 +554,10 @@ const result = await generateText({
 Read the [documentation](https://docs.example.com) for more details.`
 
   function handleConvert() {
-    if (converting) return
-    setConverting(true)
-    setConverted(false)
+    if (phase === "converting") return
+    setPhase("converting")
     setCopied(false)
-    setTimeout(() => {
-      setConverting(false)
-      setConverted(true)
-    }, 1400)
+    setTimeout(() => setPhase("done"), 1400)
   }
 
   function handleCopy() {
@@ -391,177 +571,238 @@ Read the [documentation](https://docs.example.com) for more details.`
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      <div className="flex gap-2">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-background px-3 py-2 transition-all duration-150 focus-within:border-foreground/30 focus-within:shadow-md">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleConvert()}
           placeholder="https://docs.example.com/guide"
-          className="h-9 flex-1 rounded-md border border-border/60 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground/20"
+          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
-        <button
+        <motion.button
           onClick={handleConvert}
-          disabled={converting}
-          className="h-9 rounded-md bg-foreground px-4 text-xs font-medium text-background transition-opacity disabled:opacity-50"
+          disabled={phase === "converting"}
+          whileTap={{ scale: 0.95 }}
+          className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
+            phase !== "converting"
+              ? "bg-primary text-primary-foreground"
+              : "bg-foreground/10 text-muted-foreground/50"
+          }`}
         >
-          {converting ? "Converting..." : "Convert"}
-        </button>
+          Convert
+        </motion.button>
       </div>
 
-      {converting && (
-        <div className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/40 p-3">
-          <div className="size-4 animate-spin rounded-full border-2 border-foreground/15 border-t-foreground" />
-          <div>
-            <p className="text-xs font-medium text-foreground">Fetching page...</p>
-            <p className="text-[12px] text-muted-foreground">Converting HTML to Markdown</p>
-          </div>
-        </div>
-      )}
-
-      {converted && (
-        <div className="rounded-md border border-border/60 bg-muted/40 p-4">
-          <div className="mb-2 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
-                Markdown Output
-              </span>
-              <span className="text-[12px] text-muted-foreground">
-                {markdown.length} chars
-              </span>
+      <AnimatePresence>
+        {phase === "converting" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+          >
+            <WaveDotsLoader />
+            <div>
+              <p className="text-sm font-medium text-foreground">Fetching page...</p>
+              <p className="text-xs text-muted-foreground">Converting HTML to Markdown</p>
             </div>
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-1 text-[12px] text-muted-foreground transition-colors hover:text-muted-foreground"
-            >
-              {copied ? (
-                <>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-600 dark:text-emerald-400">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect width="14" height="14" x="8" y="8" rx="2" />
-                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                  </svg>
-                  Copy
-                </>
-              )}
-            </button>
-          </div>
-          <pre className="max-h-64 overflow-y-auto overflow-x-auto text-[13px] leading-relaxed text-muted-foreground [&::-webkit-scrollbar]:hidden">
-            {markdown}
-          </pre>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {phase === "done" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="rounded-xl border border-border bg-card p-4"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Markdown Output
+                </span>
+                <span className="font-mono text-[10px] tabular-nums text-muted-foreground/40">
+                  {markdown.length} chars
+                </span>
+              </div>
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1 text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
+              >
+                {copied ? (
+                  <>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect width="14" height="14" x="8" y="8" rx="2" />
+                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                    </svg>
+                    Copy
+                  </>
+                )}
+              </button>
+            </div>
+            <pre className="max-h-64 overflow-y-auto overflow-x-auto font-mono text-xs leading-relaxed text-foreground/80 [&::-webkit-scrollbar]:hidden">
+              {markdown}
+            </pre>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
 
 /* ─── PDF Analysis ─── */
 export function PDFAnalysisPreview() {
-  const [uploaded, setUploaded] = useState(false)
-  const [analyzing, setAnalyzing] = useState(false)
-  const [done, setDone] = useState(false)
+  const [phase, setPhase] = useState<"upload" | "analyzing" | "done">("upload")
 
   function handleUpload() {
-    setUploaded(true)
-    setAnalyzing(true)
-    setTimeout(() => {
-      setAnalyzing(false)
-      setDone(true)
-    }, 2000)
+    setPhase("analyzing")
+    setTimeout(() => setPhase("done"), 2000)
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-4 p-8">
-      {!uploaded ? (
-        <div
-          onClick={handleUpload}
-          className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-border/60 transition-colors hover:border-foreground/20"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="text-muted-foreground"
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <AnimatePresence mode="wait">
+        {phase === "upload" && (
+          <motion.div
+            key="upload"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -8 }}
+            onClick={handleUpload}
+            className="flex h-32 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-border transition-all duration-150 hover:border-foreground/20 hover:bg-card"
           >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" y1="13" x2="8" y2="13" />
-            <line x1="16" y1="17" x2="8" y2="17" />
-            <polyline points="10 9 9 9 8 9" />
-          </svg>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Drop PDF file or click to upload
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 rounded-md border border-border/60 p-3">
-            <div className="flex size-10 items-center justify-center rounded-md bg-muted text-[12px] font-medium text-muted-foreground">
-              PDF
-            </div>
-            <div>
-              <p className="text-xs font-medium text-foreground">
-                research-paper.pdf
-              </p>
-              <p className="text-[12px] text-muted-foreground">
-                2.4 MB · 12 pages
-              </p>
-            </div>
-          </div>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="text-muted-foreground"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Drop PDF file or click to upload
+            </p>
+          </motion.div>
+        )}
 
-          {analyzing && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="size-3 animate-spin rounded-full border border-foreground/20 border-t-foreground" />
-              Analyzing document...
-            </div>
-          )}
-
-          {done && (
-            <div className="space-y-3">
-              <div className="rounded-md border border-border/60 p-3">
-                <span className="text-[12px] font-medium uppercase tracking-wider text-muted-foreground">
-                  Document Summary
-                </span>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  This research paper presents a novel approach to transformer
-                  architecture optimization, achieving 40% reduction in
-                  computational cost while maintaining model quality. Key
-                  contributions include a new attention mechanism and efficient
-                  training strategy.
+        {(phase === "analyzing" || phase === "done") && (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-3 rounded-xl border border-border p-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 font-mono text-xs font-semibold text-primary">
+                PDF
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground">
+                  research-paper.pdf
+                </p>
+                <p className="font-mono text-xs text-muted-foreground">
+                  2.4 MB · 12 pages
                 </p>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "Pages", value: "12" },
-                  { label: "Figures", value: "8" },
-                  { label: "References", value: "47" },
-                ].map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="rounded-md border border-border/60 p-2 text-center"
-                  >
-                    <p className="text-sm font-medium text-foreground">
-                      {stat.value}
-                    </p>
-                    <p className="text-[12px] text-muted-foreground">
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
             </div>
-          )}
-        </div>
-      )}
+
+            {phase === "analyzing" && (
+              <div className="flex items-center gap-3 px-1">
+                <WaveDotsLoader />
+                <span className="text-sm text-muted-foreground">Analyzing document...</span>
+              </div>
+            )}
+
+            <AnimatePresence>
+              {phase === "done" && (
+                <motion.div
+                  initial="initial"
+                  animate="animate"
+                  variants={{ animate: { ...STAGGER } }}
+                  className="space-y-3"
+                >
+                  <motion.div
+                    variants={FADE_UP}
+                    transition={{ ...SPRING }}
+                    className="rounded-xl border border-border bg-card p-4"
+                  >
+                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      Document Summary
+                    </span>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      This research paper presents a novel approach to transformer
+                      architecture optimization, achieving 40% reduction in
+                      computational cost while maintaining model quality. Key
+                      contributions include a new attention mechanism and efficient
+                      training strategy.
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    variants={FADE_UP}
+                    transition={{ ...SPRING }}
+                    className="grid grid-cols-3 gap-2"
+                  >
+                    {[
+                      { label: "Pages", value: "12" },
+                      { label: "Figures", value: "8" },
+                      { label: "References", value: "47" },
+                    ].map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="rounded-xl border border-border p-3 text-center"
+                      >
+                        <p className="font-mono text-lg font-semibold tabular-nums text-foreground">
+                          {stat.value}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {stat.label}
+                        </p>
+                      </div>
+                    ))}
+                  </motion.div>
+
+                  <motion.div
+                    variants={FADE_UP}
+                    transition={{ ...SPRING }}
+                    className="border-t border-border pt-2"
+                  >
+                    <button
+                      onClick={() => setPhase("upload")}
+                      className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
+                    >
+                      reset
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

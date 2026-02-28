@@ -16,10 +16,13 @@ import {
   FileIcon,
   FolderIcon,
   FolderOpenIcon,
+  Layers,
   Lock,
   Monitor,
+  PenTool,
   RefreshCw,
   Smartphone,
+  Square,
   Tablet,
   Github,
   Terminal,
@@ -305,18 +308,29 @@ function FileTreeNode({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+type ComponentStyle = "default" | "outlined" | "elevated"
+
+const COMPONENT_STYLES: { name: ComponentStyle; icon: typeof Layers; label: string }[] = [
+  { name: "default", icon: Layers, label: "Default" },
+  { name: "outlined", icon: PenTool, label: "Outlined" },
+  { name: "elevated", icon: Square, label: "Elevated" },
+]
+
 interface StackPageClientProps {
   slug: string
   registrySource?: StackRegistryFile[] | null
+  devMode?: boolean
+  defaultStyle?: ComponentStyle
 }
 
-export function StackPageClient({ slug, registrySource }: StackPageClientProps) {
+export function StackPageClient({ slug, registrySource, devMode = false, defaultStyle }: StackPageClientProps) {
   const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview")
   const [cliCopied, setCliCopied] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
   const [activeFileIndex, setActiveFileIndex] = useState(0)
   const [device, setDevice] = useState<DeviceSize>("desktop")
+  const [componentStyle, setComponentStyle] = useState<ComponentStyle>(defaultStyle ?? "default")
   const [activeTheme, setActiveTheme] = useState(0)
   const [activeRadius, setActiveRadius] = useState(2)
   const [showThemePanel, setShowThemePanel] = useState(false)
@@ -342,7 +356,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
     stackIndex < allStacks.length - 1 ? allStacks[stackIndex + 1] : null
 
   const PreviewComponent = stackPreviewRegistry[slug]
-  const userIsPro = session?.user?.isPro ?? false
+  const userIsPro = devMode || (session?.user?.isPro ?? false)
 
   const freeSource = registrySource ? { files: registrySource } : undefined
   const source = isPro && userIsPro && proFiles
@@ -368,9 +382,10 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
     }
   }, [showThemePanel])
 
-  // Fetch pro source from private GitHub repo when user is authenticated + isPro
+  // Fetch pro source from private GitHub repo (or local FS in dev mode)
   useEffect(() => {
-    if (!isPro || !session?.user?.isPro) return
+    if (!isPro) return
+    if (!devMode && !session?.user?.isPro) return
     if (proFiles) return // already fetched
 
     setProLoading(true)
@@ -381,7 +396,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
       })
       .catch(console.error)
       .finally(() => setProLoading(false))
-  }, [slug, isPro, session?.user?.isPro, proFiles])
+  }, [slug, isPro, devMode, session?.user?.isPro, proFiles])
 
   // Syntax-highlight the active file with shiki whenever it changes.
   // Uses DOMParser to extract per-line innerHTML — regex breaks on nested spans.
@@ -712,6 +727,24 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
             </button>
           </div>
 
+          <div className="flex items-center gap-0.5 rounded-md border border-border p-0.5">
+            {COMPONENT_STYLES.map(({ name, icon: Icon, label }) => (
+              <button
+                key={name}
+                onClick={() => setComponentStyle(name)}
+                title={label}
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-sm transition-colors",
+                  componentStyle === name
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className="size-4" />
+              </button>
+            ))}
+          </div>
+
           <div className="relative" ref={themePanelRef}>
             <div className="flex items-center gap-0.5 rounded-md border border-border p-0.5">
               {themePresets.map((preset, i) => (
@@ -851,7 +884,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
 
       {/* Content area — padded viewport frame with rounded border */}
       <div className="flex min-h-0 flex-1 flex-col p-3">
-        <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm dark:bg-black">
+        <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm">
           {activeTab === "preview" && (
             <div className="h-full overflow-y-scroll scrollbar-hide">
               {isPro && !userIsPro ? (
@@ -879,6 +912,7 @@ export function StackPageClient({ slug, registrySource }: StackPageClientProps) 
               ) : (
                 <div
                   ref={previewRef}
+                  data-component-style={componentStyle !== "default" ? componentStyle : undefined}
                   className={cn(
                     "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
                     deviceWidthClass

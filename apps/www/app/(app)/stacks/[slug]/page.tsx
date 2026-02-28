@@ -65,5 +65,15 @@ export default async function StackPage({
 }) {
   const { slug } = await params
   const registrySource = getStackRegistrySource(slug)
-  return <StackPageClient slug={slug} registrySource={registrySource} />
+  const devMode = !!process.env.DEV_PRO_PATH
+  const allStacks = getAllStacks()
+  const stack = allStacks.find((s) => s.link === `/stacks/${slug}`)
+  return (
+    <StackPageClient
+      slug={slug}
+      registrySource={registrySource}
+      devMode={devMode}
+      defaultStyle={stack?.style}
+    />
+  )
 }
