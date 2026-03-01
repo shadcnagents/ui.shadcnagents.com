@@ -9,10 +9,10 @@ export function RoutingPatternPreview() {
   const [activeIdx, setActiveIdx] = useState(0)
 
   const routes = [
-    { input: "Write a poem about rain", agent: "Creative Writer" },
-    { input: "Translate to Spanish", agent: "Translator" },
-    { input: "Fix this bug in my code", agent: "Code Assistant" },
-    { input: "Summarize this article", agent: "Summarizer" },
+    { input: "Write a poem about rain", agent: "Claude Creative" },
+    { input: "Translate to Spanish", agent: "Claude Translator" },
+    { input: "Fix this bug in my code", agent: "Claude Code" },
+    { input: "Summarize this article", agent: "Claude Haiku" },
   ]
 
   useEffect(() => {
@@ -25,9 +25,9 @@ export function RoutingPatternPreview() {
   return (
     <div className="mx-auto w-full max-w-xl p-6">
       <div className="mb-5 text-center">
-        <span className="text-sm font-semibold text-foreground">Request Router</span>
+        <span className="text-sm font-semibold text-foreground">Claude Router</span>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          Intelligent routing to specialized agents
+          Intelligent routing to specialized Claude models
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export function RoutingPatternPreview() {
         {/* Agents */}
         <div className="w-[140px] space-y-1.5">
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Agents
+            Claude Models
           </span>
           {routes.map((route, i) => (
             <motion.div
@@ -125,10 +125,10 @@ export function ParallelProcessingPreview() {
 
       <div className="mb-5">
         <span className="text-sm font-semibold text-foreground">
-          Parallel Agent Execution
+          LangChain Parallel Execution
         </span>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          Processing document across 3 agents simultaneously
+          Processing document across 3 LangChain chains simultaneously
         </p>
       </div>
 
@@ -193,7 +193,7 @@ export function ParallelProcessingPreview() {
             className="mt-5 rounded-xl border border-border bg-card p-4"
           >
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Combined Result
+              LangChain Combined Result
             </p>
             <div className="mt-2 space-y-1 font-mono text-sm text-muted-foreground">
               <p>Sentiment: <span className="text-foreground">Positive (0.87)</span></p>
@@ -227,8 +227,8 @@ export function HumanInTheLoopPreview() {
             </svg>
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">Agent Request</p>
-            <p className="text-xs text-muted-foreground">Email Agent wants to execute</p>
+            <p className="text-sm font-semibold text-foreground">Claude Request</p>
+            <p className="text-xs text-muted-foreground">Claude wants to execute an action</p>
           </div>
         </div>
 
@@ -316,10 +316,10 @@ export function URLAnalysisPreview() {
   const [step, setStep] = useState(-1)
 
   const steps = [
-    { name: "Fetching page", detail: "Downloading HTML content" },
-    { name: "Extracting text", detail: "Parsing DOM structure" },
-    { name: "Analyzing content", detail: "Running AI analysis" },
-    { name: "Generating summary", detail: "Creating structured output" },
+    { name: "Fetching page", detail: "Zapier webhook triggered" },
+    { name: "Extracting text", detail: "Parsing DOM via Zapier action" },
+    { name: "Analyzing content", detail: "Running Zapier AI analysis" },
+    { name: "Generating summary", detail: "Creating Zap output" },
   ]
 
   function handleAnalyze() {
@@ -432,7 +432,7 @@ export function URLAnalysisPreview() {
             className="rounded-xl border border-border bg-card p-4"
           >
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Analysis Result
+              Zapier Analysis Result
             </p>
             <div className="mt-2 space-y-1.5 text-sm">
               <p className="text-muted-foreground">Title: <span className="font-medium text-foreground">Example Article</span></p>

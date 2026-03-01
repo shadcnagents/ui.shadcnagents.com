@@ -21,8 +21,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Calls generateText() from the ai package on the server, passing a model provider (Anthropic, OpenAI, Google) and a prompt. Returns a typed result object with text, usage, and finish reason — no client-side JS required.",
     techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "Anthropic Claude", "OpenAI GPT-4"],
-    relatedSlugs: ["basics-stream-text", "basics-tool", "basics-agent"],
-  },
+    relatedSlugs: ["basics-stream-text", "basics-tool", "basics-agent"],  },
 
   "basics-stream-text": {
     intro:
@@ -36,8 +35,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Uses streamText() in a Next.js Route Handler to pipe tokens over HTTP streaming. The client uses the useCompletion hook (or useChat) to read the stream and update state incrementally.",
     techStack: ["Vercel AI SDK", "Next.js", "React", "TypeScript", "Server-Sent Events"],
-    relatedSlugs: ["basics-generate-text", "ai-elements-chat", "streaming-markdown-renderer"],
-  },
+    relatedSlugs: ["basics-generate-text", "ai-elements-chat", "streaming-markdown-renderer"],  },
 
   "basics-generate-image": {
     intro:
@@ -96,8 +94,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Defines tools with Zod schemas for parameters, passes them to streamText() or generateText(). The LLM decides when to call tools; results feed back into the context for the final answer.",
     techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "Zod", "OpenAI", "Anthropic"],
-    relatedSlugs: ["basics-agent", "ai-human-in-the-loop", "ai-chat-agent-multi-step-tool-pattern"],
-  },
+    relatedSlugs: ["basics-agent", "ai-human-in-the-loop", "ai-chat-agent-multi-step-tool-pattern"],  },
 
   "basics-agent": {
     intro:
@@ -111,8 +108,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Instantiates an Agent with a model and toolset, runs the agentic loop where the LLM calls tools and reflects on results until reaching a final answer or maxSteps limit.",
     techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "Zod", "Anthropic Claude"],
-    relatedSlugs: ["basics-tool", "ai-agents-routing", "ai-chat-agent-orchestrator-pattern"],
-  },
+    relatedSlugs: ["basics-tool", "ai-agents-routing", "ai-chat-agent-orchestrator-pattern"],  },
 
   /* ─── Agent Patterns ─── */
 
@@ -417,8 +413,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Passes the user request to generateObject() with a table schema (columns, rows, types), renders the JSON output as a TanStack Table-powered interactive component with sort and filter.",
     techStack: ["Vercel AI SDK", "Next.js", "shadcn/ui", "TypeScript", "generateObject", "Zod"],
-    relatedSlugs: ["ai-artifact-chart", "structured-output-viewer", "examples-form-generator"],
-  },
+    relatedSlugs: ["ai-artifact-chart", "structured-output-viewer", "examples-form-generator"],  },
 
   "ai-artifact-chart": {
     intro:
@@ -432,8 +427,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Uses generateObject() to produce a chart config (type, data, axis labels, colors) matching the user description. The structured config drives a Recharts component for immediate visual output.",
     techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "Recharts", "generateObject", "Zod"],
-    relatedSlugs: ["ai-artifact-table", "example-agent-data-analysis", "structured-output-viewer"],
-  },
+    relatedSlugs: ["ai-artifact-table", "example-agent-data-analysis", "structured-output-viewer"],  },
 
   "json-render-shadcn": {
     intro:
@@ -447,8 +441,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Calls generateObject() with a component schema (type, props, children), then a recursive renderer walks the tree and instantiates the matching shadcn/ui component for each node.",
     techStack: ["Vercel AI SDK", "Next.js", "shadcn/ui", "TypeScript", "generateObject", "Zod"],
-    relatedSlugs: ["artifact-canvas", "json-render-generate", "structured-output-viewer"],
-  },
+    relatedSlugs: ["artifact-canvas", "json-render-generate", "structured-output-viewer"],  },
 
   "json-render-generate": {
     intro:
@@ -462,8 +455,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Streams structured JSON using streamObject() and renders each component node progressively as it arrives. The renderer resolves component types from a registry and passes typed props.",
     techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "streamObject", "React", "Zod"],
-    relatedSlugs: ["json-render-shadcn", "artifact-canvas", "streaming-markdown-renderer"],
-  },
+    relatedSlugs: ["json-render-shadcn", "artifact-canvas", "streaming-markdown-renderer"],  },
 
   "json-render-pdf": {
     intro:
@@ -552,8 +544,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Recursively renders a JSON object with type-based color coding (sky=keys, amber=strings, green=numbers, violet=booleans) and collapsible nested nodes via a simple recursive React component.",
     techStack: ["Vercel AI SDK", "Next.js", "React", "TypeScript", "generateObject", "Zod"],
-    relatedSlugs: ["ai-artifact-table", "examples-form-generator", "json-render-shadcn"],
-  },
+    relatedSlugs: ["ai-artifact-table", "examples-form-generator", "json-render-shadcn"],  },
 
   "web-preview-sandbox": {
     intro:
@@ -813,8 +804,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Uses the useChat hook from ai/react to manage message state and streaming. The Route Handler at /api/chat calls streamText() and pipes the response stream back to the client via the AI SDK's data stream protocol.",
     techStack: ["Vercel AI SDK", "Next.js", "React", "TypeScript", "useChat", "shadcn/ui"],
-    relatedSlugs: ["ai-elements-reasoning-chat", "streaming-markdown-renderer", "ai-loading-states"],
-  },
+    relatedSlugs: ["ai-elements-reasoning-chat", "streaming-markdown-renderer", "ai-loading-states"],  },
 
   "chat-gpt": {
     intro:
@@ -828,8 +818,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Mirrors ChatGPT's layout with a fixed left sidebar (conversation list), main chat area with centered max-width, and bottom input — all driven by useChat with streaming markdown rendering.",
     techStack: ["Vercel AI SDK", "Next.js", "shadcn/ui", "TypeScript", "useChat", "OpenAI"],
-    relatedSlugs: ["chat-claude", "ai-elements-chat", "conversation-history-sidebar"],
-  },
+    relatedSlugs: ["chat-claude", "ai-elements-chat", "conversation-history-sidebar"],  },
 
   "chat-claude": {
     intro:
@@ -843,8 +832,7 @@ export const stackContent: Record<string, StackContent> = {
     howItWorks:
       "Implements Claude.ai's layout with a content-focused main panel, right-side artifact drawer, and top model/context controls, all driven by useChat with Anthropic's streaming provider.",
     techStack: ["Vercel AI SDK", "Next.js", "shadcn/ui", "TypeScript", "Anthropic Claude", "useChat"],
-    relatedSlugs: ["chat-gpt", "artifact-canvas", "ai-elements-reasoning-chat"],
-  },
+    relatedSlugs: ["chat-gpt", "artifact-canvas", "ai-elements-reasoning-chat"],  },
 
   "chat-grok": {
     intro:

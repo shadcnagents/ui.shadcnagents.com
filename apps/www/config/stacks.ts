@@ -1,12 +1,10 @@
 export type StackTier = "free" | "pro"
-export type ComponentStyle = "default" | "outlined" | "elevated"
 
 export interface StackItem {
   text: string
   description: string
   link: string
   tier: StackTier
-  style?: ComponentStyle
 }
 
 export interface StackSubCategory {

@@ -39,7 +39,7 @@ const proPlan = {
   description:
     "Every stack we've built and everything we'll ever build. One payment, forever.",
   cta: "Get Lifetime Access",
-  href: "#",
+  href: process.env.NEXT_PUBLIC_DODO_CHECKOUT_URL ?? "#",
   highlights: [
     "Everything in Open Source, plus:",
     `${siteConfig.counts.stacks}+ pro stacks and growing`,
@@ -212,14 +212,12 @@ const faqs = [
 /* ─────────────── Page ─────────────── */
 
 export default function PricingPage() {
-  const totalStacks = stackCategories.reduce((sum, c) => sum + c.count, 0)
-
   return (
     <div className="isolate min-h-screen">
       {/* ═══════ Hero ═══════ */}
       <section className="mx-auto flex max-w-[860px] flex-col items-center gap-6 px-4 py-16 text-center md:py-24">
         <span className="rounded-full border border-border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-          {totalStacks}+ stacks &middot; lifetime access
+          {siteConfig.counts.stacks}+ stacks &middot; lifetime access
         </span>
         <h1
           className="max-w-3xl leading-[1.15] tracking-[-0.03em]"
@@ -364,7 +362,7 @@ export default function PricingPage() {
               What&apos;s inside
             </p>
             <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
-              {totalStacks}+ stacks across {stackCategories.length} categories
+              {siteConfig.counts.stacks}+ stacks across {stackCategories.length} categories
             </h2>
             <p className="mx-auto mt-3 max-w-lg text-[14px] leading-relaxed text-muted-foreground">
               Every stack includes the UI components, API route, TypeScript types,
@@ -554,7 +552,7 @@ export default function PricingPage() {
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
-              href="#"
+              href={process.env.NEXT_PUBLIC_DODO_CHECKOUT_URL ?? "#"}
               className="group inline-flex items-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Get Lifetime Access — $149

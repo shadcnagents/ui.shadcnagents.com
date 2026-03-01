@@ -16,13 +16,10 @@ import {
   FileIcon,
   FolderIcon,
   FolderOpenIcon,
-  Layers,
   Lock,
   Monitor,
-  PenTool,
   RefreshCw,
   Smartphone,
-  Square,
   Tablet,
   Github,
   Terminal,
@@ -32,6 +29,8 @@ import {
 import { getAllStacks } from "@/config/stacks"
 import { stackContent } from "@/config/stack-content"
 import { siteConfig } from "@/config/site"
+import { getBrandForStack, getBrandKeyForStack } from "@/config/brands"
+import { brandIconMap } from "@/components/brand-icons"
 import { cn } from "@/lib/utils"
 import { stackPreviewRegistry } from "@/components/stack-previews"
 import type { StackRegistryFile } from "@/lib/stack-registry"
@@ -308,29 +307,19 @@ function FileTreeNode({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-type ComponentStyle = "default" | "outlined" | "elevated"
-
-const COMPONENT_STYLES: { name: ComponentStyle; icon: typeof Layers; label: string }[] = [
-  { name: "default", icon: Layers, label: "Default" },
-  { name: "outlined", icon: PenTool, label: "Outlined" },
-  { name: "elevated", icon: Square, label: "Elevated" },
-]
-
 interface StackPageClientProps {
   slug: string
   registrySource?: StackRegistryFile[] | null
   devMode?: boolean
-  defaultStyle?: ComponentStyle
 }
 
-export function StackPageClient({ slug, registrySource, devMode = false, defaultStyle }: StackPageClientProps) {
+export function StackPageClient({ slug, registrySource, devMode = false }: StackPageClientProps) {
   const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview")
   const [cliCopied, setCliCopied] = useState(false)
   const [codeCopied, setCodeCopied] = useState(false)
   const [activeFileIndex, setActiveFileIndex] = useState(0)
   const [device, setDevice] = useState<DeviceSize>("desktop")
-  const [componentStyle, setComponentStyle] = useState<ComponentStyle>(defaultStyle ?? "default")
   const [activeTheme, setActiveTheme] = useState(0)
   const [activeRadius, setActiveRadius] = useState(2)
   const [showThemePanel, setShowThemePanel] = useState(false)
@@ -364,6 +353,7 @@ export function StackPageClient({ slug, registrySource, devMode = false, default
     : freeSource
   const activeFile = source?.files[activeFileIndex]
   const content = stackContent[slug]
+  const brand = getBrandForStack(slug)
 
   const cliCommand = getCLICommand(pkgManager, slug)
 
@@ -456,6 +446,9 @@ export function StackPageClient({ slug, registrySource, devMode = false, default
   if (customColor) {
     previewThemeVars["--primary"] = customColor
     previewThemeVars["--color-primary"] = customColor
+  } else if (brand && activeTheme === 0) {
+    previewThemeVars["--primary"] = brand.accent
+    previewThemeVars["--color-primary"] = brand.accent
   }
 
   const deviceWidthClass =
@@ -476,6 +469,20 @@ export function StackPageClient({ slug, registrySource, devMode = false, default
               Pro
             </span>
           )}
+          {brand && (() => {
+            const brandKey = getBrandKeyForStack(slug)
+            const BrandIcon = brandKey ? brandIconMap[brandKey] : undefined
+            return (
+              <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-border/50 px-2 py-0.5 sm:inline-flex">
+                {BrandIcon ? (
+                  <BrandIcon className="size-3.5 text-muted-foreground" />
+                ) : (
+                  <span className="size-2 rounded-full" style={{ background: brand.accent }} />
+                )}
+                <span className="text-[11px] font-medium text-muted-foreground">{brand.name}</span>
+              </span>
+            )
+          })()}
           <span className="shrink-0 text-sm text-muted-foreground/50">—</span>
           <p className="truncate text-[13px] text-muted-foreground">{description}</p>
           {content && (() => {
@@ -727,24 +734,6 @@ export function StackPageClient({ slug, registrySource, devMode = false, default
             </button>
           </div>
 
-          <div className="flex items-center gap-0.5 rounded-md border border-border p-0.5">
-            {COMPONENT_STYLES.map(({ name, icon: Icon, label }) => (
-              <button
-                key={name}
-                onClick={() => setComponentStyle(name)}
-                title={label}
-                className={cn(
-                  "flex size-8 items-center justify-center rounded-sm transition-colors",
-                  componentStyle === name
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Icon className="size-4" />
-              </button>
-            ))}
-          </div>
-
           <div className="relative" ref={themePanelRef}>
             <div className="flex items-center gap-0.5 rounded-md border border-border p-0.5">
               {themePresets.map((preset, i) => (
@@ -890,7 +879,7 @@ export function StackPageClient({ slug, registrySource, devMode = false, default
               {isPro && !userIsPro ? (
                 <div className="flex min-h-full items-center justify-center p-8">
                   <div className="text-center">
-                    <Lock className="mx-auto mb-3 size-5 text-primary/30" />
+                    <Lock className="mx-auto mb-3 size-5 text-blue-500/70" />
                     <p className="text-sm font-medium text-foreground">Pro Stack</p>
                     <p className="mt-1 text-xs text-muted-foreground/50">
                       {session?.user
@@ -912,7 +901,6 @@ export function StackPageClient({ slug, registrySource, devMode = false, default
               ) : (
                 <div
                   ref={previewRef}
-                  data-component-style={componentStyle !== "default" ? componentStyle : undefined}
                   className={cn(
                     "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
                     deviceWidthClass
@@ -1006,7 +994,7 @@ export function StackPageClient({ slug, registrySource, devMode = false, default
                         <p className="text-xs text-muted-foreground animate-pulse">Loading source…</p>
                       ) : (
                         <>
-                          <Lock className="mb-3 size-5 text-primary/30" />
+                          <Lock className="mb-3 size-5 text-blue-500/70" />
                           <p className="text-sm font-medium">Pro Stack</p>
                           <p className="mt-1 text-xs text-muted-foreground/50">
                             {session?.user ? "Upgrade to Pro" : "Sign in or upgrade to Pro"}

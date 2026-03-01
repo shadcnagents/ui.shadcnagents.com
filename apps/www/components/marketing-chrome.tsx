@@ -22,7 +22,7 @@ const tickerItems = [
 export function MarketingChrome() {
   const pathname = usePathname()
 
-  if (!MARKETING_PATHS.includes(pathname)) return null
+  if (!pathname || !MARKETING_PATHS.includes(pathname)) return null
 
   return (
     <>

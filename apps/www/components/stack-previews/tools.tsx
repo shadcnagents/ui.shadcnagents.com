@@ -4,7 +4,7 @@ import { useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { WaveDotsLoader, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
-/* ─── Claude Web Search ─── */
+/* ─── Perplexity Web Search ─── */
 export function ClaudeWebSearchPreview() {
   const [query, setQuery] = useState("")
   const [phase, setPhase] = useState<"idle" | "searching" | "reading" | "done">("idle")
@@ -58,7 +58,7 @@ export function ClaudeWebSearchPreview() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          placeholder="Search the web..."
+          placeholder="Ask Perplexity anything..."
           className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
         <motion.button
@@ -87,7 +87,7 @@ export function ClaudeWebSearchPreview() {
           >
             <WaveDotsLoader />
             <div>
-              <p className="text-sm font-medium text-foreground">Searching the web...</p>
+              <p className="text-sm font-medium text-foreground">Perplexity is searching...</p>
               <p className="text-xs text-muted-foreground">Querying multiple sources</p>
             </div>
           </motion.div>
@@ -122,7 +122,7 @@ export function ClaudeWebSearchPreview() {
                   </motion.svg>
                 )}
                 <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                  {phase === "reading" ? `Reading sources ${visibleResults}/${results.length}` : `${results.length} results`}
+                  {phase === "reading" ? `Perplexity reading ${visibleResults}/${results.length}` : `${results.length} results`}
                 </span>
               </div>
               {phase === "done" && (
@@ -235,7 +235,7 @@ export function ExaWebSearchPreview() {
           >
             <WaveDotsLoader />
             <div>
-              <p className="text-sm font-medium text-foreground">Neural search...</p>
+              <p className="text-sm font-medium text-foreground">Exa neural search...</p>
               <p className="text-xs text-muted-foreground">Computing semantic embeddings</p>
             </div>
           </motion.div>
@@ -282,7 +282,7 @@ export function ExaWebSearchPreview() {
   )
 }
 
-/* ─── Cheerio Scraper ─── */
+/* ─── Perplexity Scraper ─── */
 export function CheerioScraperPreview() {
   const [url, setUrl] = useState("")
   const [phase, setPhase] = useState<"idle" | "scraping" | "done">("idle")
@@ -343,7 +343,7 @@ export function CheerioScraperPreview() {
           >
             <WaveDotsLoader />
             <div>
-              <p className="text-sm font-medium text-foreground">Scraping page...</p>
+              <p className="text-sm font-medium text-foreground">Perplexity scraping page...</p>
               <p className="text-xs text-muted-foreground">Parsing DOM structure</p>
             </div>
           </motion.div>
@@ -360,7 +360,7 @@ export function CheerioScraperPreview() {
           >
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                DOM Structure
+                Perplexity DOM Structure
               </span>
               <button
                 onClick={() => { setPhase("idle"); setUrl("") }}
@@ -448,8 +448,8 @@ export function JinaScraperPreview() {
           >
             <WaveDotsLoader />
             <div>
-              <p className="text-sm font-medium text-foreground">Extracting content...</p>
-              <p className="text-xs text-muted-foreground">Reader API processing</p>
+              <p className="text-sm font-medium text-foreground">Jina AI extracting content...</p>
+              <p className="text-xs text-muted-foreground">Jina Reader API processing</p>
             </div>
           </motion.div>
         )}
@@ -497,7 +497,7 @@ export function JinaScraperPreview() {
             >
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Extracted Content
+                  Jina AI Extracted Content
                 </span>
                 <button
                   onClick={() => { setPhase("idle"); setUrl("") }}
@@ -521,7 +521,7 @@ export function JinaScraperPreview() {
   )
 }
 
-/* ─── Markdown Scraper ─── */
+/* ─── Firecrawl Markdown Scraper ─── */
 export function MarkdownScraperPreview() {
   const [url, setUrl] = useState("")
   const [phase, setPhase] = useState<"idle" | "converting" | "done">("idle")
@@ -607,7 +607,7 @@ Read the [documentation](https://docs.example.com) for more details.`
           >
             <WaveDotsLoader />
             <div>
-              <p className="text-sm font-medium text-foreground">Fetching page...</p>
+              <p className="text-sm font-medium text-foreground">Firecrawl fetching page...</p>
               <p className="text-xs text-muted-foreground">Converting HTML to Markdown</p>
             </div>
           </motion.div>
@@ -625,7 +625,7 @@ Read the [documentation](https://docs.example.com) for more details.`
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Markdown Output
+                  Firecrawl Output
                 </span>
                 <span className="font-mono text-[10px] tabular-nums text-muted-foreground/40">
                   {markdown.length} chars
@@ -663,7 +663,7 @@ Read the [documentation](https://docs.example.com) for more details.`
   )
 }
 
-/* ─── PDF Analysis ─── */
+/* ─── ChatGPT PDF Analysis ─── */
 export function PDFAnalysisPreview() {
   const [phase, setPhase] = useState<"upload" | "analyzing" | "done">("upload")
 
@@ -732,7 +732,7 @@ export function PDFAnalysisPreview() {
             {phase === "analyzing" && (
               <div className="flex items-center gap-3 px-1">
                 <WaveDotsLoader />
-                <span className="text-sm text-muted-foreground">Analyzing document...</span>
+                <span className="text-sm text-muted-foreground">ChatGPT analyzing document...</span>
               </div>
             )}
 
@@ -750,7 +750,7 @@ export function PDFAnalysisPreview() {
                     className="rounded-xl border border-border bg-card p-4"
                   >
                     <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                      Document Summary
+                      ChatGPT Summary
                     </span>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                       This research paper presents a novel approach to transformer

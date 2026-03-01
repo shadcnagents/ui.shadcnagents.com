@@ -140,7 +140,7 @@ const proFeatures = [
   "Human-in-the-loop workflows",
   "Full-stack templates",
   "Priority updates & new stacks",
-  "14-day money-back guarantee",
+  "30-day money-back guarantee",
 ]
 
 const faqItems = [
@@ -178,7 +178,7 @@ const faqItems = [
     question: "What if it doesn't fit my project?",
     tag: "Guarantee",
     answer:
-      "14-day money-back guarantee, no questions asked. If the stacks don't fit your workflow, you get a full refund.",
+      "30-day money-back guarantee, no questions asked. If the stacks don't fit your workflow, you get a full refund.",
   },
 ]
 

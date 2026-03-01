@@ -64,16 +64,16 @@ export default async function StackPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const registrySource = getStackRegistrySource(slug)
-  const devMode = !!process.env.DEV_PRO_PATH
   const allStacks = getAllStacks()
   const stack = allStacks.find((s) => s.link === `/stacks/${slug}`)
+  // Never send registry source to client for pro stacks — prevents accidental leakage
+  const registrySource = stack?.tier === "pro" ? null : getStackRegistrySource(slug)
+  const devMode = !!process.env.DEV_PRO_PATH
   return (
     <StackPageClient
       slug={slug}
       registrySource={registrySource}
       devMode={devMode}
-      defaultStyle={stack?.style}
     />
   )
 }

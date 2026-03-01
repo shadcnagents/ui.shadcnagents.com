@@ -1,0 +1,400 @@
+# shadcnagents — Full Stack Listing
+
+> Copy-paste Vercel AI SDK components and agent patterns for Next.js. Built with AI SDK v6, shadcn/ui, React 19, Tailwind v4, and TypeScript.
+
+Website: https://shadcnagents.com
+GitHub: https://github.com/shadcnagents/ui
+Twitter: https://x.com/shadcnagents
+
+## Installation
+
+Install any stack with one command:
+```
+npx shadcn@latest add https://shadcnagents.com/r/<stack-name>.json
+```
+
+Each stack is a full vertical slice — UI component, API route, types, and all dependencies wired together.
+
+---
+
+## Foundations (9 stacks)
+
+Core Vercel AI SDK methods with interactive previews.
+
+### generateText()
+
+- **Generate Text** (free) — Basic text generation with AI models
+  URL: https://shadcnagents.com/stacks/basics-generate-text
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-generate-text.json`
+
+- **Multi-Model** (free) — Compare responses across GPT-4o, Claude, and Gemini
+  URL: https://shadcnagents.com/stacks/basics-generate-text-multi-model
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-generate-text-multi-model.json`
+
+- **Prompt Engineering** (free) — System prompts and temperature control
+  URL: https://shadcnagents.com/stacks/basics-generate-text-prompt
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-generate-text-prompt.json`
+
+### streamText()
+
+- **Stream Text** (free) — Real-time token streaming
+  URL: https://shadcnagents.com/stacks/basics-stream-text
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-stream-text.json`
+
+### generateImage()
+
+- **Generate Image** (free) — AI image creation
+  URL: https://shadcnagents.com/stacks/basics-generate-image
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-generate-image.json`
+
+### generateSpeech()
+
+- **Generate Speech** (free) — AI speech synthesis
+  URL: https://shadcnagents.com/stacks/basics-generate-speech
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-generate-speech.json`
+
+### transcribe()
+
+- **Transcribe Audio** (free) — Audio transcription
+  URL: https://shadcnagents.com/stacks/basics-transcribe
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-transcribe.json`
+
+### tool()
+
+- **Tool Calling** (free) — Define and execute tools with AI models
+  URL: https://shadcnagents.com/stacks/basics-tool
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-tool.json`
+
+### Agent
+
+- **Agent Setup** (free) — Basic agent with tool calling loop
+  URL: https://shadcnagents.com/stacks/basics-agent
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/basics-agent.json`
+
+---
+
+## Agent Architecture (10 stacks)
+
+Advanced agent patterns — routing, orchestration, evaluation, and human-in-the-loop flows.
+
+- **Routing Pattern** (free) — Route prompts to specialized agents
+  URL: https://shadcnagents.com/stacks/ai-agents-routing
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-agents-routing.json`
+
+- **Orchestrator-Worker** (pro) — Central orchestrator delegates to worker agents
+  URL: https://shadcnagents.com/stacks/ai-chat-agent-orchestrator-pattern
+
+- **Sub-Agent Orchestrator** (pro) — Hierarchical multi-agent orchestration
+  URL: https://shadcnagents.com/stacks/sub-agent-orchestrator
+
+- **Tool Approval Basic** (free) — Human-in-the-loop tool approval flow
+  URL: https://shadcnagents.com/stacks/ai-human-in-the-loop
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-human-in-the-loop.json`
+
+- **Context Builder** (pro) — Agentic context building with human approval
+  URL: https://shadcnagents.com/stacks/ai-human-in-the-loop-agentic-context-builder
+
+- **Needs Approval** (pro) — Tool approval pattern for chat agents
+  URL: https://shadcnagents.com/stacks/ai-chat-agent-tool-approval
+
+- **Inquire Multi-Choice** (pro) — Agent asks user multiple-choice questions
+  URL: https://shadcnagents.com/stacks/ai-human-in-the-loop-inquire-multiple-choice
+
+- **Inquire Text Input** (pro) — Agent asks user for text input
+  URL: https://shadcnagents.com/stacks/ai-human-in-the-loop-inquire-text
+
+- **Evaluator-Optimizer** (pro) — Self-improving agent with evaluation loop
+  URL: https://shadcnagents.com/stacks/ai-chat-agent-evaluator-optimizer-pattern
+
+- **Multi-Step Tools** (pro) — Agent executes multi-step tool sequences
+  URL: https://shadcnagents.com/stacks/ai-chat-agent-multi-step-tool-pattern
+
+- **Parallel Processing** (free) — Run multiple AI tasks in parallel
+  URL: https://shadcnagents.com/stacks/ai-agents-parallel-processing
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-agents-parallel-processing.json`
+
+---
+
+## Starter Apps (8 stacks)
+
+Full application examples with complete UI and backend.
+
+- **Chat-Base Clone** (pro) — Full chat application starter
+  URL: https://shadcnagents.com/stacks/examples-chat-base-clone
+
+- **Form Generator** (pro) — AI-powered form generation
+  URL: https://shadcnagents.com/stacks/examples-form-generator
+
+- **Data Analysis Agent** (pro) — Agent that analyzes data sets
+  URL: https://shadcnagents.com/stacks/example-agent-data-analysis
+
+- **Branding Agent** (pro) — AI branding assistant
+  URL: https://shadcnagents.com/stacks/example-agent-branding
+
+- **Competitor Research** (pro) — AI competitor analysis agent
+  URL: https://shadcnagents.com/stacks/example-agent-competitor
+
+- **SEO Audit Agent** (pro) — AI SEO auditing tool
+  URL: https://shadcnagents.com/stacks/example-agent-seo-audit
+
+- **Reddit Validation** (pro) — Validate ideas via Reddit analysis
+  URL: https://shadcnagents.com/stacks/example-agent-reddit-validation
+
+- **A11y Audit Agent** (pro) — Accessibility auditing agent
+  URL: https://shadcnagents.com/stacks/example-agent-a11y-audit
+
+---
+
+## Rich Output (11 stacks)
+
+Structured and visual AI output — tables, charts, JSON renders, canvas, and more.
+
+- **Table Editor** (free) — AI-generated editable tables
+  URL: https://shadcnagents.com/stacks/ai-artifact-table
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-artifact-table.json`
+
+- **Chart Generation** (free) — AI-generated charts and visualizations
+  URL: https://shadcnagents.com/stacks/ai-artifact-chart
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-artifact-chart.json`
+
+- **JSON Render Shadcn** (pro) — Render JSON as shadcn/ui components
+  URL: https://shadcnagents.com/stacks/json-render-shadcn
+
+- **JSON Render Generate** (pro) — Generate UI from JSON schema
+  URL: https://shadcnagents.com/stacks/json-render-generate
+
+- **JSON Render PDF** (pro) — Render JSON as PDF documents
+  URL: https://shadcnagents.com/stacks/json-render-pdf
+
+- **JSON Render Remotion** (pro) — Render JSON as Remotion videos
+  URL: https://shadcnagents.com/stacks/json-render-remotion
+
+- **Streaming Markdown** (free) — Real-time markdown rendering from AI stream
+  URL: https://shadcnagents.com/stacks/streaming-markdown-renderer
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/streaming-markdown-renderer.json`
+
+- **Artifact Canvas** (pro) — Interactive canvas for AI-generated content
+  URL: https://shadcnagents.com/stacks/artifact-canvas
+
+- **AI Image Output** (free) — Display AI-generated images
+  URL: https://shadcnagents.com/stacks/ai-image-output
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-image-output.json`
+
+- **Structured Output** (pro) — Typed structured output viewer
+  URL: https://shadcnagents.com/stacks/structured-output-viewer
+
+- **Web Preview** (pro) — Sandboxed web preview of AI-generated code
+  URL: https://shadcnagents.com/stacks/web-preview-sandbox
+
+---
+
+## Connectors (8 stacks)
+
+Web search, scraping, and document processing tools.
+
+- **Claude Web Search** (free) — Web search using Claude's built-in tool
+  URL: https://shadcnagents.com/stacks/tool-websearch-claude
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/tool-websearch-claude.json`
+
+- **Exa Web Search** (free) — Web search using Exa API
+  URL: https://shadcnagents.com/stacks/tool-websearch-exa
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/tool-websearch-exa.json`
+
+- **Exa Labs Search** (pro) — Advanced Exa search with labs features
+  URL: https://shadcnagents.com/stacks/tool-websearch-exa-2
+
+- **Firecrawl Scraper** (pro) — Web scraping with Firecrawl
+  URL: https://shadcnagents.com/stacks/tool-websearch-firecrawl
+
+- **Cheerio Scraper** (free) — Lightweight web scraping with Cheerio
+  URL: https://shadcnagents.com/stacks/cheerio-scraper
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/cheerio-scraper.json`
+
+- **Jina AI Scraper** (free) — Web scraping with Jina AI reader
+  URL: https://shadcnagents.com/stacks/jina-scraper
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/jina-scraper.json`
+
+- **Markdown Scraper** (pro) — Convert web pages to clean markdown
+  URL: https://shadcnagents.com/stacks/markdown-new-scraper
+
+- **PDF Analysis** (free) — Extract and analyze PDF documents
+  URL: https://shadcnagents.com/stacks/ai-pdf-ingest
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-pdf-ingest.json`
+
+---
+
+## Pipelines (7 stacks)
+
+Multi-step AI workflows and prompt pipelines.
+
+- **URL Analysis** (free) — Basic workflow analyzing URLs
+  URL: https://shadcnagents.com/stacks/ai-workflow-basic
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-workflow-basic.json`
+
+- **Sequential Workflow** (pro) — Step-by-step sequential pipeline
+  URL: https://shadcnagents.com/stacks/wdk-workflows-sequential
+
+- **Evaluator Workflow** (pro) — Self-evaluating pipeline
+  URL: https://shadcnagents.com/stacks/wdk-workflows-evaluator
+
+- **Orchestrator Workflow** (pro) — Multi-agent orchestrator pipeline
+  URL: https://shadcnagents.com/stacks/wdk-workflows-orchestrator
+
+- **Parallel Review** (pro) — Parallel review pipeline
+  URL: https://shadcnagents.com/stacks/wdk-workflows-parallel
+
+- **Routing Workflow** (pro) — Route-based workflow pipeline
+  URL: https://shadcnagents.com/stacks/wdk-workflows-routing
+
+- **Few-Shot Editor** (pro) — Few-shot prompt engineering editor
+  URL: https://shadcnagents.com/stacks/ai-sdk-prompt-few-shot
+
+---
+
+## Chat Kit (20 stacks)
+
+Chat interfaces, input components, and display elements.
+
+### Chat Interfaces
+
+- **Basic Chat** (free) — Minimal chat interface
+  URL: https://shadcnagents.com/stacks/ai-elements-chat
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-elements-chat.json`
+
+- **ChatGPT Clone** (pro) — Full ChatGPT-style interface
+  URL: https://shadcnagents.com/stacks/chat-gpt
+
+- **Claude Clone** (pro) — Full Claude-style interface
+  URL: https://shadcnagents.com/stacks/chat-claude
+
+- **Grok Clone** (pro) — Full Grok-style interface
+  URL: https://shadcnagents.com/stacks/chat-grok
+
+### Display Elements
+
+- **Reasoning Display** (free) — Show AI reasoning/thinking process
+  URL: https://shadcnagents.com/stacks/ai-elements-reasoning-chat
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-elements-reasoning-chat.json`
+
+- **Sources & Citations** (free) — Display sources with citations
+  URL: https://shadcnagents.com/stacks/ai-elements-sources-chat
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-elements-sources-chat.json`
+
+- **Inline Citations** (pro) — Inline citation annotations
+  URL: https://shadcnagents.com/stacks/ai-elements-inline-citation
+
+- **Plan Display** (free) — Show AI execution plan steps
+  URL: https://shadcnagents.com/stacks/ai-elements-plan
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-elements-plan.json`
+
+- **Tool Approval** (free) — Confirm tool execution in chat
+  URL: https://shadcnagents.com/stacks/ai-elements-confirmation
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-elements-confirmation.json`
+
+- **Queue Display** (free) — Display queued AI tasks
+  URL: https://shadcnagents.com/stacks/ai-elements-queue
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-elements-queue.json`
+
+### Input Components
+
+- **AI Prompt Input** (free) — Rich prompt input field
+  URL: https://shadcnagents.com/stacks/ai-prompt-input
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-prompt-input.json`
+
+- **Voice Input Button** (pro) — Voice-to-text input button
+  URL: https://shadcnagents.com/stacks/voice-input-button
+
+- **Model Selector** (free) — AI model picker dropdown
+  URL: https://shadcnagents.com/stacks/model-selector
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/model-selector.json`
+
+- **Token Counter** (pro) — Real-time token count display
+  URL: https://shadcnagents.com/stacks/token-counter
+
+- **Prompt Suggestions** (free) — Clickable prompt suggestion pills
+  URL: https://shadcnagents.com/stacks/prompt-suggestion-pills
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/prompt-suggestion-pills.json`
+
+- **Multimodal Upload** (pro) — File and image upload for AI chat
+  URL: https://shadcnagents.com/stacks/multimodal-file-upload
+
+### Chat Features
+
+- **History Sidebar** (pro) — Conversation history sidebar
+  URL: https://shadcnagents.com/stacks/conversation-history-sidebar
+
+- **Message Branch** (pro) — Branch and navigate message threads
+  URL: https://shadcnagents.com/stacks/message-branch-navigator
+
+- **AI Loading States** (free) — Animated loading indicators for AI responses
+  URL: https://shadcnagents.com/stacks/ai-loading-states
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/ai-loading-states.json`
+
+- **Token Stream Effect** (pro) — Animated token streaming visual effect
+  URL: https://shadcnagents.com/stacks/ai-token-stream
+
+---
+
+## Landing Blocks (12 stacks)
+
+Marketing UI components for AI product pages.
+
+- **Code Block 1** (free) — Feature section with code preview
+  URL: https://shadcnagents.com/stacks/marketing-feature-code-block-1
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/marketing-feature-code-block-1.json`
+
+- **Code Block 2** (free) — Feature section with code preview (variant)
+  URL: https://shadcnagents.com/stacks/marketing-feature-code-block-2
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/marketing-feature-code-block-2.json`
+
+- **Code Block 3** (free) — Feature section with code preview (variant)
+  URL: https://shadcnagents.com/stacks/marketing-feature-code-block-3
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/marketing-feature-code-block-3.json`
+
+- **Feature Grid** (pro) — Grid layout for feature showcases
+  URL: https://shadcnagents.com/stacks/marketing-feature-grid-1
+
+- **Bento Layout** (free) — Bento grid for marketing pages
+  URL: https://shadcnagents.com/stacks/marketing-bento-1
+  Install: `npx shadcn@latest add https://shadcnagents.com/r/marketing-bento-1.json`
+
+- **Model Comparison** (pro) — Side-by-side model comparison
+  URL: https://shadcnagents.com/stacks/marketing-model-comparison
+
+- **Comparison Compact** (pro) — Compact model comparison card
+  URL: https://shadcnagents.com/stacks/marketing-model-comparison-compact
+
+- **Comparison Table** (pro) — Detailed model comparison table
+  URL: https://shadcnagents.com/stacks/marketing-model-comparison-table-1
+
+- **Integration Showcase** (pro) — Integration logos and cards
+  URL: https://shadcnagents.com/stacks/marketing-integrations-1
+
+- **Integrations Circle** (pro) — Circular integration display
+  URL: https://shadcnagents.com/stacks/marketing-integrations-2
+
+- **ROI Calculator** (pro) — Interactive AI ROI calculator
+  URL: https://shadcnagents.com/stacks/marketing-calculator-agent-roi
+
+- **Changelog** (pro) — Product changelog component
+  URL: https://shadcnagents.com/stacks/marketing-changelog-1
+
+---
+
+## Supported AI Providers
+
+Works with any Vercel AI SDK-compatible provider:
+- OpenAI (GPT-4o, GPT-4, GPT-3.5)
+- Anthropic (Claude Sonnet 4, Claude Haiku)
+- Google (Gemini Pro, Gemini Flash)
+- Groq
+- Mistral
+- Any custom AI SDK provider
+
+## Links
+
+- Website: https://shadcnagents.com
+- Documentation: https://shadcnagents.com/docs
+- Pricing: https://shadcnagents.com/pricing
+- GitHub: https://github.com/shadcnagents/ui
+- Twitter: https://x.com/shadcnagents

@@ -1,0 +1,47 @@
+# shadcnagents
+
+> Copy-paste Vercel AI SDK components and agent patterns for Next.js. generateText, streamText, tool calling, AI agents, orchestration, and more. Built with AI SDK v6, shadcn/ui, and TypeScript.
+
+shadcnagents is a component registry of 87+ production-ready "stacks" — full vertical slices (UI + API route + types + dependencies) that you install with one CLI command via the shadcn CLI. Each stack demonstrates a specific Vercel AI SDK pattern with a live interactive preview.
+
+## Tech Stack
+
+- Next.js v16 with Turbopack
+- Vercel AI SDK v6
+- React 19
+- Tailwind CSS v4
+- TypeScript
+- shadcn/ui components
+
+## Installation
+
+```
+npx shadcn@latest add https://shadcnagents.com/r/<stack-name>.json
+```
+
+## Key Pages
+
+- Homepage: https://shadcnagents.com
+- All Stacks: https://shadcnagents.com/stacks
+- Documentation: https://shadcnagents.com/docs
+- Pricing: https://shadcnagents.com/pricing
+
+## Stack Categories (8)
+
+- **Foundations** (9 stacks): generateText, streamText, generateImage, generateSpeech, transcribe, tool calling, agent setup
+- **Agent Architecture** (10 stacks): Routing, orchestrator-worker, sub-agent orchestrator, evaluator-optimizer, multi-step tools, parallel processing, human-in-the-loop
+- **Starter Apps** (8 stacks): ChatGPT clone, Claude clone, form generator, data analysis agent, branding agent, SEO audit
+- **Rich Output** (11 stacks): Tables, charts, JSON renders, streaming markdown, artifact canvas, structured output, web preview
+- **Connectors** (8 stacks): Claude/Exa web search, Firecrawl/Cheerio/Jina scrapers, PDF analysis
+- **Pipelines** (7 stacks): Sequential, evaluator, orchestrator, parallel, routing workflows, few-shot editor
+- **Chat Kit** (20 stacks): Chat interfaces, reasoning display, sources & citations, plan display, tool approval, voice input, model selector, token counter, multimodal upload, history sidebar
+- **Landing Blocks** (12 stacks): Bento layouts, code blocks, feature grids, model comparisons, integration showcases, ROI calculator, changelog
+
+## Pricing
+
+- **Free**: 36 open source stacks, MIT licensed
+- **Pro** ($149 lifetime): All 87+ stacks, agent patterns, orchestration, human-in-the-loop workflows, full-stack templates, priority updates
+
+## Detailed Listing
+
+For a complete list of all stacks with descriptions, see: https://shadcnagents.com/llms-full.txt

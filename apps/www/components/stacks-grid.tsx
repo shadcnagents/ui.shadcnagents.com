@@ -8,6 +8,8 @@ import { motion } from "motion/react"
 import { stacksConfig, isSubCategory, type StackItem } from "@/config/stacks"
 import { cn } from "@/lib/utils"
 import { stackPreviewRegistry } from "@/components/stack-previews"
+import { getBrandForStack, getBrandKeyForStack } from "@/config/brands"
+import { brandIconMap } from "@/components/brand-icons"
 
 interface FlatStack extends StackItem {
   categoryName: string
@@ -53,6 +55,7 @@ function flattenStacks(): FlatStack[] {
 function PreviewCard({ stack, index }: { stack: FlatStack; index: number }) {
   const slug = stack.link.replace("/stacks/", "")
   const PreviewComponent = stackPreviewRegistry[slug]
+  const brand = getBrandForStack(slug)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
 
@@ -96,6 +99,7 @@ function PreviewCard({ stack, index }: { stack: FlatStack; index: number }) {
                 width: "200%",
                 height: "200%",
                 transform: "scale(0.5)",
+                ...(brand ? { "--primary": brand.accent, "--color-primary": brand.accent } as React.CSSProperties : {}),
               }}
             >
               <div className="flex h-full w-full items-center justify-center p-6">
@@ -116,7 +120,7 @@ function PreviewCard({ stack, index }: { stack: FlatStack; index: number }) {
 
           {/* Pro badge */}
           {stack.tier === "pro" && (
-            <div className="absolute right-2 top-2 flex items-center gap-1 bg-foreground/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-background">
+            <div className="absolute right-2 top-2 flex items-center gap-1 bg-blue-500 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white">
               <Lock className="size-2.5" />
               Pro
             </div>
@@ -133,9 +137,24 @@ function PreviewCard({ stack, index }: { stack: FlatStack; index: number }) {
               {stack.description}
             </p>
           </div>
-          <span className="shrink-0 mt-0.5 text-[9px] font-medium uppercase tracking-wider text-muted-foreground/40">
-            {stack.categoryName}
-          </span>
+          {brand ? (() => {
+            const brandKey = getBrandKeyForStack(slug)
+            const BrandIcon = brandKey ? brandIconMap[brandKey] : undefined
+            return (
+              <span className="shrink-0 mt-0.5 flex items-center gap-1">
+                {BrandIcon ? (
+                  <BrandIcon className="size-3 text-muted-foreground/60" />
+                ) : (
+                  <span className="size-1.5 rounded-full" style={{ background: brand.accent }} />
+                )}
+                <span className="text-[9px] font-medium text-muted-foreground/50">{brand.name}</span>
+              </span>
+            )
+          })() : (
+            <span className="shrink-0 mt-0.5 text-[9px] font-medium uppercase tracking-wider text-muted-foreground/40">
+              {stack.categoryName}
+            </span>
+          )}
         </div>
       </Link>
     </motion.div>

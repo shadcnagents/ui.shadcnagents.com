@@ -179,17 +179,10 @@ export function GenerateTextPreview() {
           </div>
           <div className="flex items-center justify-between px-3 pb-3">
             <div className="flex items-center gap-1">
-              <button className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card hover:text-foreground">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-              </button>
-              <div className="mx-0.5 h-4 w-px bg-foreground/10" />
-              <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-muted-foreground transition-colors hover:bg-card hover:text-foreground">
-                <span className="size-2 rounded-full bg-orange-400" />
-                <span className="text-sm font-medium">Sonnet</span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M6 9l6 6 6-6" /></svg>
-              </button>
+              <span className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-muted-foreground/60">
+                <span className="size-2 rounded-full bg-[#10a37f]" />
+                <span className="text-sm font-medium">GPT-4o</span>
+              </span>
             </div>
             <motion.button
               onClick={submit}
@@ -425,7 +418,7 @@ export function StreamTextPreview() {
             />
           </div>
           <div className="flex items-center justify-between px-3 pb-3">
-            <span className="text-sm font-medium text-muted-foreground">Stream mode</span>
+            <span className="text-sm font-medium text-muted-foreground">AI SDK Stream</span>
             <motion.button
               onClick={submit}
               disabled={!prompt.trim() || isStreaming}
@@ -568,7 +561,7 @@ export function GenerateImagePreview() {
       />
       <div className="mt-2 flex items-center justify-between">
         <span className="font-mono text-sm text-muted-foreground">
-          512 × 512 · 4 variations
+          DALL·E 3 · 1024×1024
         </span>
         <button
           onClick={generate}
@@ -994,7 +987,7 @@ export function ToolCallingPreview() {
 
       <div className="flex items-center justify-between">
         <span className="font-mono text-sm text-muted-foreground">
-          tool execution
+          Claude Tool Use
         </span>
         <button
           onClick={() => setStep(0)}
@@ -1100,7 +1093,7 @@ export function AgentSetupPreview() {
 
       <div className="flex items-center justify-between">
         <span className="font-mono text-sm text-muted-foreground">
-          agent execution
+          Claude Agent
         </span>
         <button
           onClick={() => setStep(0)}
@@ -1203,7 +1196,7 @@ const MM_MODELS = [
     tokens: 49,
   },
   {
-    name: "Claude 3.5 Sonnet",
+    name: "Claude Sonnet 4",
     color: "#d97757",
     delay: 2500,
     response:
