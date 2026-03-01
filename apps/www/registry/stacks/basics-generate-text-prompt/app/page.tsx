@@ -1,16 +1,16 @@
 import type { Metadata } from "next"
-import { GenerateTextDemo } from "@/components/generate-text-demo"
+import { PromptEngineeringDemo } from "@/components/prompt-demo"
 
 export const metadata: Metadata = {
-  title: "Generate Text — AI SDK",
+  title: "Prompt Engineering — AI SDK",
   description:
-    "Server-side text generation with GPT-4o. Returns typed responses with usage metadata.",
+    "Control AI output with system prompts, persona presets, and temperature tuning.",
 }
 
 export default function Page() {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
-      <GenerateTextDemo />
+      <PromptEngineeringDemo />
     </main>
   )
 }

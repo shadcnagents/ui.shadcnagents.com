@@ -1,11 +1,13 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 
 interface GenerateResult {
   text: string
   meta: {
     model: string
+    system: string | null
+    temperature: number
     promptTokens: number
     completionTokens: number
     totalTokens: number
@@ -13,13 +15,33 @@ interface GenerateResult {
   }
 }
 
-export function GenerateTextDemo() {
+const PRESETS = [
+  {
+    label: "Concise",
+    system:
+      "You are a concise technical writer. Use bullet points. Be direct and precise.",
+  },
+  {
+    label: "Creative",
+    system:
+      "You are a creative writer. Use vivid metaphors, storytelling, and expressive language.",
+  },
+  {
+    label: "ELI5",
+    system:
+      "Explain concepts as if speaking to a 5-year-old. Use simple words and fun analogies.",
+  },
+]
+
+export function PromptEngineeringDemo() {
+  const [system, setSystem] = useState(PRESETS[0].system)
   const [prompt, setPrompt] = useState("")
+  const [temperature, setTemperature] = useState(0.7)
   const [result, setResult] = useState<GenerateResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [activePreset, setActivePreset] = useState(0)
 
   const generate = useCallback(async () => {
     if (!prompt.trim() || loading) return
@@ -28,10 +50,14 @@ export function GenerateTextDemo() {
     setError(null)
 
     try {
-      const res = await fetch("/api/generate-text", {
+      const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: prompt.trim() }),
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          system: system.trim() || undefined,
+          temperature,
+        }),
       })
       if (!res.ok) throw new Error(await res.text())
       setResult(await res.json())
@@ -40,7 +66,7 @@ export function GenerateTextDemo() {
     } finally {
       setLoading(false)
     }
-  }, [prompt, loading])
+  }, [prompt, system, temperature, loading])
 
   function copyText() {
     if (!result?.text) return
@@ -49,14 +75,49 @@ export function GenerateTextDemo() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const wordCount = prompt.trim() ? prompt.trim().split(/\s+/).length : 0
+  function selectPreset(idx: number) {
+    setActivePreset(idx)
+    setSystem(PRESETS[idx].system)
+  }
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-4">
-      {/* Input */}
+      {/* System prompt */}
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            System Prompt
+          </label>
+          <div className="flex gap-1">
+            {PRESETS.map((preset, i) => (
+              <button
+                key={preset.label}
+                onClick={() => selectPreset(i)}
+                className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium transition-colors ${
+                  activePreset === i
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <textarea
+          value={system}
+          onChange={(e) => {
+            setSystem(e.target.value)
+            setActivePreset(-1)
+          }}
+          rows={2}
+          className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 font-mono text-xs leading-relaxed text-foreground/70 shadow-xs outline-none placeholder:text-muted-foreground/50 focus-visible:border-foreground/20"
+        />
+      </div>
+
+      {/* Prompt + controls */}
       <div className="rounded-xl border border-input bg-background shadow-xs">
         <textarea
-          ref={textareaRef}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => {
@@ -65,18 +126,32 @@ export function GenerateTextDemo() {
               generate()
             }
           }}
-          placeholder="Summarize the key points of a quarterly earnings report..."
-          rows={4}
+          placeholder="What is recursion?"
+          rows={2}
           className="w-full resize-none rounded-xl bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/50"
         />
         <div className="flex items-center justify-between border-t border-border/50 px-4 py-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="rounded-md bg-muted/80 px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
               gpt-4o
             </span>
-            <span className="text-[11px] text-muted-foreground/50">
-              {wordCount > 0 ? `${wordCount} words` : "\u2318\u21B5 to generate"}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-mono text-[11px] text-muted-foreground/60">
+                temp
+              </span>
+              <input
+                type="range"
+                min="0"
+                max="2"
+                step="0.1"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                className="h-[3px] w-16 cursor-pointer appearance-none rounded-full bg-foreground/15 accent-primary [&::-webkit-slider-thumb]:size-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-moz-range-thumb]:size-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary"
+              />
+              <span className="w-5 font-mono text-[11px] tabular-nums text-muted-foreground">
+                {temperature.toFixed(1)}
+              </span>
+            </div>
           </div>
           <button
             onClick={generate}
@@ -94,7 +169,6 @@ export function GenerateTextDemo() {
           <div className="h-3 w-3/4 animate-pulse rounded-full bg-muted" />
           <div className="h-3 w-full animate-pulse rounded-full bg-muted" />
           <div className="h-3 w-5/6 animate-pulse rounded-full bg-muted" />
-          <div className="h-3 w-2/3 animate-pulse rounded-full bg-muted" />
         </div>
       )}
 
@@ -121,7 +195,11 @@ export function GenerateTextDemo() {
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             ) : (
               <svg
@@ -143,7 +221,7 @@ export function GenerateTextDemo() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 border-t border-border/50 px-4 py-2">
+          <div className="flex flex-wrap items-center gap-3 border-t border-border/50 px-4 py-2">
             <span className="font-mono text-[11px] text-muted-foreground">
               {result.meta.model}
             </span>
@@ -154,6 +232,10 @@ export function GenerateTextDemo() {
             <span className="text-muted-foreground/30">&middot;</span>
             <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
               {result.meta.latencyMs}ms
+            </span>
+            <span className="text-muted-foreground/30">&middot;</span>
+            <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+              temp {result.meta.temperature.toFixed(1)}
             </span>
           </div>
         </div>

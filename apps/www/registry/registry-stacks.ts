@@ -14,7 +14,7 @@ export const stacks: Registry["items"] = [
   {
     name: "basics-generate-text",
     type: "registry:block",
-    description: "Generate text with GPT-4o using the Vercel AI SDK.",
+    description: "Server-side text generation with usage metadata and GPT-4o.",
     dependencies: ["ai", "@ai-sdk/openai"],
     files: [
       {
@@ -36,6 +36,71 @@ export const stacks: Registry["items"] = [
         path: "registry/stacks/basics-generate-text/components/generate-text-demo.tsx",
         type: "registry:component",
         target: "components/generate-text-demo.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "basics-generate-text-multi-model",
+    type: "registry:block",
+    description:
+      "Compare GPT-4o, Claude Sonnet 4, and Gemini 2.0 Flash responses side by side.",
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/anthropic",
+      "@ai-sdk/google",
+    ],
+    files: [
+      {
+        path: "registry/stacks/basics-generate-text-multi-model/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/basics-generate-text-multi-model/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/basics-generate-text-multi-model/app/api/compare/route.ts",
+        type: "registry:file",
+        target: "app/api/compare/route.ts",
+      },
+      {
+        path: "registry/stacks/basics-generate-text-multi-model/components/multi-model-demo.tsx",
+        type: "registry:component",
+        target: "components/multi-model-demo.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "basics-generate-text-prompt",
+    type: "registry:block",
+    description:
+      "System prompts, persona presets, and temperature control for text generation.",
+    dependencies: ["ai", "@ai-sdk/openai"],
+    files: [
+      {
+        path: "registry/stacks/basics-generate-text-prompt/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/basics-generate-text-prompt/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/basics-generate-text-prompt/app/api/generate/route.ts",
+        type: "registry:file",
+        target: "app/api/generate/route.ts",
+      },
+      {
+        path: "registry/stacks/basics-generate-text-prompt/components/prompt-demo.tsx",
+        type: "registry:component",
+        target: "components/prompt-demo.tsx",
       },
     ],
   },
@@ -101,8 +166,8 @@ export const stacks: Registry["items"] = [
   {
     name: "basics-generate-speech",
     type: "registry:block",
-    description: "Convert text to natural-sounding audio using OpenAI TTS and the Vercel AI SDK.",
-    dependencies: ["ai", "@ai-sdk/openai"],
+    description: "Text-to-speech with audio-reactive orb and live waveform visualization. OpenAI TTS, 6 voices, Web Audio API volume tracking.",
+    dependencies: ["ai", "@ai-sdk/openai", "@react-three/fiber", "three"],
     files: [
       {
         path: "registry/stacks/basics-generate-speech/app/page.tsx",
@@ -118,6 +183,16 @@ export const stacks: Registry["items"] = [
         path: "registry/stacks/basics-generate-speech/app/api/speech/route.ts",
         type: "registry:file",
         target: "app/api/speech/route.ts",
+      },
+      {
+        path: "registry/stacks/basics-generate-speech/components/ui/orb.tsx",
+        type: "registry:component",
+        target: "components/ui/orb.tsx",
+      },
+      {
+        path: "registry/stacks/basics-generate-speech/components/ui/live-waveform.tsx",
+        type: "registry:component",
+        target: "components/ui/live-waveform.tsx",
       },
       {
         path: "registry/stacks/basics-generate-speech/components/generate-speech-demo.tsx",

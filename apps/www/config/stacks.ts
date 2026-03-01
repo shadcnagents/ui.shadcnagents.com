@@ -34,19 +34,19 @@ export const stacksConfig: StackCategory[] = [
         children: [
           {
             text: "Generate Text",
-            description: "Basic text generation with AI models",
+            description: "Server-side text generation with usage metadata",
             link: "/stacks/basics-generate-text",
             tier: "free",
           },
           {
-            text: "Multi-Model",
-            description: "Compare responses across GPT-4o, Claude, and Gemini",
+            text: "Model A/B Testing",
+            description: "Compare GPT-4o, Claude, and Gemini side-by-side",
             link: "/stacks/basics-generate-text-multi-model",
             tier: "free",
           },
           {
-            text: "Prompt Engineering",
-            description: "System prompts and temperature control",
+            text: "System Prompts",
+            description: "Persona presets, temperature, and prompt configuration",
             link: "/stacks/basics-generate-text-prompt",
             tier: "free",
           },

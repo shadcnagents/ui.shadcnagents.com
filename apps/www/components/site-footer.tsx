@@ -230,7 +230,9 @@ export function SiteFooter() {
           {/* Copyright + socials */}
           <div className="flex items-center gap-4">
             <span className="font-mono text-[11px] tracking-wider text-muted-foreground/60">
-              &copy; {new Date().getFullYear()} shadcnagents
+              &copy; {new Date().getFullYear()} shadcnagents &middot; All
+              product names, logos, and brands are property of their respective
+              owners.
             </span>
             <div className="flex items-center gap-1">
               <Link
