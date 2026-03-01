@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { WaveDotsLoader, SuggestionPills, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
-/* ─── Basic Chat ─── */
+/* ─── Basic Chat · OpenAI (ChatGPT) ─── */
 
 const CHAT_PLACEHOLDERS = [
-  "Ask me anything...",
+  "Ask ChatGPT anything...",
   "Explain quantum computing...",
   "Help me debug this code...",
   "Write a haiku about AI...",
@@ -20,7 +20,7 @@ export function BasicChatPreview() {
   const [messages, setMessages] = useState<
     { role: "user" | "assistant"; content: string }[]
   >([
-    { role: "assistant", content: "Hello! How can I help you today?" },
+    { role: "assistant", content: "Hello! I'm ChatGPT. How can I help you today?" },
   ])
   const [input, setInput] = useState("")
   const [state, setState] = useState<"idle" | "thinking" | "streaming">("idle")
@@ -138,7 +138,7 @@ export function BasicChatPreview() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Type a message..."
+            placeholder="Message ChatGPT..."
             className="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
           <motion.button
@@ -162,7 +162,7 @@ export function BasicChatPreview() {
   )
 }
 
-/* ─── Reasoning Display ─── */
+/* ─── Reasoning Display · DeepSeek ─── */
 export function ReasoningChatPreview() {
   const [showThinking, setShowThinking] = useState(true)
 
@@ -204,7 +204,7 @@ export function ReasoningChatPreview() {
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>
-          Thinking
+          DeepThink
           <span className="font-mono text-xs tabular-nums font-normal text-muted-foreground/60">
             324ms
           </span>
@@ -239,7 +239,7 @@ export function ReasoningChatPreview() {
   )
 }
 
-/* ─── Sources & Citations ─── */
+/* ─── Sources & Citations · Perplexity ─── */
 export function SourcesChatPreview() {
   const sources = [
     { title: "Transformer Architecture", url: "arxiv.org", year: "2017" },
@@ -314,7 +314,7 @@ export function SourcesChatPreview() {
   )
 }
 
-/* ─── Plan Display ─── */
+/* ─── Plan Display · Devin ─── */
 export function PlanDisplayPreview() {
   const [completedSteps, setCompletedSteps] = useState(0)
 
@@ -342,7 +342,7 @@ export function PlanDisplayPreview() {
 
       <div className="mb-4 flex items-center justify-between">
         <span className="text-sm font-semibold text-foreground">
-          Execution Plan
+          Devin&apos;s Plan
         </span>
         <span className="font-mono text-xs tabular-nums text-muted-foreground">
           {completedSteps}/{steps.length}
@@ -437,7 +437,7 @@ export function PlanDisplayPreview() {
   )
 }
 
-/* ─── Tool Approval / Confirmation ─── */
+/* ─── Tool Approval / Confirmation · Anthropic (Claude) ─── */
 export function ToolApprovalPreview() {
   const [status, setStatus] = useState<"pending" | "approved" | "denied">(
     "pending"
@@ -463,7 +463,7 @@ export function ToolApprovalPreview() {
         className="space-y-3"
       >
         <div className="rounded-2xl bg-card px-3.5 py-2.5 text-sm text-foreground">
-          I need to run a destructive operation. Please confirm:
+          Claude needs to run a destructive operation. Please confirm:
         </div>
 
         <div className="rounded-xl border border-border bg-card/50 p-4 backdrop-blur-xl">
@@ -575,14 +575,14 @@ export function ToolApprovalPreview() {
   )
 }
 
-/* ─── Queue Display ─── */
+/* ─── Queue Display · Linear ─── */
 export function QueueDisplayPreview() {
   const [tasks, setTasks] = useState([
-    { id: 1, name: "Fetch user data", status: "done" as const },
-    { id: 2, name: "Process analytics", status: "done" as const },
-    { id: 3, name: "Generate report", status: "running" as const },
-    { id: 4, name: "Send notifications", status: "queued" as const },
-    { id: 5, name: "Update dashboard", status: "queued" as const },
+    { id: 1, name: "LIN-101 Fetch user data", status: "done" as const },
+    { id: 2, name: "LIN-102 Process analytics", status: "done" as const },
+    { id: 3, name: "LIN-103 Generate report", status: "running" as const },
+    { id: 4, name: "LIN-104 Send notifications", status: "queued" as const },
+    { id: 5, name: "LIN-105 Update dashboard", status: "queued" as const },
   ])
 
   useEffect(() => {
@@ -608,7 +608,7 @@ export function QueueDisplayPreview() {
       <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
 
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-sm font-semibold text-foreground">Task Queue</span>
+        <span className="text-sm font-semibold text-foreground">Linear Queue</span>
         <span className="font-mono text-xs tabular-nums text-muted-foreground">
           {done}/{tasks.length}
         </span>
@@ -694,11 +694,11 @@ export function QueueDisplayPreview() {
             <button
               onClick={() =>
                 setTasks([
-                  { id: 1, name: "Fetch user data", status: "done" },
-                  { id: 2, name: "Process analytics", status: "done" },
-                  { id: 3, name: "Generate report", status: "running" },
-                  { id: 4, name: "Send notifications", status: "queued" },
-                  { id: 5, name: "Update dashboard", status: "queued" },
+                  { id: 1, name: "LIN-101 Fetch user data", status: "done" },
+                  { id: 2, name: "LIN-102 Process analytics", status: "done" },
+                  { id: 3, name: "LIN-103 Generate report", status: "running" },
+                  { id: 4, name: "LIN-104 Send notifications", status: "queued" },
+                  { id: 5, name: "LIN-105 Update dashboard", status: "queued" },
                 ])
               }
               className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"

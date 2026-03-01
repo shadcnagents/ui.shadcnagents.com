@@ -4,7 +4,7 @@ import { useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { SPRING, FADE_UP, STAGGER } from "./shared"
 
-/* ─── Table Editor ─── */
+/* ─── Notion Table ─── */
 export function TableEditorPreview() {
   const [data, setData] = useState([
     { id: 1, name: "GPT-4o", provider: "OpenAI", latency: "320ms", cost: "$0.005" },
@@ -28,7 +28,7 @@ export function TableEditorPreview() {
     <div className="mx-auto w-full max-w-2xl p-6">
       <div className="mb-4 flex items-center justify-between">
         <span className="text-sm font-semibold text-foreground">
-          AI Model Comparison
+          Notion Table
         </span>
         <span className="font-mono text-xs text-muted-foreground">
           Click to edit
@@ -101,7 +101,7 @@ export function TableEditorPreview() {
   )
 }
 
-/* ─── Chart Generation ─── */
+/* ─── ChatGPT Charts ─── */
 export function ChartGenerationPreview() {
   const [chartType, setChartType] = useState<"bar" | "line">("bar")
 
@@ -121,7 +121,7 @@ export function ChartGenerationPreview() {
     <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-5 flex items-center justify-between">
         <span className="text-sm font-semibold text-foreground">
-          API Usage Over Time
+          ChatGPT Charts
         </span>
         <div className="flex gap-0.5 rounded-lg border border-border p-0.5">
           {(["bar", "line"] as const).map((type) => (

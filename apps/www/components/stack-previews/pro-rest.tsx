@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { cn } from "@/lib/utils"
-import { SuggestionPills } from "./shared"
+import { SuggestionPills, WaveDotsLoader, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ══════════════════════════════════════════
    Rich Output Previews
@@ -11,26 +11,63 @@ import { SuggestionPills } from "./shared"
 
 /* ─── JSON → shadcn Render ─── */
 export function JSONRenderShadcnPreview() {
+  const [phase, setPhase] = useState(0)
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 800)
+    const t2 = setTimeout(() => setPhase(2), 1800)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [])
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
       <div className="mb-4">
         <span className="text-sm font-medium text-foreground">JSON → shadcn/ui</span>
-        <p className="mt-1 text-sm text-muted-foreground">Render structured data as UI components</p>
+        <p className="mt-1 text-xs text-muted-foreground">Render structured data as shadcn/ui components</p>
       </div>
       <div className="space-y-3">
-        <div className="rounded-md border border-border bg-card p-3 font-mono text-sm text-muted-foreground">
-          {`{ "type": "card", "title": "Revenue", "value": "$12,450" }`}
-        </div>
-        <div className="flex items-center justify-center py-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-        <div className="rounded-lg border border-border shadow-sm p-4">
-          <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Revenue</p>
-          <p className="mt-1 text-2xl font-bold text-foreground">$12,450</p>
-          <p className="mt-0.5 text-sm text-muted-foreground">+12.5% from last month</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...SPRING }}
+          className="rounded-xl border border-border bg-card p-3 font-mono text-sm text-muted-foreground"
+        >
+          {`{ "type": "shadcn/card", "title": "Revenue", "value": "$12,450" }`}
+        </motion.div>
+
+        {phase >= 1 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ ...SPRING }}
+            className="flex items-center justify-center py-2"
+          >
+            {phase < 2 ? (
+              <WaveDotsLoader />
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/70">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            )}
+          </motion.div>
+        )}
+
+        <AnimatePresence>
+          {phase >= 2 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...SPRING }}
+              className="rounded-xl border border-border p-4"
+            >
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Revenue</p>
+              <p className="mt-1 text-2xl font-bold text-foreground">$12,450</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">+12.5% from last month</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
@@ -41,29 +78,44 @@ export function JSONRenderGeneratePreview() {
   const [mode, setMode] = useState<"json" | "code">("json")
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-sm font-medium text-foreground">JSON → Code Generator</span>
-        <div className="flex gap-1 rounded-md border border-border p-0.5">
+        <span className="text-sm font-medium text-foreground">v0 Code Generator</span>
+        <div className="flex gap-1 rounded-xl border border-border p-0.5">
           {(["json", "code"] as const).map((m) => (
-            <button key={m} onClick={() => setMode(m)} className={`rounded px-2.5 py-1 text-sm font-medium capitalize ${mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+            <button key={m} onClick={() => setMode(m)} className={`rounded-lg px-2.5 py-1 text-xs font-medium capitalize transition-all duration-150 ${mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
               {m}
             </button>
           ))}
         </div>
       </div>
-      <div className="rounded-md border border-border bg-card p-4 font-mono text-sm">
-        {mode === "json" ? (
-          <pre className="text-muted-foreground">{`{
+      <div className="overflow-hidden rounded-xl border border-border bg-card p-4 font-mono text-sm">
+        <AnimatePresence mode="wait">
+          {mode === "json" ? (
+            <motion.pre
+              key="json"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ ...SPRING }}
+              className="text-muted-foreground"
+            >{`{
   "component": "UserCard",
   "props": {
     "name": "John Doe",
     "email": "john@example.com",
     "avatar": "/avatars/john.jpg"
   }
-}`}</pre>
-        ) : (
-          <pre className="text-foreground">{`export function UserCard() {
+}`}</motion.pre>
+          ) : (
+            <motion.pre
+              key="code"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ ...SPRING }}
+              className="text-foreground"
+            >{`export function UserCard() {
   return (
     <div className="flex items-center gap-3">
       <Avatar src="/avatars/john.jpg" />
@@ -73,8 +125,9 @@ export function JSONRenderGeneratePreview() {
       </div>
     </div>
   )
-}`}</pre>
-        )}
+}`}</motion.pre>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
@@ -82,37 +135,79 @@ export function JSONRenderGeneratePreview() {
 
 /* ─── JSON → PDF ─── */
 export function JSONRenderPDFPreview() {
+  const [generated, setGenerated] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setGenerated(true), 1200)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const items = [
+    { item: "Pro Subscription", qty: 1, price: "$49" },
+    { item: "Extra Seats", qty: 3, price: "$30" },
+  ]
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">JSON → PDF Export</span>
+        <span className="text-sm font-medium text-foreground">Adobe PDF Export</span>
       </div>
-      <div className="rounded-md border border-border bg-card p-6">
-        <div className="border-b border-border pb-3">
-          <p className="text-sm font-bold text-foreground">Invoice #2024-001</p>
-          <p className="text-sm text-muted-foreground">December 15, 2024</p>
+
+      {!generated ? (
+        <div className="flex items-center gap-3 py-8">
+          <WaveDotsLoader />
+          <span className="text-sm text-muted-foreground">Generating invoice...</span>
         </div>
-        <div className="mt-3 space-y-2">
-          {[
-            { item: "Pro Subscription", qty: 1, price: "$49" },
-            { item: "Extra Seats", qty: 3, price: "$30" },
-          ].map((row) => (
-            <div key={row.item} className="flex justify-between text-sm text-muted-foreground">
-              <span>{row.item} x{row.qty}</span>
-              <span>{row.price}</span>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...SPRING }}
+        >
+          <div className="rounded-xl border border-border bg-card p-6">
+            <div className="border-b border-border pb-3">
+              <p className="text-sm font-bold text-foreground">Invoice #2024-001</p>
+              <p className="text-xs text-muted-foreground">December 15, 2024</p>
             </div>
-          ))}
-          <div className="flex justify-between border-t border-border pt-2 text-sm font-medium text-foreground">
-            <span>Total</span>
-            <span>$79.00</span>
+            <motion.div
+              initial="initial"
+              animate="animate"
+              variants={{ animate: { ...STAGGER } }}
+              className="mt-3 space-y-2"
+            >
+              {items.map((row) => (
+                <motion.div
+                  key={row.item}
+                  variants={FADE_UP}
+                  transition={{ ...SPRING }}
+                  className="flex justify-between text-sm text-muted-foreground"
+                >
+                  <span>{row.item} x{row.qty}</span>
+                  <span>{row.price}</span>
+                </motion.div>
+              ))}
+              <motion.div
+                variants={FADE_UP}
+                transition={{ ...SPRING }}
+                className="flex justify-between border-t border-border pt-2 text-sm font-medium text-foreground"
+              >
+                <span>Total</span>
+                <span>$79.00</span>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-      </div>
-      <div className="mt-3 flex justify-end">
-        <div className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background">
-          Export PDF
-        </div>
-      </div>
+          <div className="mt-3 flex justify-end">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="rounded-xl bg-foreground px-3 py-1.5 text-sm font-medium text-background"
+            >
+              Export via Adobe
+            </motion.button>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }
@@ -127,28 +222,44 @@ export function JSONRenderRemotionPreview() {
   }, [])
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
         <span className="text-sm font-medium text-foreground">JSON → Remotion Video</span>
       </div>
-      <div className="overflow-hidden rounded-md border border-border">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...SPRING }}
+        className="overflow-hidden rounded-xl border border-border"
+      >
         <div className="flex aspect-video items-center justify-center bg-muted/30">
           <div className="text-center" style={{ opacity: Math.min(1, frame / 15) }}>
-            <p className="text-lg font-bold text-foreground">Welcome</p>
+            <motion.p
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...SPRING }}
+              className="text-lg font-bold text-foreground"
+            >
+              Welcome
+            </motion.p>
             <p className="mt-1 text-sm text-muted-foreground" style={{ opacity: Math.min(1, Math.max(0, (frame - 20) / 15)) }}>
-              AI-generated video from structured data
+              Remotion-powered video from structured data
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3 border-t border-border px-3 py-2">
           <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-foreground/40 transition-all" style={{ width: `${(frame / 60) * 100}%` }} />
+            <motion.div
+              className="h-full rounded-full bg-primary/40"
+              animate={{ width: `${(frame / 60) * 100}%` }}
+              transition={{ duration: 0.1 }}
+            />
           </div>
-          <span className="font-mono text-sm text-muted-foreground">
+          <span className="font-mono text-xs text-muted-foreground">
             {Math.floor(frame / 30)}:{String(frame % 30).padStart(2, "0")}
           </span>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -159,55 +270,155 @@ export function JSONRenderRemotionPreview() {
 
 /* ─── Web Preview Sandbox ─── */
 export function WebPreviewSandboxPreview() {
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoaded(true), 1400)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
-      <div className="overflow-hidden rounded-md border border-border">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...SPRING }}
+        className="overflow-hidden rounded-xl border border-border"
+      >
         <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-3 py-2">
-          <div className="flex gap-1">
-            <div className="size-2.5 rounded-full bg-red-400/60" />
-            <div className="size-2.5 rounded-full bg-yellow-400/60" />
-            <div className="size-2.5 rounded-full bg-green-400/60" />
-          </div>
-          <div className="flex-1 rounded bg-card px-2 py-0.5 text-center text-sm text-muted-foreground">
-            localhost:3000
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={{ animate: { ...STAGGER } }}
+            className="flex gap-1"
+          >
+            {["bg-red-400/60", "bg-yellow-400/60", "bg-green-400/60"].map((c) => (
+              <motion.div
+                key={c}
+                variants={FADE_UP}
+                transition={{ ...SPRING }}
+                className={`size-2.5 rounded-full ${c}`}
+              />
+            ))}
+          </motion.div>
+          <div className="flex-1 rounded-lg bg-card px-2 py-0.5 text-center text-xs text-muted-foreground">
+            v0.dev/preview
           </div>
         </div>
         <div className="flex aspect-[16/10] items-center justify-center bg-card">
-          <div className="text-center">
-            <p className="text-sm font-medium text-foreground">Live Preview</p>
-            <p className="mt-1 text-sm text-muted-foreground">Sandboxed web preview of generated code</p>
-          </div>
+          {!loaded ? (
+            <div className="flex items-center gap-2">
+              <WaveDotsLoader />
+              <span className="text-xs text-muted-foreground">Loading preview...</span>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ ...SPRING }}
+              className="text-center"
+            >
+              <p className="text-sm font-medium text-foreground">v0 Live Preview</p>
+              <p className="mt-1 text-xs text-muted-foreground">Sandboxed v0 preview of generated code</p>
+            </motion.div>
+          )}
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 /* ─── Exa Web Search v2 ─── */
 export function ExaWebSearch2Preview() {
+  const [query, setQuery] = useState("")
+  const [phase, setPhase] = useState<"idle" | "searching" | "done">("idle")
+
+  const results = [
+    { title: "Building AI-powered apps with Next.js", url: "exa.ai/docs", score: 0.95 },
+    { title: "Exa neural search for semantic retrieval", url: "exa.ai/blog", score: 0.89 },
+    { title: "RAG patterns with Exa embeddings", url: "exa.ai/examples", score: 0.84 },
+  ]
+
+  function handleSearch() {
+    if (!query.trim() || phase === "searching") return
+    setPhase("searching")
+    setTimeout(() => setPhase("done"), 1500)
+  }
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
-      <div className="mb-4">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="mb-2">
         <span className="text-sm font-medium text-foreground">Exa Neural Search v2</span>
       </div>
-      <div className="mb-4 flex h-9 items-center rounded-md border border-border px-3">
-        <span className="text-sm text-muted-foreground/80">Search with neural embeddings…</span>
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-background px-3 py-2 transition-all duration-150 focus-within:border-foreground/30 focus-within:shadow-md">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          placeholder="Search with Exa neural embeddings..."
+          className="h-9 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        />
+        <motion.button
+          onClick={handleSearch}
+          disabled={phase === "searching"}
+          whileTap={{ scale: 0.95 }}
+          className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
+            query.trim() && phase !== "searching"
+              ? "bg-primary text-primary-foreground"
+              : "bg-foreground/10 text-muted-foreground/50"
+          }`}
+        >
+          Search
+        </motion.button>
       </div>
-      <div className="space-y-2">
-        {[
-          { title: "Building AI-powered apps with Next.js", url: "vercel.com", score: 0.95 },
-          { title: "The future of semantic search", url: "arxiv.org", score: 0.89 },
-          { title: "RAG patterns for production", url: "langchain.dev", score: 0.84 },
-        ].map((r) => (
-          <div key={r.title} className="rounded-md border border-border px-4 py-3">
-            <p className="text-sm font-medium text-foreground">{r.title}</p>
-            <div className="mt-1 flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{r.url}</span>
-              <span className="font-mono text-sm text-muted-foreground/80">score: {r.score}</span>
+
+      <AnimatePresence>
+        {phase === "searching" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+          >
+            <WaveDotsLoader />
+            <div>
+              <p className="text-sm font-medium text-foreground">Exa neural search...</p>
+              <p className="text-xs text-muted-foreground">Computing semantic embeddings</p>
             </div>
-          </div>
-        ))}
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {phase === "done" && (
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={{ animate: { ...STAGGER } }}
+            className="space-y-2"
+          >
+            {results.map((r, i) => (
+              <motion.div
+                key={r.title}
+                variants={FADE_UP}
+                transition={{ ...SPRING }}
+                className="rounded-xl border border-border px-4 py-3 transition-all duration-150 hover:bg-card"
+              >
+                <p className="text-sm font-medium text-foreground">{r.title}</p>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{r.url}</span>
+                  <span className="font-mono text-xs text-muted-foreground/80">score: {r.score}</span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -221,33 +432,60 @@ export function FirecrawlScraperPreview() {
     return () => clearInterval(timer)
   }, [])
 
-  const steps = ["Crawling pages", "Extracting content", "Converting to markdown"]
+  const steps = ["Firecrawl crawling pages", "Firecrawl extracting content", "Converting to markdown"]
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
-      <div className="mb-4">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
+      <div className="mb-4 flex items-center justify-between">
         <span className="text-sm font-medium text-foreground">Firecrawl Web Scraper</span>
+        <span className="font-mono text-xs tabular-nums text-muted-foreground">
+          {Math.min(step, steps.length)}/{steps.length}
+        </span>
       </div>
-      <div className="mb-4 space-y-1">
+      <div className="mb-4 space-y-0.5">
         {steps.map((s, i) => (
-          <div key={s} className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm transition-opacity ${i <= step ? "opacity-100" : "opacity-50"}`}>
-            {i < step ? (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-foreground/80"><polyline points="20 6 9 17 4 12" /></svg>
-            ) : i === step ? (
-              <div className="size-3 animate-spin rounded-full border border-border border-t-foreground" />
-            ) : (
-              <div className="size-2 rounded-full bg-foreground/15" />
-            )}
-            <span className="text-muted-foreground">{s}</span>
-          </div>
+          <motion.div
+            key={s}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: i <= step ? 1 : 0.3, x: 0 }}
+            transition={{ ...SPRING, delay: i * 0.06 }}
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+          >
+            <div className="flex size-5 shrink-0 items-center justify-center">
+              {i < step ? (
+                <motion.svg
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ ...SPRING }}
+                  width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </motion.svg>
+              ) : i === step ? (
+                <WaveDotsLoader />
+              ) : (
+                <div className="size-2 rounded-full bg-foreground/15" />
+              )}
+            </div>
+            <span className={`text-sm ${i <= step ? "text-muted-foreground" : "text-muted-foreground/60"}`}>{s}</span>
+          </motion.div>
         ))}
       </div>
-      {step >= 3 && (
-        <div className="rounded-md border border-border bg-card p-3 font-mono text-sm text-muted-foreground">
-          # Extracted Content<br />
-          12 pages crawled, 45KB markdown generated
-        </div>
-      )}
+      <AnimatePresence>
+        {step >= 3 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="rounded-xl border border-border bg-card p-3 font-mono text-sm text-muted-foreground"
+          >
+            # Firecrawl Output<br />
+            12 pages crawled, 45KB markdown generated
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -267,27 +505,52 @@ export function SequentialWorkflowPreview() {
   }, [])
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
       <div className="mb-6">
-        <span className="text-sm font-medium text-foreground">Sequential Pipeline</span>
+        <span className="text-sm font-medium text-foreground">LangChain Sequential Pipeline</span>
       </div>
       <div className="flex items-center justify-between">
         {steps.map((s, i) => (
           <div key={s} className="flex items-center">
-            <div className={`flex size-10 items-center justify-center rounded-full border-2 text-sm font-medium transition-all ${
-              i < active ? "border-foreground/30 bg-foreground/[0.05] text-foreground" : i === active ? "border-foreground bg-primary text-primary-foreground" : "border-border text-muted-foreground"
-            }`}>
-              {i < active ? "✓" : i + 1}
-            </div>
+            <motion.div
+              animate={{
+                backgroundColor: i < active ? "var(--color-primary)" : i === active ? "var(--color-primary)" : "transparent",
+                color: i <= active ? "var(--color-primary-foreground)" : "var(--color-muted-foreground)",
+                borderColor: i <= active ? "var(--color-primary)" : "var(--color-border)",
+              }}
+              transition={{ duration: 0.2 }}
+              className="flex size-10 items-center justify-center rounded-full border-2 text-sm font-medium"
+            >
+              {i < active ? (
+                <motion.svg
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ ...SPRING }}
+                  width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </motion.svg>
+              ) : i === active ? (
+                <WaveDotsLoader />
+              ) : (
+                i + 1
+              )}
+            </motion.div>
             {i < steps.length - 1 && (
-              <div className={`mx-1 h-px w-8 transition-colors ${i < active ? "bg-foreground/30" : "bg-foreground/15"}`} />
+              <motion.div
+                animate={{ backgroundColor: i < active ? "var(--color-primary)" : "var(--color-border)" }}
+                transition={{ duration: 0.2 }}
+                className="mx-1 h-px w-8"
+              />
             )}
           </div>
         ))}
       </div>
       <div className="mt-3 flex justify-between px-1">
         {steps.map((s) => (
-          <span key={s} className="text-sm text-muted-foreground">{s}</span>
+          <span key={s} className="text-xs text-muted-foreground">{s}</span>
         ))}
       </div>
     </div>
@@ -296,28 +559,50 @@ export function SequentialWorkflowPreview() {
 
 /* ─── Evaluator Workflow ─── */
 export function EvaluatorWorkflowPreview() {
+  const [visible, setVisible] = useState(0)
+
+  const rounds = [
+    { round: 1, score: 0.45, action: "Retry" },
+    { round: 2, score: 0.72, action: "Retry" },
+    { round: 3, score: 0.91, action: "Accept" },
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setVisible((p) => Math.min(p + 1, rounds.length))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Evaluator Pipeline</span>
-        <p className="mt-1 text-sm text-muted-foreground">Score → threshold → retry or accept</p>
+        <span className="text-sm font-medium text-foreground">LangChain Evaluator Pipeline</span>
+        <p className="mt-1 text-xs text-muted-foreground">LangChain score → threshold → retry or accept</p>
       </div>
       <div className="space-y-2">
-        {[
-          { round: 1, score: 0.45, action: "Retry" },
-          { round: 2, score: 0.72, action: "Retry" },
-          { round: 3, score: 0.91, action: "Accept ✓" },
-        ].map((r) => (
-          <div key={r.round} className="flex items-center justify-between rounded-md border border-border px-4 py-2.5">
+        {rounds.slice(0, visible).map((r) => (
+          <motion.div
+            key={r.round}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ ...SPRING }}
+            className="flex items-center justify-between rounded-xl border border-border px-4 py-2.5"
+          >
             <span className="text-sm text-muted-foreground">Round {r.round}</span>
             <div className="flex items-center gap-3">
               <div className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-foreground/100" style={{ width: `${r.score * 100}%` }} />
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${r.score * 100}%` }}
+                  transition={{ ...SPRING, delay: 0.2 }}
+                  className="h-full rounded-full bg-primary"
+                />
               </div>
-              <span className="w-8 text-right font-mono text-sm text-foreground">{r.score}</span>
-              <span className="w-14 text-right text-sm text-muted-foreground">{r.action}</span>
+              <span className="w-8 text-right font-mono text-xs text-foreground">{r.score}</span>
+              <span className="w-14 text-right text-xs text-muted-foreground">{r.action}</span>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -340,22 +625,37 @@ export function OrchestratorWorkflowPreview() {
   ]
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Orchestrator Workflow</span>
+        <span className="text-sm font-medium text-foreground">LangChain Orchestrator</span>
       </div>
-      <div className="mb-4 rounded-md border border-border bg-muted/50 px-4 py-2.5 text-center text-sm text-muted-foreground">
-        Orchestrator → coordinating {agents.length} agents
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...SPRING }}
+        className="mb-4 rounded-xl border border-border bg-muted/50 px-4 py-2.5 text-center text-xs text-muted-foreground"
+      >
+        LangChain orchestrator → coordinating {agents.length} agents
+      </motion.div>
       <div className="space-y-2">
         {agents.map((a, i) => (
-          <div key={a.name} className={`flex items-center justify-between rounded-md border px-4 py-3 transition-all ${i === active ? "border-border bg-muted/30" : "border-border"}`}>
+          <motion.div
+            key={a.name}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ ...SPRING, delay: i * 0.06 }}
+            className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-all ${
+              i === active ? "border-border bg-card" : "border-border"
+            }`}
+          >
             <div>
               <p className="text-sm font-medium text-foreground">{a.name}</p>
-              <p className="text-sm text-muted-foreground">{a.task}</p>
+              <p className="text-xs text-muted-foreground">{a.task}</p>
             </div>
-            {i === active && <div className="size-3 animate-spin rounded-full border border-border border-t-foreground" />}
-          </div>
+            {i === active && <WaveDotsLoader />}
+          </motion.div>
         ))}
       </div>
     </div>
@@ -375,29 +675,75 @@ export function ParallelWorkflowPreview() {
   }, [])
 
   const tasks = ["Search Agent", "Analysis Agent", "Summary Agent"]
+  const allDone = progress.every((p) => p >= 100)
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
+
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Parallel Execution</span>
-        <p className="mt-1 text-sm text-muted-foreground">3 agents running simultaneously</p>
+        <span className="text-sm font-medium text-foreground">LangChain Parallel Execution</span>
+        <p className="mt-1 text-xs text-muted-foreground">3 LangChain agents running simultaneously</p>
       </div>
       <div className="space-y-3">
         {tasks.map((task, i) => {
           const pct = Math.round(progress[i])
+          const done = pct >= 100
           return (
-            <div key={task} className="space-y-1.5">
-              <div className="flex justify-between">
-                <span className="text-sm text-foreground">{task}</span>
-                <span className="text-sm tabular-nums text-muted-foreground">{pct >= 100 ? "Done" : `${pct}%`}</span>
+            <motion.div
+              key={task}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...SPRING, delay: i * 0.06 }}
+              className="space-y-1.5"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {done ? (
+                    <motion.svg
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ ...SPRING }}
+                      width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </motion.svg>
+                  ) : (
+                    <WaveDotsLoader />
+                  )}
+                  <span className="text-sm text-foreground">{task}</span>
+                </div>
+                <span className="font-mono text-xs tabular-nums text-muted-foreground">{done ? "Done" : `${pct}%`}</span>
               </div>
               <div className="h-1 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-foreground/100 transition-all duration-200" style={{ width: `${pct}%` }} />
+                <motion.div
+                  className="h-full rounded-full bg-primary"
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.2 }}
+                />
               </div>
-            </div>
+            </motion.div>
           )
         })}
       </div>
+
+      <AnimatePresence>
+        {allDone && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...SPRING }}
+            className="mt-5 rounded-xl border border-border bg-card p-4"
+          >
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Combined Result</p>
+            <div className="mt-2 space-y-1 font-mono text-sm text-muted-foreground">
+              <p>Search: <span className="text-foreground">12 sources found</span></p>
+              <p>Analysis: <span className="text-foreground">3 key insights</span></p>
+              <p>Summary: <span className="text-foreground">Generated (342 words)</span></p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -417,26 +763,50 @@ export function RoutingWorkflowPreview() {
   }, [])
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Routing Workflow</span>
+        <span className="text-sm font-medium text-foreground">LangChain Routing Workflow</span>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <div className="w-40 space-y-1.5">
+        <div className="w-[140px] space-y-1.5">
           {routes.map((r, i) => (
-            <div key={r.input} className={`rounded-md border px-3 py-2 text-sm transition-all ${i === route ? "border-border bg-muted/30 text-foreground" : "border-border text-muted-foreground"}`}>
+            <motion.div
+              key={r.input}
+              animate={{
+                backgroundColor: i === route ? "var(--color-primary)" : "transparent",
+                color: i === route ? "var(--color-primary-foreground)" : "var(--color-muted-foreground)",
+              }}
+              transition={{ duration: 0.15 }}
+              className="rounded-xl border border-border px-3 py-2 text-xs"
+            >
               {r.input}
-            </div>
+            </motion.div>
           ))}
         </div>
         <div className="text-muted-foreground/60">→</div>
-        <div className="rounded-md border border-border px-3 py-2 text-sm text-muted-foreground">Router</div>
+        <motion.div
+          animate={{ scale: [1, 1.03, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary"
+        >
+          Router
+        </motion.div>
         <div className="text-muted-foreground/60">→</div>
-        <div className="w-36 space-y-1.5">
+        <div className="w-[130px] space-y-1.5">
           {routes.map((r, i) => (
-            <div key={r.dest} className={`rounded-md border px-3 py-2 text-sm transition-all ${i === route ? "border-border bg-muted/30 text-foreground" : "border-border text-muted-foreground"}`}>
+            <motion.div
+              key={r.dest}
+              animate={{
+                borderColor: i === route ? "var(--color-primary)" : "var(--color-border)",
+                backgroundColor: i === route ? "oklch(from var(--primary) l c h / 0.1)" : "transparent",
+              }}
+              transition={{ duration: 0.15 }}
+              className={`rounded-xl border px-3 py-2 text-xs transition-all ${
+                i === route ? "font-medium text-foreground" : "text-muted-foreground"
+              }`}
+            >
               {r.dest}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -446,35 +816,74 @@ export function RoutingWorkflowPreview() {
 
 /* ─── Few-Shot Prompt ─── */
 export function FewShotPromptPreview() {
+  const [classified, setClassified] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setClassified(true), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const examples = [
+    { label: "Example 1", input: "The movie was great!", output: "positive" },
+    { label: "Example 2", input: "Terrible experience", output: "negative" },
+    { label: "Example 3", input: "It was okay", output: "neutral" },
+  ]
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Few-Shot Prompting</span>
+        <span className="text-sm font-medium text-foreground">OpenAI Few-Shot Prompting</span>
       </div>
-      <div className="space-y-2">
-        {[
-          { label: "Example 1", input: "The movie was great!", output: "positive" },
-          { label: "Example 2", input: "Terrible experience", output: "negative" },
-          { label: "Example 3", input: "It was okay", output: "neutral" },
-        ].map((ex) => (
-          <div key={ex.label} className="rounded-md border border-border bg-card px-3 py-2">
-            <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground/80">{ex.label}</span>
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={{ animate: { ...STAGGER } }}
+        className="space-y-2"
+      >
+        {examples.map((ex) => (
+          <motion.div
+            key={ex.label}
+            variants={FADE_UP}
+            transition={{ ...SPRING }}
+            className="rounded-xl border border-border bg-card px-3 py-2"
+          >
+            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{ex.label}</span>
             <div className="mt-1 flex items-center gap-2 text-sm">
-              <span className="text-foreground">"{ex.input}"</span>
+              <span className="text-foreground">&quot;{ex.input}&quot;</span>
               <span className="text-muted-foreground/70">→</span>
-              <span className="rounded bg-foreground/15 px-1.5 py-0.5 font-mono text-foreground/90">{ex.output}</span>
+              <span className="rounded-lg bg-primary/10 px-1.5 py-0.5 font-mono text-xs text-primary">{ex.output}</span>
             </div>
-          </div>
+          </motion.div>
         ))}
-        <div className="rounded-md border border-border bg-foreground/[0.02] px-3 py-2">
-          <span className="text-sm font-medium uppercase tracking-wider text-foreground/70">Input</span>
+        <motion.div
+          variants={FADE_UP}
+          transition={{ ...SPRING }}
+          className="rounded-xl border border-border bg-card/50 px-3 py-2"
+        >
+          <span className="text-xs font-medium uppercase tracking-wider text-foreground/70">Input</span>
           <div className="mt-1 flex items-center gap-2 text-sm">
-            <span className="text-foreground">"I absolutely love this product"</span>
+            <span className="text-foreground">&quot;I absolutely love this product&quot;</span>
             <span className="text-muted-foreground/70">→</span>
-            <span className="animate-pulse font-mono text-foreground/70">…</span>
+            <AnimatePresence mode="wait">
+              {classified ? (
+                <motion.span
+                  key="result"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ ...SPRING }}
+                  className="rounded-lg bg-primary/10 px-1.5 py-0.5 font-mono text-xs text-primary"
+                >
+                  positive
+                </motion.span>
+              ) : (
+                <motion.span key="loading" className="font-mono text-foreground/70">
+                  <WaveDotsLoader />
+                </motion.span>
+              )}
+            </AnimatePresence>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   )
 }
@@ -485,21 +894,33 @@ export function FewShotPromptPreview() {
 
 /* ─── Model Comparison ─── */
 export function ModelComparisonPreview() {
+  const models = [
+    { name: "Claude Opus 4", speed: 72, quality: 98, cost: "$$" },
+    { name: "Claude Sonnet 4", speed: 85, quality: 95, cost: "$" },
+    { name: "Claude Haiku 3.5", speed: 95, quality: 88, cost: "$" },
+  ]
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Model Comparison</span>
+        <span className="text-sm font-medium text-foreground">Anthropic Model Comparison</span>
       </div>
-      <div className="space-y-3">
-        {[
-          { name: "GPT-4o", speed: 85, quality: 92, cost: "$" },
-          { name: "Claude 3.5", speed: 78, quality: 95, cost: "$$" },
-          { name: "Gemini Pro", speed: 90, quality: 88, cost: "$" },
-        ].map((m) => (
-          <div key={m.name} className="rounded-md border border-border px-4 py-3">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={{ animate: { ...STAGGER } }}
+        className="space-y-3"
+      >
+        {models.map((m) => (
+          <motion.div
+            key={m.name}
+            variants={FADE_UP}
+            transition={{ ...SPRING }}
+            className="rounded-xl border border-border px-4 py-3"
+          >
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-foreground">{m.name}</span>
-              <span className="text-sm text-muted-foreground">{m.cost}</span>
+              <span className="text-xs text-muted-foreground">{m.cost}</span>
             </div>
             <div className="mt-2 space-y-1">
               {[
@@ -507,74 +928,111 @@ export function ModelComparisonPreview() {
                 { label: "Quality", value: m.quality },
               ].map((stat) => (
                 <div key={stat.label} className="flex items-center gap-2">
-                  <span className="w-12 text-sm text-muted-foreground">{stat.label}</span>
+                  <span className="w-12 text-xs text-muted-foreground">{stat.label}</span>
                   <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div className="h-full rounded-full bg-foreground/40" style={{ width: `${stat.value}%` }} />
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${stat.value}%` }}
+                      transition={{ ...SPRING, delay: 0.3 }}
+                      className="h-full rounded-full bg-primary/40"
+                    />
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 /* ─── Model Comparison Compact ─── */
 export function ModelComparisonCompactPreview() {
+  const [selected, setSelected] = useState(1)
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Model Selector</span>
+        <span className="text-sm font-medium text-foreground">OpenRouter Model Selector</span>
       </div>
-      <div className="flex gap-2">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={{ animate: { ...STAGGER } }}
+        className="flex gap-2"
+      >
         {[
           { name: "GPT-4o", tag: "Fast" },
           { name: "Claude", tag: "Best" },
-          { name: "Gemini", tag: "Cheap" },
+          { name: "Mixtral", tag: "Cheap" },
         ].map((m, i) => (
-          <button key={m.name} className={`flex-1 rounded-lg border px-3 py-3 text-center transition-all ${i === 1 ? "border-border bg-foreground/15" : "border-border"}`}>
+          <motion.button
+            key={m.name}
+            variants={FADE_UP}
+            transition={{ ...SPRING }}
+            onClick={() => setSelected(i)}
+            whileTap={{ scale: 0.97 }}
+            className={`flex-1 rounded-xl border px-3 py-3 text-center transition-all ${
+              i === selected ? "border-primary bg-primary/10" : "border-border hover:bg-card"
+            }`}
+          >
             <p className="text-sm font-medium text-foreground">{m.name}</p>
-            <span className="mt-1 inline-block rounded-full bg-muted px-2 py-0.5 text-sm text-muted-foreground">{m.tag}</span>
-          </button>
+            <span className="mt-1 inline-block rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{m.tag}</span>
+          </motion.button>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 /* ─── Model Comparison Table ─── */
 export function ModelComparisonTablePreview() {
+  const rows = [
+    { model: "Llama 3.1", latency: "180ms", quality: "88", cost: "$0.20" },
+    { model: "Mistral Large", latency: "240ms", quality: "90", cost: "$0.80" },
+    { model: "Gemma 2", latency: "160ms", quality: "82", cost: "$0.10" },
+    { model: "Phi-3", latency: "120ms", quality: "78", cost: "$0.05" },
+  ]
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
-      <div className="overflow-hidden rounded-md border border-border">
+    <div className="mx-auto w-full max-w-lg p-6">
+      <div className="mb-4">
+        <span className="text-sm font-medium text-foreground">Hugging Face Model Leaderboard</span>
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...SPRING }}
+        className="overflow-hidden rounded-xl border border-border"
+      >
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="px-3 py-2 text-left font-medium text-muted-foreground">Model</th>
-              <th className="px-3 py-2 text-right font-medium text-muted-foreground">Latency</th>
-              <th className="px-3 py-2 text-right font-medium text-muted-foreground">Quality</th>
-              <th className="px-3 py-2 text-right font-medium text-muted-foreground">$/1M tok</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Model</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Latency</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">Quality</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground">$/1M tok</th>
             </tr>
           </thead>
           <tbody>
-            {[
-              { model: "GPT-4o", latency: "340ms", quality: "92", cost: "$5.00" },
-              { model: "Claude 3.5", latency: "420ms", quality: "95", cost: "$3.00" },
-              { model: "Gemini Pro", latency: "280ms", quality: "88", cost: "$1.25" },
-              { model: "Llama 3.1", latency: "180ms", quality: "82", cost: "$0.20" },
-            ].map((row) => (
-              <tr key={row.model} className="border-b border-border last:border-0">
+            {rows.map((row, i) => (
+              <motion.tr
+                key={row.model}
+                initial={{ opacity: 0, x: -4 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ ...SPRING, delay: i * 0.06 }}
+                className="border-b border-border last:border-0 transition-colors hover:bg-card/50"
+              >
                 <td className="px-3 py-2 font-medium text-foreground">{row.model}</td>
-                <td className="px-3 py-2 text-right text-muted-foreground">{row.latency}</td>
-                <td className="px-3 py-2 text-right text-muted-foreground">{row.quality}</td>
-                <td className="px-3 py-2 text-right text-muted-foreground">{row.cost}</td>
-              </tr>
+                <td className="px-3 py-2 text-right font-mono text-xs text-muted-foreground">{row.latency}</td>
+                <td className="px-3 py-2 text-right font-mono text-xs text-muted-foreground">{row.quality}</td>
+                <td className="px-3 py-2 text-right font-mono text-xs text-muted-foreground">{row.cost}</td>
+              </motion.tr>
             ))}
           </tbody>
         </table>
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -587,20 +1045,31 @@ export function IntegrationsGridPreview() {
   ]
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Integrations</span>
+        <span className="text-sm font-medium text-foreground">Vercel Integrations</span>
       </div>
-      <div className="grid grid-cols-4 gap-2">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={{ animate: { ...STAGGER } }}
+        className="grid grid-cols-4 gap-2"
+      >
         {integrations.map((name) => (
-          <div key={name} className="flex flex-col items-center gap-1.5 rounded-lg border border-border shadow-sm px-2 py-3 transition-colors hover:bg-muted/50">
-            <div className="flex size-8 items-center justify-center rounded-md bg-foreground/15 text-sm font-bold text-foreground/60">
+          <motion.div
+            key={name}
+            variants={FADE_UP}
+            transition={{ ...SPRING }}
+            whileHover={{ scale: 1.03 }}
+            className="flex flex-col items-center gap-1.5 rounded-xl border border-border px-2 py-3 transition-colors hover:bg-card"
+          >
+            <div className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-sm font-bold text-primary/60">
               {name[0]}
             </div>
-            <span className="text-sm text-muted-foreground">{name}</span>
-          </div>
+            <span className="text-xs text-muted-foreground">{name}</span>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -608,30 +1077,40 @@ export function IntegrationsGridPreview() {
 /* ─── Integrations v2 ─── */
 export function IntegrationsGrid2Preview() {
   const integrations = [
-    { name: "OpenAI", desc: "GPT models" },
-    { name: "Anthropic", desc: "Claude models" },
-    { name: "Google", desc: "Gemini models" },
-    { name: "Mistral", desc: "Open models" },
+    { name: "Notion AI", desc: "Writing assistant" },
+    { name: "Notion DBs", desc: "Database sync" },
+    { name: "Notion API", desc: "Page access" },
+    { name: "Notion Search", desc: "Workspace search" },
   ]
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Provider Integrations</span>
+        <span className="text-sm font-medium text-foreground">Notion Integrations</span>
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={{ animate: { ...STAGGER } }}
+        className="grid grid-cols-2 gap-2"
+      >
         {integrations.map((item) => (
-          <div key={item.name} className="flex items-center gap-3 rounded-lg border border-border shadow-sm px-4 py-3">
-            <div className="flex size-8 items-center justify-center rounded-md bg-foreground/15 text-sm font-bold text-foreground/60">
+          <motion.div
+            key={item.name}
+            variants={FADE_UP}
+            transition={{ ...SPRING }}
+            className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 transition-colors hover:bg-card"
+          >
+            <div className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-sm font-bold text-primary/60">
               {item.name[0]}
             </div>
             <div>
               <p className="text-sm font-medium text-foreground">{item.name}</p>
-              <p className="text-sm text-muted-foreground">{item.desc}</p>
+              <p className="text-xs text-muted-foreground">{item.desc}</p>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -641,13 +1120,18 @@ export function CalculatorAgentROIPreview() {
   const [hours, setHours] = useState(40)
 
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">ROI Calculator</span>
+        <span className="text-sm font-medium text-foreground">Intercom ROI Calculator</span>
       </div>
-      <div className="space-y-4">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...SPRING }}
+        className="space-y-4"
+      >
         <div>
-          <label className="text-sm text-muted-foreground">Hours saved per month</label>
+          <label className="text-xs text-muted-foreground">Support hours saved per month</label>
           <input
             type="range"
             min="10"
@@ -656,48 +1140,70 @@ export function CalculatorAgentROIPreview() {
             onChange={(e) => setHours(Number(e.target.value))}
             className="mt-1 w-full"
           />
-          <p className="text-right text-sm tabular-nums text-foreground">{hours}h</p>
+          <p className="text-right font-mono text-xs tabular-nums text-foreground">{hours}h</p>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-md border border-border p-3">
-            <p className="text-sm uppercase text-muted-foreground">Annual savings</p>
+          <motion.div
+            key={`savings-${hours}`}
+            initial={{ opacity: 0.5 }}
+            animate={{ opacity: 1 }}
+            className="rounded-xl border border-border p-3"
+          >
+            <p className="text-xs uppercase text-muted-foreground">Intercom savings</p>
             <p className="mt-1 text-lg font-bold text-foreground">${(hours * 75 * 12).toLocaleString()}</p>
-          </div>
-          <div className="rounded-md border border-border p-3">
-            <p className="text-sm uppercase text-muted-foreground">ROI</p>
+          </motion.div>
+          <motion.div
+            key={`roi-${hours}`}
+            initial={{ opacity: 0.5 }}
+            animate={{ opacity: 1 }}
+            className="rounded-xl border border-border p-3"
+          >
+            <p className="text-xs uppercase text-muted-foreground">Intercom ROI</p>
             <p className="mt-1 text-lg font-bold text-foreground">{Math.round((hours * 75 * 12) / 588)}x</p>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 /* ─── Changelog ─── */
 export function ChangelogPreview() {
+  const releases = [
+    { ver: "v2.1.0", date: "Dec 15", items: ["Linear project views", "Cycle improvements", "Bug fixes"] },
+    { ver: "v2.0.0", date: "Nov 28", items: ["Linear redesign", "Triage workflow", "Linear Asks launch"] },
+  ]
+
   return (
-    <div className="mx-auto w-full max-w-lg p-8">
+    <div className="mx-auto w-full max-w-lg p-6">
       <div className="mb-4">
-        <span className="text-sm font-medium text-foreground">Changelog</span>
+        <span className="text-sm font-medium text-foreground">Linear Changelog</span>
       </div>
-      <div className="space-y-4">
-        {[
-          { ver: "v2.1.0", date: "Dec 15", items: ["Multi-model support", "Streaming improvements", "Bug fixes"] },
-          { ver: "v2.0.0", date: "Nov 28", items: ["Complete redesign", "Agent orchestration", "Pro tier launch"] },
-        ].map((release) => (
-          <div key={release.ver} className="border-l-2 border-border pl-4">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={{ animate: { ...STAGGER } }}
+        className="space-y-4"
+      >
+        {releases.map((release) => (
+          <motion.div
+            key={release.ver}
+            variants={FADE_UP}
+            transition={{ ...SPRING }}
+            className="border-l-2 border-border pl-4"
+          >
             <div className="flex items-center gap-2">
               <span className="font-mono text-sm font-bold text-foreground">{release.ver}</span>
-              <span className="text-sm text-muted-foreground">{release.date}</span>
+              <span className="text-xs text-muted-foreground">{release.date}</span>
             </div>
             <ul className="mt-1.5 space-y-0.5">
               {release.items.map((item) => (
-                <li key={item} className="text-sm text-muted-foreground">• {item}</li>
+                <li key={item} className="text-sm text-muted-foreground">{item}</li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -713,7 +1219,7 @@ export function AIPromptInputPreview() {
   const [thinking, setThinking] = useState(false)
   const [hasAttachment, setHasAttachment] = useState(false)
   const suggestions = [
-    "Ask me anything…",
+    "Ask ChatGPT anything...",
     "Write a blog post about AI agents",
     "Explain quantum entanglement",
     "Debug my React component",
@@ -754,7 +1260,7 @@ export function AIPromptInputPreview() {
                     <polyline points="14 2 14 8 20 8" />
                   </svg>
                   <span className="text-sm text-muted-foreground">requirements.pdf</span>
-                  <span className="font-mono text-sm text-muted-foreground/60">12 KB</span>
+                  <span className="font-mono text-xs text-muted-foreground/60">12 KB</span>
                   <button
                     onClick={() => setHasAttachment(false)}
                     className="ml-auto rounded-md p-0.5 text-muted-foreground/60 transition-colors hover:bg-card hover:text-muted-foreground"
@@ -775,7 +1281,7 @@ export function AIPromptInputPreview() {
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder="Ask anything..."
+          placeholder="Ask ChatGPT anything..."
           rows={3}
           className="block w-full resize-none bg-transparent px-4 pt-4 pb-2 text-base leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/70"
         />
@@ -796,20 +1302,19 @@ export function AIPromptInputPreview() {
             {/* Divider */}
             <div className="mx-0.5 h-4 w-px bg-foreground/15" />
 
-            {/* Model pill */}
-            <button className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-muted-foreground transition-colors hover:bg-card hover:text-muted-foreground">
-              <span className="size-2 rounded-full bg-orange-400" />
-              <span className="text-sm">Sonnet</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M6 9l6 6 6-6" /></svg>
-            </button>
+            {/* Model label */}
+            <span className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-muted-foreground/60">
+              <span className="size-2 rounded-full bg-green-500" />
+              <span className="text-xs">ChatGPT</span>
+            </span>
 
             {/* Think toggle */}
             <button
               onClick={() => setThinking((t) => !t)}
               className={cn(
-                "flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-all",
+                "flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs transition-all",
                 thinking
-                  ? "bg-foreground/15 text-foreground"
+                  ? "bg-primary/10 text-foreground"
                   : "text-muted-foreground/60 hover:text-muted-foreground"
               )}
             >
@@ -838,8 +1343,8 @@ export function AIPromptInputPreview() {
       </div>
 
       {/* Subtle keyboard hints */}
-      <p className="mt-2.5 text-center font-mono text-sm text-foreground/50">
-        ↵ send · shift+↵ newline · ⌘V paste files
+      <p className="mt-2.5 text-center font-mono text-[10px] text-foreground/50">
+        ChatGPT · ↵ send · shift+↵ newline · ⌘V paste files
       </p>
     </div>
   )

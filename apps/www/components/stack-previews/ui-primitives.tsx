@@ -15,7 +15,7 @@ const KEYFRAMES = `
 `
 
 /* ─────────────────────────────────────────────────────────────────
- * ARTIFACT CANVAS  — ChatGPT Canvas / Claude Artifacts split-pane
+ * ARTIFACT CANVAS  — Claude Artifacts split-pane
  * ───────────────────────────────────────────────────────────────── */
 
 const CANVAS_CODE = `export function PricingCard({
@@ -103,7 +103,7 @@ export function ArtifactCanvasPreview() {
       {/* ── Left: Chat panel ── */}
       <div className="flex w-[40%] min-w-0 flex-col border-r border-border">
         <div className="flex h-9 shrink-0 items-center border-b border-border px-3">
-          <span className="text-sm font-medium text-muted-foreground">Chat</span>
+          <span className="text-sm font-medium text-muted-foreground">Claude</span>
         </div>
 
         <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
@@ -148,7 +148,7 @@ export function ArtifactCanvasPreview() {
         {/* Input bar */}
         <div className="border-t border-border p-2.5">
           <div className="flex items-center gap-2 rounded-lg border border-border shadow-sm bg-card px-2.5 py-1.5">
-            <span className="flex-1 text-sm text-muted-foreground">Ask Claude to build…</span>
+            <span className="flex-1 text-sm text-muted-foreground">Ask Claude Artifacts to build…</span>
             <div className="flex size-5 items-center justify-center rounded-full bg-card">
               <svg viewBox="0 0 24 24" className="size-3 text-muted-foreground">
                 <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -184,7 +184,7 @@ export function ArtifactCanvasPreview() {
               </span>
             )}
             {phase === "done" && (
-              <span className="text-sm text-muted-foreground">TypeScript • React</span>
+              <span className="text-sm text-muted-foreground">Claude Artifact • React</span>
             )}
           </div>
         </div>
@@ -260,7 +260,7 @@ function CodeLine({ line }: { line: string }) {
 
 
 /* ─────────────────────────────────────────────────────────────────
- * VOICE INPUT BUTTON  — mic with recording states + waveform
+ * VOICE INPUT BUTTON  — ChatGPT Voice mic with recording states + waveform
  * ───────────────────────────────────────────────────────────────── */
 
 const WAVEFORM_HEIGHTS = Array.from({ length: 28 }, (_, i) =>
@@ -386,7 +386,7 @@ export function VoiceInputPreview() {
             exit={{ opacity: 0, y: -4 }}
             className="text-sm text-muted-foreground"
           >
-            {state === "idle" ? "Click to speak" : state === "listening" ? "Listening…" : state === "processing" ? "Transcribing…" : "Transcription ready"}
+            {state === "idle" ? "Tap for ChatGPT Voice" : state === "listening" ? "ChatGPT listening…" : state === "processing" ? "ChatGPT transcribing…" : "ChatGPT Voice ready"}
           </motion.p>
         </AnimatePresence>
         <AnimatePresence>
@@ -412,7 +412,7 @@ export function VoiceInputPreview() {
             exit={{ opacity: 0 }}
             className="w-full rounded-xl border border-border shadow-sm bg-card/80 px-4 py-3"
           >
-            <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground/60">Transcript</p>
+            <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground/60">ChatGPT Voice Transcript</p>
             <p className="mt-1 text-sm leading-relaxed text-foreground">
               &ldquo;Build a pricing card component with three tiers&rdquo;
             </p>
@@ -425,7 +425,7 @@ export function VoiceInputPreview() {
 
 
 /* ─────────────────────────────────────────────────────────────────
- * STREAMING MARKDOWN  — markdown renderer with streaming effect
+ * STREAMING MARKDOWN  — ChatGPT-style markdown renderer with streaming effect
  * ───────────────────────────────────────────────────────────────── */
 
 const MD_BLOCKS = [
@@ -496,7 +496,7 @@ export function StreamingMarkdownPreview() {
             onClick={start}
             className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background"
           >
-            Stream markdown →
+            Stream like ChatGPT →
           </button>
         </div>
       )}
@@ -520,7 +520,7 @@ export function StreamingMarkdownPreview() {
           onClick={start}
           className="mt-2 self-start text-sm text-muted-foreground hover:text-foreground"
         >
-          Stream again
+          Stream again with ChatGPT
         </button>
       )}
     </div>
@@ -528,10 +528,10 @@ export function StreamingMarkdownPreview() {
 }
 
 function blockFullText(block: (typeof MD_BLOCKS)[0]): string {
-  if (block.type === "p" && "parts" in block) return block.parts.map((p) => p.t).join("")
-  if (block.type === "code" && "text" in block) return block.text
-  if (block.type === "list" && "items" in block) return block.items.join("\n")
-  if ("text" in block) return block.text
+  if (block.type === "p" && "parts" in block && block.parts) return block.parts.map((p) => p.t).join("")
+  if (block.type === "code" && "text" in block) return (block as any).text
+  if (block.type === "list" && "items" in block) return (block as any).items.join("\n")
+  if ("text" in block) return (block as any).text
   return ""
 }
 
@@ -551,7 +551,7 @@ function MDBlock({
   if (block.type === "h1") return <h1 className="text-base font-bold">{visibleText}{cursor}</h1>
   if (block.type === "h2") return <h2 className="text-sm font-semibold text-foreground">{visibleText}{cursor}</h2>
 
-  if (block.type === "p" && "parts" in block) {
+  if (block.type === "p" && "parts" in block && block.parts) {
     let remaining = visibleText
     return (
       <p className="text-sm leading-[1.75] text-foreground">
@@ -608,7 +608,7 @@ function MDBlock({
 
 
 /* ─────────────────────────────────────────────────────────────────
- * MODEL SELECTOR  — command-palette provider + model picker
+ * MODEL SELECTOR  — OpenRouter command-palette provider + model picker
  * ───────────────────────────────────────────────────────────────── */
 
 const MODELS = [
@@ -695,7 +695,7 @@ export function ModelSelectorPreview() {
                   ref={inputRef}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search models…"
+                  placeholder="Search OpenRouter models…"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/70"
                 />
               </div>
@@ -733,7 +733,7 @@ export function ModelSelectorPreview() {
               ))}
               {filtered.length === 0 && (
                 <p className="px-3.5 py-4 text-center text-sm text-muted-foreground/70">
-                  No models found
+                  No OpenRouter models found
                 </p>
               )}
             </div>
@@ -743,7 +743,7 @@ export function ModelSelectorPreview() {
 
       {!open && (
         <p className="font-mono text-sm text-foreground/50">
-          {selected.group} · {selected.name}
+          OpenRouter · {selected.group} · {selected.name}
         </p>
       )}
     </div>
@@ -752,7 +752,7 @@ export function ModelSelectorPreview() {
 
 
 /* ─────────────────────────────────────────────────────────────────
- * PROMPT SUGGESTIONS  — empty state with suggestion chips
+ * PROMPT SUGGESTIONS  — ChatGPT-style empty state with suggestion chips
  * ───────────────────────────────────────────────────────────────── */
 
 const SUGGESTIONS = [
@@ -775,9 +775,9 @@ export function PromptSuggestionsPreview() {
     <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-5 p-6 pt-8">
       {/* Brand */}
       <div className="text-center">
-        <p className="text-[18px] font-semibold tracking-tight">What can I help you build?</p>
+        <p className="text-[18px] font-semibold tracking-tight">What can ChatGPT help you build?</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Select a suggestion or type your own
+          Pick a ChatGPT suggestion or type your own
         </p>
       </div>
 
@@ -807,7 +807,7 @@ export function PromptSuggestionsPreview() {
         <input
           value={input}
           onChange={(e) => { setInput(e.target.value); setSelected(null) }}
-          placeholder="Or ask anything…"
+          placeholder="Or ask ChatGPT anything…"
           className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
         <motion.button
@@ -829,7 +829,7 @@ export function PromptSuggestionsPreview() {
 
 
 /* ─────────────────────────────────────────────────────────────────
- * TOKEN COUNTER  — context window meter with circular ring
+ * TOKEN COUNTER  — OpenAI context window meter with circular ring
  * ───────────────────────────────────────────────────────────────── */
 
 const MODEL_LIMITS = [
@@ -897,7 +897,7 @@ export function TokenCounterPreview() {
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Paste your prompt here to count tokens in real-time…"
+        placeholder="Paste your prompt to count OpenAI tokens in real-time…"
         rows={5}
         className="w-full resize-none rounded-lg border border-border shadow-sm bg-card p-3 text-sm leading-relaxed outline-none placeholder:text-muted-foreground focus:border-foreground/50"
       />
@@ -905,7 +905,7 @@ export function TokenCounterPreview() {
       {/* Footer stats */}
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         <span>{text.length} chars</span>
-        <span>{pct.toFixed(1)}% context used</span>
+        <span>{pct.toFixed(1)}% OpenAI context used</span>
         <span>{Math.max(0, model.limit - tokens).toLocaleString()} remaining</span>
       </div>
     </div>
@@ -914,7 +914,7 @@ export function TokenCounterPreview() {
 
 
 /* ─────────────────────────────────────────────────────────────────
- * AI LOADING STATES  — wave, orb, shimmer, typing indicator
+ * AI LOADING STATES  — Claude-style wave, orb, shimmer, typing indicator
  * ───────────────────────────────────────────────────────────────── */
 
 type LoadingType = "wave" | "orb" | "shimmer" | "typing"
@@ -968,10 +968,10 @@ export function AILoadingStatesPreview() {
 
       {/* Label */}
       <p className="text-sm text-muted-foreground">
-        {active === "wave" && "Ellipse wave — 5-row dot grid"}
-        {active === "orb" && "Pulsing orb — glow + scale"}
-        {active === "shimmer" && "Shimmer skeleton — streaming"}
-        {active === "typing" && "Typing indicator — three dots"}
+        {active === "wave" && "Claude wave — 5-row dot grid"}
+        {active === "orb" && "Claude orb — glow + scale"}
+        {active === "shimmer" && "Claude shimmer — streaming"}
+        {active === "typing" && "Claude typing — three dots"}
       </p>
     </div>
   )
@@ -1057,7 +1057,7 @@ function TypingIndicator() {
 
 
 /* ─────────────────────────────────────────────────────────────────
- * STRUCTURED OUTPUT VIEWER  — collapsible JSON tree
+ * STRUCTURED OUTPUT VIEWER  — OpenAI collapsible JSON tree
  * ───────────────────────────────────────────────────────────────── */
 
 const EXTRACTED = {
@@ -1083,7 +1083,7 @@ export function StructuredOutputPreview() {
     <div className="mx-auto flex w-full max-w-sm flex-col gap-3 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Structured Output</span>
+        <span className="text-sm font-medium">OpenAI Structured Output</span>
         <span className="rounded-full bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 font-mono text-sm text-emerald-700 dark:text-emerald-400">
           confidence: 96%
         </span>
@@ -1095,7 +1095,7 @@ export function StructuredOutputPreview() {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Generated with generateObject() + Zod schema
+        OpenAI generateObject() + Zod schema
       </p>
     </div>
   )
@@ -1176,7 +1176,7 @@ function JSONNode({
 
 
 /* ─────────────────────────────────────────────────────────────────
- * AI IMAGE OUTPUT  — generation card with shimmer + metadata
+ * AI IMAGE OUTPUT  — Midjourney-style generation card with shimmer + metadata
  * ───────────────────────────────────────────────────────────────── */
 
 const PROMPTS = [
@@ -1254,7 +1254,7 @@ export function AIImageOutputPreview() {
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                   <OrbAnimation />
-                  <p className="text-sm text-muted-foreground">Generating… {elapsed.toFixed(1)}s</p>
+                  <p className="text-sm text-muted-foreground">Midjourney generating… {elapsed.toFixed(1)}s</p>
                 </div>
               </div>
             )}
@@ -1283,7 +1283,7 @@ export function AIImageOutputPreview() {
           {/* Metadata */}
           {phase === "done" && (
             <div className="flex items-center justify-between border-t border-border px-3 py-2">
-              <span className="font-mono text-sm text-muted-foreground">dall-e-3 · 3.2s</span>
+              <span className="font-mono text-sm text-muted-foreground">Midjourney v6 · 3.2s</span>
               <button onClick={next} className="text-sm text-muted-foreground hover:text-foreground">
                 New prompt →
               </button>
@@ -1294,7 +1294,7 @@ export function AIImageOutputPreview() {
 
       {phase === "idle" && (
         <div className="flex h-44 items-center justify-center rounded-xl border border-dashed border-border shadow-sm">
-          <p className="text-sm text-muted-foreground">Image will appear here</p>
+          <p className="text-sm text-muted-foreground">Midjourney image will appear here</p>
         </div>
       )}
     </div>
