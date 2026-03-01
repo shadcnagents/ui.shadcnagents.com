@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { WaveDotsLoader, SuggestionPills, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
+import { BrandChatbase, BrandOpenAI } from "@/components/brand-icons"
 
 /* ─── Chat Base Clone ─── */
 
@@ -66,7 +67,7 @@ export function ChatBaseClonePreview() {
 
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border px-6 py-3">
-        <div className="size-4 rounded-full bg-foreground/20" />
+        <BrandChatbase className="size-4 text-foreground" />
         <span className="text-sm font-medium text-foreground">Chatbase</span>
         <span className="rounded-lg bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">Custom GPT</span>
       </div>
@@ -267,7 +268,10 @@ export function AgentDataAnalysisPreview() {
       <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
 
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-sm font-medium text-foreground">ChatGPT Data Analyst</span>
+        <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+          <BrandOpenAI className="size-3.5" />
+          ChatGPT Data Analyst
+        </span>
         <span className="font-mono text-xs tabular-nums text-muted-foreground">
           {Math.min(step, steps.length)}/{steps.length}
         </span>

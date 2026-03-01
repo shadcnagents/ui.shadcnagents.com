@@ -11,17 +11,48 @@ export const stackContent: Record<string, StackContent> = {
 
   "basics-generate-text": {
     intro:
-      "Generate text with any AI model using the Vercel AI SDK's generateText function in a Next.js app. This copy-paste ready stack shows you how to call Claude, GPT-4, or Gemini from a server action or API route and return structured text responses with full TypeScript support.",
+      "The foundational AI SDK pattern. Call any model server-side, get typed responses with usage metadata, zero client-side JavaScript. This stack gives you a production-ready API route with input validation, a polished demo component with copy-to-clipboard and response metadata, and the architecture to scale from prototype to pipeline.",
     useCases: [
-      "Summarize articles, emails, or documents server-side",
-      "Power form auto-fill, tag extraction, or classification pipelines",
-      "Generate product descriptions, SEO copy, or report content",
-      "Run batch AI processing jobs without a streaming UI",
+      "Auto-tag support tickets, classify emails, or extract entities from text",
+      "Generate product descriptions, commit messages, or API documentation",
+      "Build server-side summarization for articles, reports, or meeting notes",
+      "Power batch processing pipelines that don't need streaming UI",
     ],
     howItWorks:
-      "Calls generateText() from the ai package on the server, passing a model provider (Anthropic, OpenAI, Google) and a prompt. Returns a typed result object with text, usage, and finish reason — no client-side JS required.",
-    techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "Anthropic Claude", "OpenAI GPT-4"],
-    relatedSlugs: ["basics-stream-text", "basics-tool", "basics-agent"],  },
+      "Calls generateText() from the ai package in a Next.js API route, passing a model provider and prompt. Returns a typed result with text, token usage (prompt + completion), and latency — everything you need for production monitoring.",
+    techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "OpenAI GPT-4o"],
+    relatedSlugs: ["basics-generate-text-multi-model", "basics-generate-text-prompt", "basics-stream-text", "basics-tool"],
+  },
+
+  "basics-generate-text-multi-model": {
+    intro:
+      "Compare AI model responses side by side. Send one prompt to GPT-4o, Claude Sonnet 4, and Gemini 2.0 Flash simultaneously, then compare quality, speed, and token usage. The production pattern for model evaluation and A/B testing.",
+    useCases: [
+      "Evaluate model quality for your specific use case before committing to a provider",
+      "Build model comparison features for AI playgrounds and testing tools",
+      "Run parallel inference for consensus-based answers or ensemble techniques",
+      "Benchmark latency and cost across providers for production routing decisions",
+    ],
+    howItWorks:
+      "Sends the same prompt to three model providers in parallel using Promise.allSettled. Each call returns independently with text, token count, and latency. Failed providers return graceful error states without blocking the others.",
+    techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "OpenAI", "Anthropic", "Google AI"],
+    relatedSlugs: ["basics-generate-text", "basics-generate-text-prompt", "basics-stream-text"],
+  },
+
+  "basics-generate-text-prompt": {
+    intro:
+      "Control AI output with system prompts, temperature, and persona presets. Switch between concise, creative, and ELI5 styles instantly — the exact pattern used in production apps that need configurable AI behavior without changing model or code.",
+    useCases: [
+      "Build tone controls for AI writing assistants (formal, casual, technical)",
+      "Create configurable AI agents with swappable system personalities",
+      "Implement temperature tuning for creative vs deterministic outputs",
+      "Develop prompt template libraries with reusable system instructions",
+    ],
+    howItWorks:
+      "Passes system prompt, user prompt, and temperature to generateText() in a single API call. The route validates and clamps temperature (0–2), applies the system instruction, and returns text with full metadata including which settings produced the response.",
+    techStack: ["Vercel AI SDK", "Next.js", "TypeScript", "OpenAI GPT-4o"],
+    relatedSlugs: ["basics-generate-text", "basics-generate-text-multi-model", "basics-stream-text"],
+  },
 
   "basics-stream-text": {
     intro:

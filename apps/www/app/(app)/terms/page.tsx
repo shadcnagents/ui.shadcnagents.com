@@ -72,7 +72,24 @@ export default function TermsPage() {
 
         <section>
           <h2 className="mb-3 text-base font-semibold text-foreground">
-            6. Contact
+            6. Third-Party Trademarks
+          </h2>
+          <p>
+            All product names, logos, brands, and trademarks displayed on this
+            site — including but not limited to OpenAI, ChatGPT, Anthropic,
+            Claude, Google, Gemini, xAI, Grok, Perplexity, DeepSeek, Vercel,
+            Next.js, Stripe, Notion, Linear, Midjourney, LangChain, Firecrawl,
+            and others — are the property of their respective owners.
+            shadcnagents is not affiliated with, endorsed by, or sponsored by
+            any of these companies. Their names and logos are used solely for
+            identification and reference purposes in the context of describing
+            integrations and compatibility.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-base font-semibold text-foreground">
+            7. Contact
           </h2>
           <p>
             For questions about these terms, email us at{" "}

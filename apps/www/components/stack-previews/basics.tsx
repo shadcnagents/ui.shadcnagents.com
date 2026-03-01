@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { cn } from "@/lib/utils"
-import { SuggestionPills, WaveDotsLoader, WAVE_KEYFRAMES } from "./shared"
+import { LiveWaveform } from "@/registry/stacks/basics-generate-speech/components/ui/live-waveform"
+import { ShimmeringText, SPRING, SuggestionPills, WaveDotsLoader, WAVE_KEYFRAMES } from "./shared"
 
 /* ─── Generate Text ─── */
 
@@ -15,33 +16,30 @@ const GT_KEYFRAMES = WAVE_KEYFRAMES
 const GT_TOKENS = GT_RESPONSE.split(/\s+/).length
 
 const GT_PLACEHOLDERS = [
-  "Explain how language models work...",
-  "Write a poem about recursion...",
-  "What is quantum entanglement?",
-  "Describe the future of AI...",
+  "Summarize this article...",
+  "Extract the key entities...",
+  "Classify this support ticket...",
+  "Rewrite in a formal tone...",
 ]
 
 export function GenerateTextPreview() {
-  const [state, setState] = useState<
-    "idle" | "thinking" | "streaming" | "complete"
-  >("idle")
+  const [state, setState] = useState<"idle" | "thinking" | "complete">("idle")
   const [prompt, setPrompt] = useState("")
   const [submittedPrompt, setSubmittedPrompt] = useState("")
-  const [displayed, setDisplayed] = useState("")
   const [elapsed, setElapsed] = useState(0)
-  const idxRef = useRef(0)
-  const tmRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const t0Ref = useRef(0)
+  const tmRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function submit() {
-    if (!prompt.trim() || state === "thinking" || state === "streaming") return
+    if (!prompt.trim() || state === "thinking") return
     setSubmittedPrompt(prompt.trim())
     setPrompt("")
     setState("thinking")
-    setDisplayed("")
-    idxRef.current = 0
     t0Ref.current = Date.now()
-    setTimeout(() => setState("streaming"), 1800)
+    tmRef.current = setTimeout(() => {
+      setElapsed(Date.now() - t0Ref.current)
+      setState("complete")
+    }, 2000)
   }
 
   function reset() {
@@ -49,29 +47,8 @@ export function GenerateTextPreview() {
     setState("idle")
     setPrompt("")
     setSubmittedPrompt("")
-    setDisplayed("")
     setElapsed(0)
-    idxRef.current = 0
   }
-
-  useEffect(() => {
-    if (state !== "streaming") return
-    function tick() {
-      const n = 2 + Math.floor(Math.random() * 2)
-      idxRef.current = Math.min(idxRef.current + n, GT_RESPONSE.length)
-      setDisplayed(GT_RESPONSE.slice(0, idxRef.current))
-      if (idxRef.current >= GT_RESPONSE.length) {
-        setElapsed(Date.now() - t0Ref.current)
-        setState("complete")
-      } else {
-        tmRef.current = setTimeout(tick, 18 + Math.random() * 12)
-      }
-    }
-    tmRef.current = setTimeout(tick, 40)
-    return () => {
-      if (tmRef.current) clearTimeout(tmRef.current)
-    }
-  }, [state])
 
   useEffect(
     () => () => {
@@ -79,9 +56,6 @@ export function GenerateTextPreview() {
     },
     []
   )
-
-  const isActive = state === "thinking" || state === "streaming"
-  const hasOutput = state === "streaming" || state === "complete"
 
   return (
     <div className="mx-auto flex h-[420px] w-full max-w-xl flex-col p-6">
@@ -106,7 +80,7 @@ export function GenerateTextPreview() {
           )}
         </AnimatePresence>
 
-        {/* ── Output ── */}
+        {/* ── Thinking ── */}
         <AnimatePresence>
           {state === "thinking" && (
             <motion.div
@@ -121,36 +95,29 @@ export function GenerateTextPreview() {
           )}
         </AnimatePresence>
 
+        {/* ── Complete — full block reveal (not streaming) ── */}
         <AnimatePresence>
-          {hasOutput && (
+          {state === "complete" && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ type: "spring", duration: 0.5, bounce: 0 }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="mb-5"
             >
               <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground">
-                {displayed}
-                {state === "streaming" && (
-                  <span
-                    className="ml-px inline-block h-[15px] w-[1.5px] translate-y-[3px] rounded-full bg-foreground/60"
-                    style={{ animation: "gt-blink 0.8s step-end infinite" }}
-                  />
-                )}
+                {GT_RESPONSE}
               </p>
-              {state === "complete" && (
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="font-mono text-sm text-muted-foreground">
-                    {GT_TOKENS} tokens · {(elapsed / 1000).toFixed(1)}s
-                  </span>
-                  <button
-                    onClick={reset}
-                    className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-                  >
-                    clear
-                  </button>
-                </div>
-              )}
+              <div className="mt-3 flex items-center justify-between">
+                <span className="font-mono text-sm text-muted-foreground">
+                  gpt-4o · {GT_TOKENS} tokens · {(elapsed / 1000).toFixed(1)}s
+                </span>
+                <button
+                  onClick={reset}
+                  className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
+                >
+                  clear
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -172,8 +139,8 @@ export function GenerateTextPreview() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submit()}
-              disabled={isActive}
-              placeholder="Ask anything..."
+              disabled={state === "thinking"}
+              placeholder="Enter a prompt..."
               className="h-8 w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-40"
             />
           </div>
@@ -186,11 +153,11 @@ export function GenerateTextPreview() {
             </div>
             <motion.button
               onClick={submit}
-              disabled={!prompt.trim() || isActive}
+              disabled={!prompt.trim() || state === "thinking"}
               whileTap={{ scale: 0.9 }}
               className={cn(
                 "flex size-8 items-center justify-center rounded-lg transition-colors",
-                prompt.trim() && !isActive
+                prompt.trim() && state !== "thinking"
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "bg-foreground/10 text-muted-foreground/50"
               )}
@@ -651,29 +618,67 @@ export function GenerateImagePreview() {
 
 /* ─── Generate Speech ─── */
 
-const VOICE_OPTIONS = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
-const WAVE_BARS = Array.from({ length: 48 }, (_, i) => {
-  const t = i / 48
-  return 20 + Math.sin(t * Math.PI * 3) * 15 + Math.sin(t * Math.PI * 7) * 8 + Math.sin(t * Math.PI * 11) * 4
-})
+const VOICE_OPTIONS: { id: string; label: string; desc: string }[] = [
+  { id: "alloy", label: "Alloy", desc: "Neutral and balanced" },
+  { id: "echo", label: "Echo", desc: "Warm and rounded" },
+  { id: "fable", label: "Fable", desc: "Expressive and British" },
+  { id: "onyx", label: "Onyx", desc: "Deep and authoritative" },
+  { id: "nova", label: "Nova", desc: "Female, friendly and bright" },
+  { id: "shimmer", label: "Shimmer", desc: "Soft and whispery" },
+]
+
+const ORB_COLORS: Record<string, [string, string]> = {
+  alloy: ["#60A5FA", "#3B82F6"],
+  echo: ["#93C5FD", "#60A5FA"],
+  fable: ["#38BDF8", "#0EA5E9"],
+  onyx: ["#3B82F6", "#1D4ED8"],
+  nova: ["#818CF8", "#6366F1"],
+  shimmer: ["#A5B4FC", "#818CF8"],
+}
+
+const ORB_KEYFRAMES = `
+@keyframes orb-idle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+@keyframes orb-gen {
+  0%, 100% { transform: scale(0.94) rotate(0deg); }
+  50% { transform: scale(1.06) rotate(4deg); }
+}
+@keyframes orb-talk {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  20% { transform: scale(1.08) rotate(2deg); }
+  40% { transform: scale(0.97) rotate(-1.5deg); }
+  60% { transform: scale(1.05) rotate(3deg); }
+  80% { transform: scale(0.99) rotate(-1deg); }
+}
+`
+
+const MAX_CHARS = 300
 
 export function GenerateSpeechPreview() {
-  const [text, setText] = useState("")
+  const [text, setText] = useState(
+    "The Vercel AI SDK makes it easy to build AI-powered applications with streaming, tool use, and multi-modal capabilities."
+  )
   const [voice, setVoice] = useState("alloy")
   const [state, setState] = useState<"idle" | "generating" | "ready">("idle")
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  const colors = ORB_COLORS[voice] || ORB_COLORS.alloy
+  const voiceInfo = VOICE_OPTIONS.find((v) => v.id === voice) || VOICE_OPTIONS[0]
+
   function generate() {
     if (!text.trim() || state === "generating") return
     setState("generating")
     setProgress(0)
     setPlaying(false)
-    setTimeout(() => setState("ready"), 1500)
+    setTimeout(() => setState("ready"), 1800)
   }
 
   function togglePlay() {
+    if (state !== "ready") return
     if (playing) {
       setPlaying(false)
       if (intervalRef.current) clearInterval(intervalRef.current)
@@ -687,14 +692,13 @@ export function GenerateSpeechPreview() {
           if (intervalRef.current) clearInterval(intervalRef.current)
           return 0
         }
-        return p + 2
+        return p + 1.5
       })
-    }, 80)
+    }, 60)
   }
 
   function reset() {
     setState("idle")
-    setText("")
     setPlaying(false)
     setProgress(0)
     if (intervalRef.current) clearInterval(intervalRef.current)
@@ -706,126 +710,320 @@ export function GenerateSpeechPreview() {
     }
   }, [])
 
+  const orbAnimation =
+    state === "generating"
+      ? "orb-gen 1.2s ease-in-out infinite"
+      : playing
+        ? "orb-talk 1.5s ease-in-out infinite"
+        : "orb-idle 4s ease-in-out infinite"
+
   return (
-    <div className="mx-auto w-full max-w-xl p-6">
-      <style>{GT_KEYFRAMES}</style>
+    <div className="mx-auto w-full max-w-lg p-6">
+      <style>{GT_KEYFRAMES}{ORB_KEYFRAMES}</style>
 
-      {/* ── Text input ── */}
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault()
-            generate()
-          }
-        }}
-        disabled={state === "generating"}
-        placeholder="Hello, welcome to our platform. We're glad to have you here."
-        rows={3}
-        className="w-full resize-none rounded-lg border border-border shadow-sm bg-card px-3 py-2.5 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus:border-foreground/10 disabled:opacity-40"
-      />
-
-      {/* ── Voice picker + generate ── */}
-      <div className="mt-2 flex items-center justify-between">
-        <div className="flex items-center gap-0.5">
-          {VOICE_OPTIONS.map((v) => (
-            <button
-              key={v}
-              onClick={() => setVoice(v)}
-              className={`rounded-full px-1.5 py-0.5 font-mono text-sm transition-colors ${
-                voice === v
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground/50 hover:text-foreground/80"
-              }`}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={generate}
-          disabled={!text.trim() || state === "generating"}
-          className="font-mono text-sm text-foreground/60 transition-colors hover:text-foreground disabled:opacity-20"
+      {/* ── 1. Header — shimmer reveal ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
+        <ShimmeringText
+          text="Generate Speech"
+          className="text-lg font-semibold tracking-tight"
+          duration={2.5}
+          delay={0.2}
+          repeat={false}
+          spread={3}
+        />
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="mt-1 text-sm text-muted-foreground"
         >
-          {state === "generating" ? "synthesizing..." : "speak →"}
-        </button>
-      </div>
+          Convert text to natural-sounding audio with OpenAI TTS.
+        </motion.p>
+      </motion.div>
 
-      {/* ── Generating ── */}
-      <AnimatePresence>
-        {state === "generating" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="mt-6 flex items-center gap-2"
-          >
-            <WaveDotsLoader />
-            <span className="font-mono text-sm text-muted-foreground">
-              generating with {voice}
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── 2. Hero: Orb + Waveform ── */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="mt-6 flex items-center gap-5"
+      >
+        {/* Orb */}
+        <motion.div
+          className="size-20 shrink-0 overflow-hidden rounded-full"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 20 }}
+        >
+          <div
+            className="size-full rounded-full"
+            style={{
+              background: `
+                radial-gradient(circle at 35% 35%, ${colors[0]}, transparent 60%),
+                radial-gradient(circle at 65% 65%, ${colors[1]}, transparent 60%),
+                radial-gradient(circle at 50% 50%, ${colors[0]}88, ${colors[1]}66, transparent 70%)
+              `,
+              animation: orbAnimation,
+            }}
+          />
+        </motion.div>
 
-      {/* ── Player ── */}
+        {/* Waveform + status */}
+        <div className="flex min-w-0 flex-1 flex-col gap-2 overflow-hidden">
+          <LiveWaveform
+            active={false}
+            processing={state === "generating" || playing}
+            mode="static"
+            height={100}
+            barWidth={3}
+            barGap={1}
+            barRadius={1.5}
+            sensitivity={1.2}
+            fadeEdges
+            fadeWidth={16}
+            className="text-foreground/70"
+          />
+          <div className="flex items-center justify-between px-0.5">
+            <AnimatePresence mode="wait">
+              {playing ? (
+                <motion.span
+                  key="playing"
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 4 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <span className="size-1.5 animate-pulse rounded-full" style={{ backgroundColor: colors[1] }} />
+                  <ShimmeringText
+                    text="Playing"
+                    className="font-mono text-[10px]"
+                    duration={1.5}
+                    repeat={false}
+                    spread={2}
+                    startOnView={false}
+                  />
+                </motion.span>
+              ) : state === "generating" ? (
+                <motion.span
+                  key="generating"
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 4 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <WaveDotsLoader />
+                  <span className="font-mono text-[10px] text-foreground/40">
+                    Generating…
+                  </span>
+                </motion.span>
+              ) : state === "ready" ? (
+                <motion.span
+                  key="ready"
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ShimmeringText
+                    text="Ready"
+                    className="font-mono text-[10px]"
+                    duration={1.8}
+                    repeat={false}
+                    spread={3}
+                    startOnView={false}
+                  />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="idle"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="font-mono text-[10px] text-foreground/20"
+                >
+                  Idle
+                </motion.span>
+              )}
+            </AnimatePresence>
+            <ShimmeringText
+              text="tts-1"
+              className="font-mono text-[10px]"
+              duration={2}
+              delay={0.6}
+              repeat={false}
+              spread={2}
+              color="oklch(0.556 0 0 / 0.3)"
+            />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── 3. Playback controls ── */}
       <AnimatePresence>
         {state === "ready" && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-            className="mt-5"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="mt-4 flex items-center justify-center gap-3"
           >
-            {/* Waveform */}
-            <div className="flex h-10 items-end gap-[2px]">
-              {WAVE_BARS.map((h, i) => {
-                const filled = (i / WAVE_BARS.length) * 100 <= progress
-                return (
-                  <div
-                    key={i}
-                    className={`flex-1 rounded-full transition-colors duration-75 ${
-                      filled ? "bg-foreground/100" : "bg-foreground/20"
-                    }`}
-                    style={{ height: `${h}%` }}
-                  />
-                )
-              })}
-            </div>
-
-            {/* Controls */}
-            <div className="mt-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={togglePlay}
-                  className="flex size-6 items-center justify-center rounded-full bg-foreground"
-                >
-                  {playing ? (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-background">
-                      <rect x="6" y="4" width="4" height="16" rx="1" />
-                      <rect x="14" y="4" width="4" height="16" rx="1" />
-                    </svg>
-                  ) : (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 text-background">
-                      <polygon points="5 3 19 12 5 21" />
-                    </svg>
-                  )}
-                </button>
-                <span className="font-mono text-sm tabular-nums text-muted-foreground">
-                  0:{String(Math.floor((progress / 100) * 12)).padStart(2, "0")} / 0:12
-                </span>
-              </div>
-              <button
-                onClick={reset}
-                className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-              >
-                clear
-              </button>
-            </div>
+            <motion.button
+              onClick={togglePlay}
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              className="flex size-8 items-center justify-center rounded-full bg-foreground text-background"
+            >
+              <AnimatePresence mode="wait">
+                {playing ? (
+                  <motion.svg
+                    key="pause"
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    width="10" height="10" viewBox="0 0 24 24" fill="currentColor"
+                  >
+                    <rect x="6" y="4" width="4" height="16" rx="1" />
+                    <rect x="14" y="4" width="4" height="16" rx="1" />
+                  </motion.svg>
+                ) : (
+                  <motion.svg
+                    key="play"
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="ml-0.5"
+                  >
+                    <polygon points="5 3 19 12 5 21" />
+                  </motion.svg>
+                )}
+              </AnimatePresence>
+            </motion.button>
+            <span className="font-mono text-xs tabular-nums text-muted-foreground">
+              0:{String(Math.floor((progress / 100) * 8)).padStart(2, "0")} / 0:08
+            </span>
+            <motion.button
+              onClick={reset}
+              whileTap={{ scale: 0.95 }}
+              className="text-xs text-muted-foreground/40 transition-colors hover:text-foreground"
+            >
+              clear
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── 4. Text input ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+        className="mt-6"
+      >
+        <textarea
+          value={text}
+          onChange={(e) => {
+            if (e.target.value.length <= MAX_CHARS) setText(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+              e.preventDefault()
+              generate()
+            }
+          }}
+          disabled={state === "generating"}
+          placeholder="Enter text to convert to speech…"
+          rows={3}
+          className="w-full resize-none rounded-xl border border-border bg-card px-4 py-3 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/50 focus:border-foreground/15 disabled:opacity-40"
+        />
+      </motion.div>
+
+      {/* ── 5. Voice picker + Generate ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.4 }}
+        className="mt-4 flex items-center justify-between"
+      >
+        <div className="flex items-center gap-0.5">
+          {VOICE_OPTIONS.map((v, i) => (
+            <motion.button
+              key={v.id}
+              onClick={() => setVoice(v.id)}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.65 + i * 0.04, type: "spring", stiffness: 400, damping: 25 }}
+              whileTap={{ scale: 0.95 }}
+              className={`rounded-full px-2 py-0.5 text-xs font-medium transition-all ${
+                voice === v.id
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {v.label}
+            </motion.button>
+          ))}
+        </div>
+        <motion.button
+          onClick={generate}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7, type: "spring", stiffness: 300, damping: 20 }}
+          whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.02 }}
+          disabled={!text.trim() || state === "generating"}
+          className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-30"
+        >
+          {state === "generating" ? "Generating…" : "Speak"}
+        </motion.button>
+      </motion.div>
+
+      {/* ── 6. Footer metadata — shimmer reveal ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+        className="mt-5 flex items-center gap-3 border-t border-border/40 pt-3"
+      >
+        <ShimmeringText
+          text="tts-1"
+          className="font-mono text-[10px]"
+          duration={2}
+          delay={1}
+          repeat={false}
+          spread={2}
+          color="oklch(0.556 0 0 / 0.2)"
+        />
+        <span className="text-foreground/10">&middot;</span>
+        <ShimmeringText
+          text={voiceInfo.label}
+          className="font-mono text-[10px]"
+          duration={2}
+          delay={1.1}
+          repeat={false}
+          spread={2}
+          color="oklch(0.556 0 0 / 0.2)"
+        />
+        <span className="text-foreground/10">&middot;</span>
+        <ShimmeringText
+          text={`${text.trim().split(/\s+/).filter(Boolean).length} words`}
+          className="font-mono text-[10px] tabular-nums"
+          duration={2}
+          delay={1.2}
+          repeat={false}
+          spread={2}
+          color="oklch(0.556 0 0 / 0.2)"
+        />
+      </motion.div>
     </div>
   )
 }
@@ -836,113 +1034,375 @@ const TRANSCRIBE_RESULT =
   "Welcome to today's discussion on artificial intelligence. We'll be covering the latest developments in large language models and how they're being integrated into production applications. Let's start with an overview of the current landscape."
 
 export function TranscribePreview() {
-  const [state, setState] = useState<"idle" | "transcribing" | "complete">(
-    "idle"
-  )
-  const [result, setResult] = useState("")
+  const [state, setState] = useState<
+    "idle" | "uploaded" | "transcribing" | "streaming" | "complete"
+  >("idle")
+  const [displayed, setDisplayed] = useState("")
   const [dragging, setDragging] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const idxRef = useRef(0)
+
+  function handleUpload() {
+    if (state !== "idle") return
+    setState("uploaded")
+  }
 
   function transcribe() {
-    if (state === "transcribing") return
+    if (state !== "uploaded") return
     setState("transcribing")
-    setResult("")
-    setTimeout(() => {
-      setResult(TRANSCRIBE_RESULT)
-      setState("complete")
-    }, 2000)
+    setDisplayed("")
+    idxRef.current = 0
+    setTimeout(() => setState("streaming"), 1600)
+  }
+
+  // Character-by-character streaming
+  useEffect(() => {
+    if (state !== "streaming") return
+    const iv = setInterval(() => {
+      if (idxRef.current < TRANSCRIBE_RESULT.length) {
+        idxRef.current += 1
+        setDisplayed(TRANSCRIBE_RESULT.slice(0, idxRef.current))
+      } else {
+        clearInterval(iv)
+        setState("complete")
+      }
+    }, 12)
+    return () => clearInterval(iv)
+  }, [state])
+
+  function copyResult() {
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
   }
 
   function reset() {
     setState("idle")
-    setResult("")
+    setDisplayed("")
+    idxRef.current = 0
+    setCopied(false)
   }
 
+  const resultText = state === "complete" ? TRANSCRIBE_RESULT : displayed
+
   return (
-    <div className="mx-auto w-full max-w-xl p-6">
+    <div className="mx-auto w-full max-w-lg p-6">
       <style>{GT_KEYFRAMES}</style>
 
-      {/* ── Drop zone ── */}
-      <div
-        onDragOver={(e) => {
-          e.preventDefault()
-          setDragging(true)
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setDragging(false)
-          transcribe()
-        }}
-        onClick={transcribe}
-        className={`flex h-28 cursor-pointer flex-col items-center justify-center rounded-lg border transition-all ${
-          dragging
-            ? "border-border bg-card"
-            : "border-border bg-muted/10 hover:bg-card"
-        }`}
+      {/* ── Header ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-muted-foreground"
+        <ShimmeringText
+          text="Transcribe Audio"
+          className="text-lg font-semibold tracking-tight"
+          duration={2.5}
+          delay={0.2}
+          repeat={false}
+          spread={3}
+        />
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="mt-1 text-sm text-muted-foreground"
         >
-          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-          <line x1="12" x2="12" y1="19" y2="22" />
-        </svg>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Drop audio or click to upload
-        </p>
-        <p className="mt-0.5 font-mono text-sm text-muted-foreground">
-          MP3 · WAV · M4A · up to 25 MB
-        </p>
-      </div>
+          Convert audio to text with OpenAI Whisper.
+        </motion.p>
+      </motion.div>
 
-      {/* ── Transcribing ── */}
-      <AnimatePresence>
+      {/* ── Drop zone / File card ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        className="mt-6"
+      >
+        <AnimatePresence mode="wait">
+          {state === "idle" ? (
+            <motion.div
+              key="dropzone"
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => { e.preventDefault(); setDragging(false); handleUpload() }}
+              onClick={handleUpload}
+              className={cn(
+                "group flex h-36 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-all duration-300",
+                dragging
+                  ? "border-primary/50 bg-primary/5"
+                  : "border-border/60 bg-transparent hover:border-foreground/20 hover:bg-card/50"
+              )}
+            >
+              <motion.div
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-muted-foreground/50 transition-colors group-hover:text-foreground/50"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" x2="12" y1="3" y2="15" />
+                </svg>
+              </motion.div>
+              <p className="mt-3 text-sm text-muted-foreground/70 transition-colors group-hover:text-foreground/60">
+                Drop audio file or click to browse
+              </p>
+              <div className="mt-2 flex items-center gap-1.5">
+                {["MP3", "WAV", "M4A", "WEBM"].map((fmt) => (
+                  <span
+                    key={fmt}
+                    className="rounded-md border border-border/40 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground/40"
+                  >
+                    {fmt}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="filecard"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="rounded-2xl border border-border bg-card p-4"
+            >
+              {/* File info row */}
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-primary"
+                  >
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    recording_2024-01-15.mp3
+                  </p>
+                  <p className="font-mono text-[11px] text-muted-foreground/60">
+                    1.2 MB · 2:34
+                  </p>
+                </div>
+                {state === "uploaded" && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    onClick={reset}
+                    className="text-xs text-muted-foreground/40 transition-colors hover:text-foreground"
+                  >
+                    remove
+                  </motion.button>
+                )}
+              </div>
+
+              {/* Waveform */}
+              <div className="mt-3 h-[36px] min-w-0 overflow-hidden">
+                <LiveWaveform
+                  active={false}
+                  processing={state === "transcribing"}
+                  height={36}
+                  barWidth={3}
+                  barGap={1}
+                  barRadius={1.5}
+                  fadeEdges
+                  fadeWidth={12}
+                  className={cn(
+                    "transition-opacity duration-500",
+                    state === "transcribing" || state === "streaming" || state === "complete"
+                      ? "opacity-70"
+                      : "opacity-30"
+                  )}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* ── Action row ── */}
+      <AnimatePresence mode="wait">
+        {state === "uploaded" && (
+          <motion.div
+            key="transcribe-btn"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="mt-4 flex items-center justify-between"
+          >
+            <span className="font-mono text-[11px] text-muted-foreground/40">
+              whisper-large-v3
+            </span>
+            <motion.button
+              onClick={transcribe}
+              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Transcribe
+            </motion.button>
+          </motion.div>
+        )}
+
         {state === "transcribing" && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            key="transcribing"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="mt-5 flex items-center gap-2"
+            className="mt-4 flex items-center gap-2"
           >
             <WaveDotsLoader />
-            <span className="font-mono text-sm text-muted-foreground">
-              transcribing with whisper-large-v3
+            <span className="font-mono text-xs text-muted-foreground">
+              Transcribing…
             </span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── Result ── */}
+      {/* ── Streaming result ── */}
+      <AnimatePresence>
+        {(state === "streaming" || state === "complete") && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="mt-5"
+          >
+            <div className="flex items-center justify-between">
+              <ShimmeringText
+                text="Transcript"
+                className="text-xs font-medium uppercase tracking-wider"
+                duration={1.8}
+                repeat={false}
+                spread={3}
+                startOnView={false}
+              />
+              {state === "complete" && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex items-center gap-2"
+                >
+                  <motion.button
+                    onClick={copyResult}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-1 text-xs text-muted-foreground/50 transition-colors hover:text-foreground"
+                  >
+                    <AnimatePresence mode="wait">
+                      {copied ? (
+                        <motion.svg
+                          key="check"
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.5, opacity: 0 }}
+                          width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        >
+                          <path d="M20 6 9 17l-5-5" />
+                        </motion.svg>
+                      ) : (
+                        <motion.svg
+                          key="copy"
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.5, opacity: 0 }}
+                          width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        >
+                          <rect width="14" height="14" x="8" y="8" rx="2" />
+                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                        </motion.svg>
+                      )}
+                    </AnimatePresence>
+                    {copied ? "Copied" : "Copy"}
+                  </motion.button>
+                  <motion.button
+                    onClick={reset}
+                    whileTap={{ scale: 0.95 }}
+                    className="text-xs text-muted-foreground/40 transition-colors hover:text-foreground"
+                  >
+                    clear
+                  </motion.button>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Streamed text */}
+            <p className="mt-3 text-[13.5px] leading-[1.8] text-foreground/80">
+              {resultText}
+              {state === "streaming" && (
+                <span
+                  className="ml-0.5 inline-block h-[14px] w-[2px] translate-y-[2px] bg-foreground/60"
+                  style={{ animation: "gt-blink 1s step-end infinite" }}
+                />
+              )}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Footer metadata ── */}
       <AnimatePresence>
         {state === "complete" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-            className="mt-5"
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mt-5 flex items-center gap-3 border-t border-border/40 pt-3"
           >
-            <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground">
-              {result}
-            </p>
-            <div className="mt-3 flex items-center justify-between">
-              <span className="font-mono text-sm text-muted-foreground">
-                {result.split(/\s+/).length} words · whisper-large-v3
-              </span>
-              <button
-                onClick={reset}
-                className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-              >
-                clear
-              </button>
-            </div>
+            <ShimmeringText
+              text="whisper-large-v3"
+              className="font-mono text-[10px]"
+              duration={2}
+              repeat={false}
+              spread={2}
+              color="oklch(0.556 0 0 / 0.2)"
+              startOnView={false}
+            />
+            <span className="text-foreground/10">&middot;</span>
+            <ShimmeringText
+              text={`${TRANSCRIBE_RESULT.split(/\s+/).length} words`}
+              className="font-mono text-[10px] tabular-nums"
+              duration={2}
+              delay={0.1}
+              repeat={false}
+              spread={2}
+              color="oklch(0.556 0 0 / 0.2)"
+              startOnView={false}
+            />
+            <span className="text-foreground/10">&middot;</span>
+            <ShimmeringText
+              text="2:34"
+              className="font-mono text-[10px] tabular-nums"
+              duration={2}
+              delay={0.2}
+              repeat={false}
+              spread={2}
+              color="oklch(0.556 0 0 / 0.2)"
+              startOnView={false}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -1066,15 +1526,12 @@ export function ToolCallingPreview() {
 /* ─── Agent Setup ─── */
 
 const AGENT_STEPS = [
-  { label: "Received task", detail: "Research latest AI developments" },
-  { label: "Planning", detail: "Breaking down into subtasks" },
-  {
-    label: "Tool: web_search",
-    detail: '"AI research 2025 breakthroughs"',
-  },
-  { label: "Tool: extract_content", detail: "Processing 3 sources" },
-  { label: "Synthesizing", detail: "Combining research findings" },
-  { label: "Response", detail: "Generating final report" },
+  { label: "Received task", detail: "Research latest AI developments", ms: 600 },
+  { label: "Planning", detail: "Breaking down into subtasks", ms: 900 },
+  { label: "Tool: web_search", detail: '"AI research 2025 breakthroughs"', ms: 1200 },
+  { label: "Tool: extract_content", detail: "Processing 3 sources", ms: 1000 },
+  { label: "Synthesizing", detail: "Combining research findings", ms: 1300 },
+  { label: "Response", detail: "Generating final report", ms: 700 },
 ]
 
 export function AgentSetupPreview() {
@@ -1082,7 +1539,10 @@ export function AgentSetupPreview() {
 
   useEffect(() => {
     if (step < AGENT_STEPS.length) {
-      const timer = setTimeout(() => setStep((s) => s + 1), 900)
+      const timer = setTimeout(
+        () => setStep((s) => s + 1),
+        AGENT_STEPS[step].ms
+      )
       return () => clearTimeout(timer)
     }
   }, [step])
@@ -1113,36 +1573,49 @@ export function AgentSetupPreview() {
               initial={false}
               animate={{ opacity: visible ? 1 : 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-start gap-3 py-1.5"
+              className="flex items-start gap-3 py-2"
             >
               <div className="flex flex-col items-center pt-1">
                 <div
-                  className={`size-[5px] rounded-full transition-all duration-300 ${
+                  className={cn(
+                    "size-[6px] rounded-full transition-all duration-300",
                     isCurrent
-                      ? "scale-125 bg-foreground"
+                      ? "scale-150 bg-foreground"
                       : visible
                         ? "bg-foreground/30"
                         : "bg-foreground/10"
-                  }`}
+                  )}
                 />
                 {i < AGENT_STEPS.length - 1 && (
                   <div
-                    className={`mt-1 h-5 w-px transition-colors duration-300 ${
+                    className={cn(
+                      "mt-1.5 h-6 w-px transition-colors duration-300",
                       visible ? "bg-foreground/20" : "bg-foreground/10"
-                    }`}
+                    )}
                   />
                 )}
               </div>
               <div className="-mt-0.5">
-                <p
-                  className={`text-sm transition-colors duration-300 ${
-                    isCurrent
-                      ? "font-medium text-foreground"
-                      : "text-foreground/80"
-                  }`}
-                >
-                  {s.label}
-                </p>
+                {isCurrent ? (
+                  <ShimmeringText
+                    text={s.label}
+                    className="text-sm font-medium"
+                    duration={1.5}
+                    repeat
+                    repeatDelay={0.3}
+                    spread={2}
+                    startOnView={false}
+                  />
+                ) : (
+                  <p
+                    className={cn(
+                      "text-sm transition-colors duration-300",
+                      visible ? "font-medium text-foreground" : "text-foreground/80"
+                    )}
+                  >
+                    {s.label}
+                  </p>
+                )}
                 <p className="font-mono text-sm text-muted-foreground">
                   {s.detail}
                 </p>
@@ -1153,11 +1626,16 @@ export function AgentSetupPreview() {
       </div>
 
       {step > 0 && step < AGENT_STEPS.length && (
-        <div className="mt-3 flex items-center gap-2">
-          <WaveDotsLoader />
-          <span className="font-mono text-sm text-muted-foreground">
-            processing...
-          </span>
+        <div className="mt-3">
+          <ShimmeringText
+            text="processing..."
+            className="font-mono text-sm"
+            duration={1.2}
+            repeat
+            repeatDelay={0.2}
+            spread={3}
+            startOnView={false}
+          />
         </div>
       )}
 
@@ -1358,18 +1836,8 @@ export function GenerateTextMultiModelPreview() {
                         </span>
                       </motion.div>
                     ) : (
-                      <div className="mt-2.5 flex gap-1">
-                        {[0, 1, 2].map((d) => (
-                          <div
-                            key={d}
-                            className="size-[5px] rounded-full"
-                            style={{
-                              backgroundColor: model.color,
-                              animation: "dot-pulse 1.4s ease-in-out infinite",
-                              animationDelay: `${d * 0.16}s`,
-                            }}
-                          />
-                        ))}
+                      <div className="mt-2">
+                        <WaveDotsLoader />
                       </div>
                     )}
 

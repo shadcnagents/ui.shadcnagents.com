@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { WaveDotsLoader, SuggestionPills, WAVE_KEYFRAMES, SPRING } from "./shared"
+import { BrandOpenAI, BrandAnthropic, BrandXAI } from "@/components/brand-icons"
 
 /* ─── ChatGPT Clone ─── */
 
@@ -66,7 +67,7 @@ export function ChatGPTPreview() {
 
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border px-6 py-3">
-        <div className="size-5 rounded-full bg-foreground/20" />
+        <BrandOpenAI className="size-4 text-foreground" />
         <span className="text-sm font-medium text-foreground">ChatGPT</span>
         <span className="rounded-md bg-foreground/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
           GPT-4o
@@ -230,9 +231,7 @@ export function ChatClaudePreview() {
 
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border px-6 py-3">
-        <div className="flex size-5 items-center justify-center rounded-full bg-[#D97757]/10 text-xs font-semibold text-[#D97757]">
-          C
-        </div>
+        <BrandAnthropic className="size-4 text-[#D97757]" />
         <span className="text-sm font-medium text-foreground">Claude</span>
         <span className="rounded-md bg-[#D97757]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#D97757]/70">
           Sonnet 4
@@ -396,9 +395,7 @@ export function ChatGrokPreview() {
 
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border px-6 py-3">
-        <div className="flex size-5 items-center justify-center rounded bg-foreground font-mono text-xs font-bold text-background">
-          G
-        </div>
+        <BrandXAI className="size-4 text-foreground" />
         <span className="font-mono text-sm font-medium text-foreground">Grok</span>
         <span className="rounded-md bg-foreground/[0.06] px-1.5 py-0.5 font-mono text-[10px] font-medium text-muted-foreground">
           Grok-3

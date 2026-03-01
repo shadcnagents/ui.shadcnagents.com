@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { SuggestionPills, WaveDotsLoader, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
+import { BrandOpenAI } from "@/components/brand-icons"
 
 /* ══════════════════════════════════════════
    Rich Output Previews
@@ -1304,7 +1305,7 @@ export function AIPromptInputPreview() {
 
             {/* Model label */}
             <span className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-muted-foreground/60">
-              <span className="size-2 rounded-full bg-green-500" />
+              <BrandOpenAI className="size-3 text-foreground/60" />
               <span className="text-xs">ChatGPT</span>
             </span>
 
