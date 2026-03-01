@@ -13,6 +13,8 @@ import {
   type StackSubCategory,
 } from "@/config/stacks"
 import { cn } from "@/lib/utils"
+import { getBrandKeyForStack } from "@/config/brands"
+import { brandIconMap } from "@/components/brand-icons"
 
 export function StacksSidebar() {
   const pathname = usePathname()
@@ -43,7 +45,7 @@ function CategorySection({
     <div className="mb-6">
       {/* Category header */}
       <div className="px-2 pb-1.5 pt-1">
-        <span className="text-[14px] font-bold uppercase tracking-[0.15em] text-foreground/90">
+        <span className="text-xs font-bold uppercase tracking-[0.15em] text-foreground/50">
           {category.name}
         </span>
       </div>
@@ -124,6 +126,9 @@ function ItemLink({
   nested?: boolean
 }) {
   const isActive = pathname === item.link
+  const slug = item.link.replace("/stacks/", "")
+  const brandKey = getBrandKeyForStack(slug)
+  const BrandIcon = brandKey ? brandIconMap[brandKey] : undefined
 
   return (
     <Link
@@ -137,9 +142,12 @@ function ItemLink({
           : "text-foreground/60 hover:bg-foreground/[0.03] hover:text-foreground"
       )}
     >
+      {BrandIcon && (
+        <BrandIcon className="size-3.5 shrink-0 text-foreground/30" />
+      )}
       <span className="truncate">{item.text}</span>
       {item.tier === "pro" && (
-        <Lock className="ml-auto size-3 shrink-0 text-primary/40" />
+        <Lock className="ml-auto size-3 shrink-0 text-blue-500/60" />
       )}
     </Link>
   )
