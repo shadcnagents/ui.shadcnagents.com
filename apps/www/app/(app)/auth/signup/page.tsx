@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Github } from "lucide-react"
+import { siteConfig } from "@/config/site"
 
 export default function SignupPage() {
   return (
@@ -11,7 +12,7 @@ export default function SignupPage() {
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold tracking-tight">Create your shadcnagents account</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Free forever. Upgrade to Pro for all 85+ stacks.
+            Free forever. Upgrade to Pro for all {siteConfig.counts.stacks}+ stacks.
           </p>
         </div>
 

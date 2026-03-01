@@ -42,8 +42,8 @@ export default function TermsPage() {
             3. Payments & Refunds
           </h2>
           <p>
-            Pro access is a one-time lifetime purchase. We offer a 14-day
-            money-back guarantee. Refund requests after 14 days are handled on
+            Pro access is a one-time lifetime purchase. We offer a 30-day
+            money-back guarantee. Refund requests after 30 days are handled on
             a case-by-case basis.
           </p>
         </section>
@@ -75,8 +75,11 @@ export default function TermsPage() {
             6. Contact
           </h2>
           <p>
-            For questions about these terms, reach out via our GitHub
-            repository or Twitter.
+            For questions about these terms, email us at{" "}
+            <a href="mailto:support@shadcnagents.com" className="text-foreground underline underline-offset-4 hover:no-underline">
+              support@shadcnagents.com
+            </a>{" "}
+            or reach out via our GitHub repository or Twitter.
           </p>
         </section>
       </div>

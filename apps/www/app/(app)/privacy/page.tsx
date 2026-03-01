@@ -76,8 +76,11 @@ export default function PrivacyPage() {
             6. Contact
           </h2>
           <p>
-            For privacy-related inquiries, reach out via our GitHub repository
-            or Twitter.
+            For privacy-related inquiries, email us at{" "}
+            <a href="mailto:support@shadcnagents.com" className="text-foreground underline underline-offset-4 hover:no-underline">
+              support@shadcnagents.com
+            </a>{" "}
+            or reach out via our GitHub repository or Twitter.
           </p>
         </section>
       </div>
