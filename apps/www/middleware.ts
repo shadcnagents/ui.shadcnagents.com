@@ -11,6 +11,11 @@ export default auth((req) => {
     }
   }
 
+  // Onboarding requires authentication
+  if (nextUrl.pathname === "/onboarding" && !session?.user) {
+    return NextResponse.redirect(new URL("/auth/login", nextUrl))
+  }
+
   // Redirect authenticated users away from login/signup pages
   if (session?.user && (
     nextUrl.pathname === "/auth/login" ||

@@ -1,3 +1,4 @@
+// @ts-expect-error - Prisma config types are generated at runtime
 import { defineConfig } from "prisma/config"
 
 export default defineConfig({

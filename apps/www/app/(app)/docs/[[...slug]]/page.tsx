@@ -82,14 +82,11 @@ export default async function Page(props: {
   }
 
   const doc = page.data
-  // @ts-expect-error - revisit fumadocs types.
   const MDX = doc.body
   const neighbours = await findNeighbour(source.pageTree, page.url)
-  // @ts-expect-error - revisit fumadocs types.
-  const rawContent = typeof doc.getText === "function" ? await doc.getText("raw") : ""
+  const rawContent = typeof (doc as any).getText === "function" ? await (doc as any).getText("raw") : ""
 
-  // @ts-expect-error - revisit fumadocs types.
-  const links = doc.links
+  const links = (doc as any).links
 
   return (
     <div
@@ -178,11 +175,9 @@ export default async function Page(props: {
       </div>
       <div className="sticky top-[calc(var(--header-height)+1px)] z-30 ml-auto hidden h-[calc(100svh-var(--footer-height)+2rem)] w-72 flex-col gap-4 overflow-hidden overscroll-none border-l border-border pb-8 xl:flex">
         <div className="h-(--top-spacing) shrink-0" />
-        {/* @ts-expect-error - revisit fumadocs types. */}
         {doc.toc?.length ? (
           <div className="no-scrollbar overflow-y-auto px-8">
-            {/* @ts-expect-error - revisit fumadocs types. */}
-            <DocsTableOfContents toc={doc.toc} />
+            <DocsTableOfContents toc={doc.toc as any} />
             <div className="h-12" />
           </div>
         ) : null}

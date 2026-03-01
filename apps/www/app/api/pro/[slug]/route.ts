@@ -4,6 +4,25 @@ import path from "path"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 
+/* ── Simple in-memory rate limiter (per-user, 30 req/min) ── */
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = 30
+const RATE_WINDOW_MS = 60_000
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(userId)
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_WINDOW_MS })
+    return true
+  }
+
+  if (entry.count >= RATE_LIMIT) return false
+  entry.count++
+  return true
+}
+
 const DEV_PRO_PATH = process.env.DEV_PRO_PATH
 const PRIVATE_REPO =
   process.env.PRO_GITHUB_REPO ?? "shadcnagents/pro.shadcnagents.com"
@@ -41,8 +60,8 @@ export async function GET(
     return Response.json({ error: "Invalid slug" }, { status: 400 })
   }
 
-  // ── Dev mode: read from local filesystem ──
-  if (DEV_PRO_PATH) {
+  // ── Dev mode: read from local filesystem (NEVER in production) ──
+  if (DEV_PRO_PATH && process.env.NODE_ENV !== "production") {
     const stackDir = path.join(DEV_PRO_PATH, "stacks", slug)
 
     try {
@@ -87,6 +106,14 @@ export async function GET(
     )
   }
 
+  // Rate limit — prevent GitHub API PAT exhaustion
+  if (!checkRateLimit(session.user.id)) {
+    return Response.json(
+      { error: "Too many requests. Please try again shortly." },
+      { status: 429 }
+    )
+  }
+
   try {
     // 3. List files in the private GitHub repo for this stack
     const listRes = await fetch(
@@ -111,11 +138,16 @@ export async function GET(
       (Array.isArray(files) ? files : [])
         .filter((f: { type: string }) => f.type === "file")
         .map(async (file: { name: string; url: string }) => {
+          // Validate URL to prevent SSRF — only allow GitHub API origins
+          if (!file.url.startsWith("https://api.github.com/")) {
+            throw new Error("Unexpected file URL from GitHub API")
+          }
           const fileRes = await fetch(file.url, {
             headers: {
               Authorization: `Bearer ${process.env.GITHUB_PRIVATE_TOKEN}`,
               Accept: "application/vnd.github.v3+json",
             },
+            redirect: "error",
           })
           const fileData = await fileRes.json()
           return {

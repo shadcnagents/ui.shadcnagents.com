@@ -89,9 +89,9 @@ export default function PreviewPage({ params }: PreviewPageProps) {
 function PreviewContent({ slug }: { slug: string }) {
   const searchParams = useSearchParams()
 
-  const theme = searchParams.get("theme") || "default"
-  const radius = searchParams.get("radius") || "0.5rem"
-  const customColor = searchParams.get("color") || ""
+  const theme = searchParams?.get("theme") || "default"
+  const radius = searchParams?.get("radius") || "0.5rem"
+  const customColor = searchParams?.get("color") || ""
 
   const allStacks = getAllStacks()
   const pattern = allStacks.find((p) => p.link === `/stacks/${slug}`)

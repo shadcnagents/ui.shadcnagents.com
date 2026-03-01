@@ -21,7 +21,7 @@ export async function getAllBlockIds(
   style: Style["name"] = DEFAULT_BLOCKS_STYLE
 ) {
   const blocks = await _getAllBlocks(style)
-  return blocks.map((block) => block.name)
+  return blocks.map((block: any) => block.name)
 }
 
 export async function getBlock(
@@ -73,7 +73,7 @@ export async function getBlock(
 }
 
 async function _getAllBlocks(style: Style["name"] = DEFAULT_BLOCKS_STYLE) {
-  const index = z.record(registryEntrySchema).parse(Index[style])
+  const index = z.record(z.string(), registryEntrySchema).parse(Index[style])
 
   return Object.values(index).filter((block) => block.type === "registry:block")
 }
