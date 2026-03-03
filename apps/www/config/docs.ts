@@ -114,16 +114,6 @@ export const docsConfig: DocsConfig = {
       ],
     },
     {
-      title: "Components",
-      items: [
-        {
-          title: "Button Group & Input Group",
-          href: "/docs/components/button-group-input-group",
-          items: [],
-        },
-      ],
-    },
-    {
       title: "Resources",
       items: [
         {
