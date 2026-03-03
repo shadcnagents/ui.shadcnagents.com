@@ -15,7 +15,7 @@ export const siteConfig = {
   /* ───────────────── Social links ───────────────── */
   links: {
     twitter: "https://x.com/shadcnagents",
-    github: "https://github.com/shadcnagents/ui",
+    github: "https://github.com/shadcnagents/ui.shadcnagents.com",
   },
 } as const
 

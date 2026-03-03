@@ -842,7 +842,7 @@ export function StackPageClient({ slug, registrySource, devMode = false }: Stack
           </div>
 
           <a
-            href={`https://stackblitz.com/github/shadcnagents/ui?file=apps/www/registry/stacks/${slug}/page.tsx`}
+            href={`https://stackblitz.com/github/shadcnagents/ui.shadcnagents.com?file=apps/www/registry/stacks/${slug}/page.tsx`}
             target="_blank"
             rel="noopener noreferrer"
             title="Open in StackBlitz"
