@@ -123,5 +123,30 @@ export const docsConfig: DocsConfig = {
         },
       ],
     },
+    {
+      title: "Resources",
+      items: [
+        {
+          title: "Why We Built This",
+          href: "/docs/why-we",
+          items: [],
+        },
+        {
+          title: "Our R&D Process",
+          href: "/docs/why-we/research",
+          items: [],
+        },
+        {
+          title: "Model Selection Guide",
+          href: "/docs/why-we/models",
+          items: [],
+        },
+        {
+          title: "Stack Stories",
+          href: "/docs/why-we/stack-stories",
+          items: [],
+        },
+      ],
+    },
   ],
 }

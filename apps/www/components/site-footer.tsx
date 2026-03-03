@@ -88,6 +88,13 @@ const developer = [
   { title: "GitHub", href: siteConfig.links.github, external: true },
 ]
 
+const resources = [
+  { title: "Why We Built This", href: "/docs/why-we" },
+  { title: "Our R&D Process", href: "/docs/why-we/research" },
+  { title: "Model Selection Guide", href: "/docs/why-we/models" },
+  { title: "Stack Stories", href: "/docs/why-we/stack-stories" },
+]
+
 const useCases = [
   { title: "AI Chatbots", href: "/group/chat" },
   { title: "Agent Orchestration", href: "/group/agents" },
@@ -201,7 +208,10 @@ export function SiteFooter() {
           <FooterColumn heading="Developer" links={developer} />
           <FooterColumn heading="Use Cases" links={useCases} />
           <div>
-            <FooterColumn heading="Company" links={company} />
+            <FooterColumn heading="Resources" links={resources} />
+            <div className="mt-8">
+              <FooterColumn heading="Company" links={company} />
+            </div>
             <div className="mt-8">
               <FooterColumn heading="Legal" links={legal} />
             </div>
