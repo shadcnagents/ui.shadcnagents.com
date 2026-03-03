@@ -1,0 +1,100 @@
+---
+title: Our R&D Process
+description: How we identify problems and design solutions for AI applications.
+---
+
+Every stack exists because we found evidence of a real problem. This page describes our approach to identifying pain points, validating they're worth solving, and designing solutions.
+
+## Signal Detection
+
+We look for patterns across developer communities:
+
+| Source | What We Look For |
+|--------|------------------|
+| **GitHub Issues** | Recurring bugs, feature requests with high engagement |
+| **Stack Overflow** | Questions with high views but poor or no answers |
+| **Reddit** | Complaint threads, "how do I" posts about AI integration |
+| **Discord/Slack** | Real-time frustration in AI SDK communities |
+
+When the same problem appears across multiple sources, it's worth investigating.
+
+## Problem Analysis
+
+### Root Cause Investigation
+
+We don't just note symptoms — we dig into **why** developers struggle.
+
+Example: Context window issues. The surface problem is "app crashes." The root causes:
+
+- No visibility into token usage
+- No warning before limits hit
+- No built-in truncation strategies
+- Token counting requires external libraries
+
+### Existing Solution Audit
+
+What are developers currently doing?
+
+| Approach | Problems |
+|----------|----------|
+| Ignore it | Crashes in production |
+| Drop old messages | Loses important context |
+| Character approximation | Inaccurate, still crashes |
+| External libraries | Extra dependencies |
+
+### Scope Definition
+
+We define exactly what a solution needs:
+
+- **Must Have** — Core functionality that solves the problem
+- **Nice to Have** — Enhancements if they don't add complexity
+- **Out of Scope** — Features that belong in separate stacks
+
+## Design Principles
+
+### Trade-off Analysis
+
+Every design decision involves trade-offs. We document our reasoning:
+
+| Decision | Options | Our Choice | Why |
+|----------|---------|------------|-----|
+| Token counting | Accurate vs Fast | Accurate | Matters for limits |
+| Truncation | Drop oldest vs Summarize | Drop oldest | Simpler, predictable |
+| Display | Percentage vs Count | Both | Different users need different info |
+
+### Implementation Patterns
+
+We choose patterns that work across the ecosystem:
+
+- React hooks for state management
+- Server components for heavy operations
+- Edge-compatible when possible
+
+## Validation
+
+After building, we verify:
+
+- Does it actually solve the problem?
+- Does it work across deployment targets (Vercel, Node.js, Cloudflare)?
+- Are the edge cases handled?
+- Is the documentation clear?
+
+## Iteration
+
+Based on usage and feedback, we:
+
+1. Fix reported issues
+2. Add missing features based on demand
+3. Update for new SDK versions
+4. Deprecate stacks that are superseded
+
+---
+
+<Callout type="tip">
+**Have a problem we should solve?**
+
+[Open an issue](https://github.com/shadcnagents/ui.shadcnagents.com/issues) with:
+- Description of the problem
+- Where you've seen it discussed (GitHub, SO, Reddit)
+- What you've tried and why it didn't work
+</Callout>

@@ -3,7 +3,7 @@
 > Copy-paste Vercel AI SDK components and agent patterns for Next.js. Built with AI SDK v6, shadcn/ui, React 19, Tailwind v4, and TypeScript.
 
 Website: https://shadcnagents.com
-GitHub: https://github.com/shadcnagents/ui
+GitHub: https://github.com/shadcnagents/ui.shadcnagents.com
 Twitter: https://x.com/shadcnagents
 
 ## Installation
@@ -396,5 +396,5 @@ Works with any Vercel AI SDK-compatible provider:
 - Website: https://shadcnagents.com
 - Documentation: https://shadcnagents.com/docs
 - Pricing: https://shadcnagents.com/pricing
-- GitHub: https://github.com/shadcnagents/ui
+- GitHub: https://github.com/shadcnagents/ui.shadcnagents.com
 - Twitter: https://x.com/shadcnagents

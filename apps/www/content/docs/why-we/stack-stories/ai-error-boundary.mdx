@@ -1,0 +1,123 @@
+---
+title: "AI Error Boundary"
+description: Why AI API error handling needs special attention and how we designed this stack.
+---
+
+<Callout type="info">
+**Stack**: [AI Error Boundary](/stacks/ai-error-boundary)
+**Category**: Production Infrastructure
+</Callout>
+
+---
+
+## The Problem
+
+AI APIs fail. This isn't a hypothetical — it's a regular occurrence:
+
+- **Rate limiting (429)** — You hit API limits, especially during traffic spikes
+- **Server errors (5xx)** — Provider infrastructure has issues
+- **Timeouts** — Long-running requests get cut off
+- **Content filters** — Input or output triggers safety filters
+- **Context overflow** — Conversation exceeds token limits
+
+When these errors happen, most applications show users a generic "Something went wrong" message. Or worse, crash entirely.
+
+### Why This Matters
+
+A recursive agent loop that keeps retrying on errors can burn through API credits quickly. An unhandled 503 during a demo can lose a customer. Rate limit errors at 3 AM mean angry support tickets in the morning.
+
+## The Options
+
+### Option 1: Basic try/catch
+
+```tsx
+try {
+  const result = await generateText({ model, prompt })
+} catch (error) {
+  console.error(error)
+  return "Something went wrong"
+}
+```
+
+**Problem**: No retry logic, no differentiation between error types, poor user experience.
+
+### Option 2: Manual retry logic
+
+```tsx
+async function withRetry(fn, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn()
+    } catch (error) {
+      if (i === maxRetries - 1) throw error
+      await sleep(Math.pow(2, i) * 1000)
+    }
+  }
+}
+```
+
+**Problem**: Doesn't differentiate error types. Rate limits need exponential backoff; auth errors shouldn't retry at all.
+
+### Option 3: Provider fallback
+
+```tsx
+const providers = [openai, anthropic, google]
+for (const provider of providers) {
+  try {
+    return await generateText({ model: provider("..."), prompt })
+  } catch (error) {
+    continue
+  }
+}
+```
+
+**Problem**: Different providers have different capabilities. Fallback order matters. Need to track which provider succeeded.
+
+## The Decision
+
+We built a comprehensive error boundary that:
+
+1. **Classifies errors** — Different errors need different handling
+2. **Retries intelligently** — Exponential backoff with jitter for rate limits
+3. **Shows user-friendly messages** — Not "Error 429"
+4. **Optionally falls back** — To alternative providers if configured
+5. **Prevents runaway costs** — Max retries and circuit breaker
+
+### Error Classification
+
+| Error Type | Retriable? | User Message |
+|------------|------------|--------------|
+| Rate limit (429) | Yes, with backoff | "High demand. Retrying..." |
+| Server error (5xx) | Yes, immediately | "Service temporarily unavailable" |
+| Timeout | Yes, with backoff | "Taking longer than usual..." |
+| Auth (401/403) | No | Fix configuration |
+| Content filter | Maybe | "Please rephrase your message" |
+| Context overflow | No | Truncate conversation |
+
+### Retry Strategy
+
+We use exponential backoff with jitter for rate limits:
+
+```tsx
+// Base delay doubles each attempt, jitter prevents thundering herd
+const delay = Math.min(
+  baseDelay * Math.pow(2, attempt) + Math.random() * 1000,
+  maxDelay
+)
+```
+
+### Trade-offs
+
+| Decision | Our Choice | Why |
+|----------|------------|-----|
+| Default max retries | 3 | Balance between recovery and cost |
+| Default backoff | Exponential + jitter | Best for rate limits at scale |
+| Auto-fallback | Opt-in | Not everyone has multiple providers |
+
+---
+
+## External Resources
+
+- [OpenAI Rate Limits](https://platform.openai.com/docs/guides/rate-limits)
+- [Anthropic Rate Limits](https://docs.anthropic.com/en/api/rate-limits)
+- [OpenAI Status Page](https://status.openai.com)

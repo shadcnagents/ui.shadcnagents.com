@@ -1,0 +1,48 @@
+---
+title: Stack Stories
+description: The reasoning behind each stack — the problem it solves, alternatives we considered, and design decisions we made.
+---
+
+Every stack has reasoning behind it. We don't build features because they seem useful — we build them because we identified a specific problem worth solving.
+
+This section documents the thinking behind major stacks: the problem, the options we considered, and the decisions we made.
+
+---
+
+## Production Infrastructure
+
+<Cards>
+  <Card
+    title="AI Error Boundary"
+    href="/docs/why-we/stack-stories/ai-error-boundary"
+    description="Handling AI API failures gracefully"
+  />
+  <Card
+    title="Context Window Manager"
+    href="/docs/why-we/stack-stories/context-window-manager"
+    description="Token tracking and conversation truncation"
+  />
+</Cards>
+
+---
+
+## How to Read These
+
+Each story follows a similar structure:
+
+### The Problem
+What issue this stack addresses and why it matters.
+
+### The Options
+What alternatives exist and their trade-offs.
+
+### The Decision
+What we built and why we made specific design choices.
+
+---
+
+<Callout type="tip">
+**Missing a story?**
+
+Not every stack has a detailed story page. We add them over time. If you want to understand the reasoning behind a specific stack, [ask us](https://github.com/shadcnagents/ui.shadcnagents.com/discussions).
+</Callout>

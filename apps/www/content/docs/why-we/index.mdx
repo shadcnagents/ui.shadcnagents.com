@@ -1,0 +1,73 @@
+---
+title: Why We Built This
+description: The story behind shadcnagents — why we started, what problems we're solving, and our approach.
+---
+
+## The Problem
+
+Building AI-powered applications became accessible to every developer with tools like the Vercel AI SDK. Calling GPT-4 or Claude takes a few lines of code. But making it production-ready? That's where teams get stuck.
+
+The common struggles:
+
+- **Streaming breaks in production** — works locally, fails when deployed
+- **Context windows overflow** — long conversations crash the app
+- **Rate limits hit at scale** — 429 errors with no graceful handling
+- **Costs are invisible** — no visibility until the bill arrives
+- **Chat UIs take forever** — every team rebuilds the same components
+
+These aren't edge cases. They're the core challenges of shipping AI applications.
+
+## What We Noticed
+
+Browse GitHub issues in AI-related repositories. Search Stack Overflow for AI SDK questions. Read Reddit threads about deploying AI apps. The same problems come up repeatedly:
+
+- "Why does streaming break on Vercel Edge?"
+- "How do I handle context length exceeded errors?"
+- "What's the best way to implement retry logic for OpenAI?"
+- "My AI costs are way higher than expected"
+
+Teams aren't struggling with AI concepts — they're struggling with **production engineering**.
+
+## Our Approach
+
+### 1. Own Your Code
+
+This is not an npm package. Every stack is source code you copy into your project. Read every line, modify anything, never worry about upstream breaking changes.
+
+### 2. Production-First
+
+We don't ship demos. Stacks include error handling, TypeScript types, edge cases, and deployment considerations.
+
+### 3. Full-Stack Solutions
+
+A "chat component" isn't just UI. It's streaming, persistence, context management, error states, loading animations. We ship complete solutions.
+
+### 4. Problem-Driven
+
+Every stack addresses a problem we've seen developers encounter. If we can't point to real developer struggles, we don't build it.
+
+## The Goal
+
+AI integration should be boring infrastructure — not a source of production incidents. Copy a stack, configure your API keys, and ship.
+
+---
+
+## Learn More
+
+<Cards>
+  <Card
+    title="Our R&D Process"
+    href="/docs/why-we/research"
+    description="How we identify problems and design solutions"
+  />
+  <Card
+    title="Model Selection Guide"
+    href="/docs/why-we/models"
+    description="Which AI models to use for different use cases"
+  />
+  <Card
+    title="Stack Stories"
+    href="/docs/why-we/stack-stories"
+    description="The reasoning behind specific stacks"
+  />
+</Cards>
