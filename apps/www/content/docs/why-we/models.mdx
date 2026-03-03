@@ -1,0 +1,233 @@
+---
+title: Model Selection Guide
+description: Which AI model to use for different use cases — pricing, capabilities, and practical recommendations.
+---
+
+Choosing the right AI model is one of the most impactful decisions you'll make. The wrong choice can mean significantly higher costs, slower responses, or worse output quality.
+
+<Callout type="warning">
+**Pricing changes frequently**
+
+Model pricing and capabilities change often. Verify current rates at each provider's pricing page before making decisions. This guide reflects general patterns, not guaranteed prices.
+</Callout>
+
+---
+
+## Quick Decision Matrix
+
+| If you need... | Consider | Why |
+|----------------|----------|-----|
+| Best overall quality | Claude 3.5 Sonnet | Strong reasoning, coding, instruction following |
+| Fastest responses | Groq (Llama models) | Optimized for speed |
+| Lowest cost | Gemini Flash | Aggressive pricing |
+| Longest context | Gemini 1.5 Pro | 2M token context window |
+| Best coding | Claude 3.5 Sonnet | Consistently strong on code benchmarks |
+| Best reasoning | o1 or DeepSeek R1 | Chain-of-thought reasoning models |
+| Vision/Images | GPT-4o or Claude 3.5 | Both capable at image understanding |
+
+---
+
+## Model Categories
+
+### Flagship Models
+
+Best models from each provider — use when quality matters most.
+
+| Model | Context | Best For |
+|-------|---------|----------|
+| **GPT-4o** | 128K | General purpose, vision, structured output |
+| **Claude 3.5 Sonnet** | 200K | Coding, long-form, complex instructions |
+| **Gemini 1.5 Pro** | 2M | Massive context, video, audio |
+| **Mistral Large** | 128K | Multilingual, European compliance |
+
+### Fast & Cheap Models
+
+For high-volume applications where cost and speed matter more than peak quality.
+
+| Model | Context | Best For |
+|-------|---------|----------|
+| **GPT-4o Mini** | 128K | High volume, simple tasks |
+| **Claude 3.5 Haiku** | 200K | Fast responses, large context |
+| **Gemini Flash** | 1M | Cheapest option, massive context |
+| **Llama 3.3 70B (Groq)** | 131K | Fastest inference, open source |
+| **DeepSeek V3** | 64K | Strong value, good for code |
+
+### Reasoning Models
+
+For complex multi-step problems, math, and scientific analysis.
+
+| Model | Context | Best For |
+|-------|---------|----------|
+| **o1** | 200K | Hardest problems, research |
+| **o3-mini** | 200K | Reasoning on a budget |
+| **DeepSeek R1** | 64K | Open-source reasoning, math |
+
+---
+
+## Use Case Recommendations
+
+### Chat Applications
+
+**Primary: GPT-4o**
+- Good balance of quality, speed, and instruction following
+- Handles conversation well
+
+**Budget: GPT-4o Mini**
+- Much cheaper, still reasonable for most conversations
+
+**Speed: Groq Llama 3.3 70B**
+- Fastest inference available
+- Open source, no vendor lock-in
+
+```tsx
+import { openai } from "@ai-sdk/openai"
+
+const result = await streamText({
+  model: openai("gpt-4o"), // or "gpt-4o-mini" for volume
+  messages,
+  maxTokens: 1000,
+})
+```
+
+### Code Generation
+
+**Primary: Claude 3.5 Sonnet**
+- Consistently performs well on coding benchmarks
+- 200K context fits large codebases
+
+**Budget: DeepSeek V3**
+- Strong coding capability at lower cost
+
+```tsx
+import { anthropic } from "@ai-sdk/anthropic"
+
+const result = await generateText({
+  model: anthropic("claude-3-5-sonnet-20241022"),
+  prompt: "Implement a rate limiter in TypeScript...",
+  maxTokens: 4000,
+})
+```
+
+### Long Document Processing
+
+**Primary: Gemini 1.5 Pro**
+- 2M token context — entire codebases fit
+- Good at long-range retrieval
+
+```tsx
+import { google } from "@ai-sdk/google"
+
+const result = await generateText({
+  model: google("gemini-1.5-pro"),
+  prompt: `Analyze this codebase:\n\n${entireCodebase}`,
+})
+```
+
+### Structured Data Extraction
+
+**Primary: GPT-4o**
+- Reliable JSON schema following
+- Structured output mode guarantees valid JSON
+
+```tsx
+import { openai } from "@ai-sdk/openai"
+import { z } from "zod"
+
+const result = await generateObject({
+  model: openai("gpt-4o"),
+  schema: z.object({
+    name: z.string(),
+    email: z.string().email(),
+    company: z.string().optional(),
+  }),
+  prompt: "Extract contact info from: ...",
+})
+```
+
+---
+
+## Cost Optimization
+
+### 1. Match Model to Task
+
+Don't use flagship models for simple tasks.
+
+```tsx
+// Simple classification doesn't need GPT-4o
+const sentiment = await generateText({
+  model: openai("gpt-4o-mini"), // much cheaper
+  prompt: "Is this positive or negative: 'Great product!'",
+})
+```
+
+### 2. Set Max Tokens
+
+Always cap output to avoid runaway responses.
+
+```tsx
+const result = await generateText({
+  model: openai("gpt-4o"),
+  prompt: "Summarize this article...",
+  maxTokens: 500, // cap output
+})
+```
+
+### 3. Cache Responses
+
+For repeated prompts, cache results.
+
+```tsx
+const cacheKey = hash(prompt)
+const cached = await db.cache.get(cacheKey)
+if (cached) return cached
+
+const result = await generateText({ model, prompt })
+await db.cache.set(cacheKey, result.text, { ttl: 3600 })
+```
+
+### 4. Batch When Possible
+
+One large request is often cheaper than many small ones.
+
+```tsx
+// Better: single API call
+const result = await generateText({
+  model,
+  prompt: `Classify each item:\n${items.join("\n")}`,
+})
+```
+
+---
+
+## Provider Notes
+
+### OpenAI
+- Most reliable, widest adoption
+- Best for structured output
+
+### Anthropic
+- Strong reasoning and coding
+- 200K context
+
+### Google
+- Cheapest at scale
+- Massive context windows
+
+### Groq
+- Fastest inference
+- Open-source models only
+
+### DeepSeek
+- Strong value
+- Good for code and reasoning
+
+---
+
+## External Resources
+
+For real-time benchmarks and pricing:
+
+- [Artificial Analysis](https://artificialanalysis.ai/) — Benchmarks and pricing comparison
+- [LMSYS Chatbot Arena](https://chat.lmsys.org/) — Human preference rankings
+- [OpenRouter](https://openrouter.ai/rankings) — Model rankings
+- [Vercel AI SDK Providers](https://sdk.vercel.ai/providers) — Supported providers

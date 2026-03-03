@@ -1,0 +1,119 @@
+---
+title: "Context Window Manager"
+description: Why token tracking and conversation truncation matter for production AI apps.
+---
+
+<Callout type="info">
+**Stack**: [Context Window Manager](/stacks/context-window-manager)
+**Category**: Production Infrastructure
+</Callout>
+
+---
+
+## The Problem
+
+Every LLM has a context window limit:
+- GPT-4o: 128K tokens
+- Claude 3.5: 200K tokens
+- Gemini 1.5 Pro: 2M tokens
+
+When you exceed this limit, one of two things happens:
+
+1. **Hard failure** — The API returns an error, your app crashes
+2. **Silent truncation** — The model forgets earlier context without warning
+
+Both are bad user experiences. And they happen faster than you'd expect — a conversation with code snippets can hit 128K tokens in 10-15 exchanges.
+
+### Why Developers Struggle
+
+- **No visibility** — You don't know how many tokens you're using until it crashes
+- **No warning** — The app fails abruptly instead of degrading gracefully
+- **Complex counting** — Tokens ≠ words, and different models tokenize differently
+- **No built-in solution** — AI SDKs don't include token management
+
+## The Options
+
+### Option 1: Ignore It
+
+Most common approach. Works until the conversation gets long enough.
+
+**Problem**: Crashes in production. Bad user experience.
+
+### Option 2: Naive Truncation
+
+```tsx
+// Keep only last N messages
+const recentMessages = messages.slice(-20)
+```
+
+**Problem**: Loses system prompt. Loses important early context. Magic number (20) doesn't account for message length.
+
+### Option 3: Character Approximation
+
+```tsx
+// Estimate: 1 token ≈ 4 characters
+const estimatedTokens = text.length / 4
+```
+
+**Problem**: Inaccurate. Code, non-English text, and special characters throw off estimates. Still crashes.
+
+### Option 4: External Library
+
+Use tiktoken or similar for accurate counting.
+
+**Problem**: Extra dependency. Different libraries for different models. Still need to build the UI and truncation logic.
+
+## The Decision
+
+We built a complete context window management system:
+
+### 1. Real-time Token Tracking
+
+```tsx
+const { tokenCount, percentage, isApproachingLimit } = useContextWindow({
+  model: "gpt-4o",
+  maxTokens: 128000,
+  warningThreshold: 0.8,
+})
+```
+
+### 2. Visual Indicator
+
+```tsx
+<TokenMeter count={tokenCount} max={128000} />
+```
+
+Shows users (and developers) exactly where they stand.
+
+### 3. Automatic Truncation
+
+```tsx
+const safeMessages = truncateToFit(messages, {
+  strategy: "keep-recent",
+  preserveSystem: true,
+  targetTokens: 100000,
+})
+```
+
+### Trade-offs
+
+| Decision | Our Choice | Alternative | Why |
+|----------|------------|-------------|-----|
+| Token counting | tiktoken | Approximation | Accuracy matters at limits |
+| UI feedback | Percentage + count | Just percentage | Power users want exact counts |
+| Truncation default | Drop oldest | Summarize | Simpler, no extra API calls |
+| Warning threshold | 80% | 90% | Earlier warning = more time to react |
+
+### What We Excluded
+
+- **Prompt compression** — Requires separate API calls, complex
+- **Semantic chunking** — Too application-specific
+- **Automatic summarization** — Adds cost and latency
+
+---
+
+## External Resources
+
+- [OpenAI Tokenizer](https://platform.openai.com/tokenizer)
+- [Anthropic Token Counting](https://docs.anthropic.com/en/docs/build-with-claude/token-counting)
+- [tiktoken](https://github.com/openai/tiktoken)
