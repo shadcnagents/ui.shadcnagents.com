@@ -781,4 +781,322 @@ export const stacks: Registry["items"] = [
     ],
   },
 
+  /* ────────────────────────────────────────────────────────────
+   * PRODUCTION INFRASTRUCTURE
+   * ──────────────────────────────────────────────────────────── */
+
+  {
+    name: "rate-limit-handler",
+    type: "registry:block",
+    description: "Production-ready rate limit handling with exponential backoff, jitter, circuit breaker, and visual retry queue.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    files: [
+      {
+        path: "registry/stacks/rate-limit-handler/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/rate-limit-handler/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/rate-limit-handler/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/rate-limit-handler/components/rate-limiter.tsx",
+        type: "registry:component",
+        target: "components/rate-limiter.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "cost-tracker",
+    type: "registry:block",
+    description: "Real-time token usage and cost monitoring with per-model pricing, budget alerts, and usage analytics.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    files: [
+      {
+        path: "registry/stacks/cost-tracker/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/cost-tracker/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/cost-tracker/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/cost-tracker/components/cost-tracker.tsx",
+        type: "registry:component",
+        target: "components/cost-tracker.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "chat-persistence-kit",
+    type: "registry:block",
+    description: "Full-stack chat persistence with conversation history, database adapters (LocalStorage + Prisma), and message serialization.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    files: [
+      {
+        path: "registry/stacks/chat-persistence-kit/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/chat-persistence-kit/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/chat-persistence-kit/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/chat-persistence-kit/components/conversation-sidebar.tsx",
+        type: "registry:component",
+        target: "components/conversation-sidebar.tsx",
+      },
+      {
+        path: "registry/stacks/chat-persistence-kit/lib/persistence.ts",
+        type: "registry:lib",
+        target: "lib/persistence.ts",
+      },
+    ],
+  },
+
+  {
+    name: "ai-error-boundary",
+    type: "registry:block",
+    description: "Graceful AI error recovery with retry logic, user feedback, and fallback strategies.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    files: [
+      {
+        path: "registry/stacks/ai-error-boundary/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/ai-error-boundary/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/ai-error-boundary/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/ai-error-boundary/components/error-boundary.tsx",
+        type: "registry:component",
+        target: "components/error-boundary.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "context-window-manager",
+    type: "registry:block",
+    description: "Token counting, context truncation, and window optimization for AI conversations.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    files: [
+      {
+        path: "registry/stacks/context-window-manager/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/context-window-manager/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/context-window-manager/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/context-window-manager/components/context-manager.tsx",
+        type: "registry:component",
+        target: "components/context-manager.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "model-fallback-handler",
+    type: "registry:block",
+    description: "Automatic provider failover with exponential backoff, circuit breaker, and real-time health monitoring across OpenAI, Anthropic, and Google.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/anthropic", "@ai-sdk/google", "@ai-sdk/react", "motion"],
+    files: [
+      {
+        path: "registry/stacks/model-fallback-handler/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/model-fallback-handler/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/model-fallback-handler/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/model-fallback-handler/components/model-fallback.tsx",
+        type: "registry:component",
+        target: "components/model-fallback.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "output-sanitizer",
+    type: "registry:block",
+    description: "XSS prevention for AI-generated content with threat detection, security scoring, and detailed sanitization reports.",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/stacks/output-sanitizer/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/output-sanitizer/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/output-sanitizer/components/sanitizer.tsx",
+        type: "registry:component",
+        target: "components/sanitizer.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "streaming-reconnect",
+    type: "registry:block",
+    description: "Automatic SSE reconnection with exponential backoff, Last-Event-ID tracking, partial message recovery, and real-time connection monitoring.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    files: [
+      {
+        path: "registry/stacks/streaming-reconnect/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/streaming-reconnect/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/streaming-reconnect/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/streaming-reconnect/components/streaming-reconnect.tsx",
+        type: "registry:component",
+        target: "components/streaming-reconnect.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "semantic-cache",
+    type: "registry:block",
+    description: "Cut LLM costs by 80% with intelligent semantic caching using embeddings and cosine similarity.",
+    dependencies: ["ai", "@ai-sdk/openai", "motion"],
+    files: [
+      {
+        path: "registry/stacks/semantic-cache/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/semantic-cache/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/semantic-cache/app/api/chat/route.ts",
+        type: "registry:file",
+        target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/semantic-cache/app/api/cache/embed/route.ts",
+        type: "registry:file",
+        target: "app/api/cache/embed/route.ts",
+      },
+      {
+        path: "registry/stacks/semantic-cache/components/semantic-cache.tsx",
+        type: "registry:component",
+        target: "components/semantic-cache.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "prompt-injection-guard",
+    type: "registry:block",
+    description: "OWASP LLM01 protection with real-time detection of jailbreaks, data extraction, and manipulation attempts.",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/stacks/prompt-injection-guard/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/prompt-injection-guard/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/prompt-injection-guard/components/prompt-guard.tsx",
+        type: "registry:component",
+        target: "components/prompt-guard.tsx",
+      },
+    ],
+  },
+
+  {
+    name: "agent-memory-kit",
+    type: "registry:block",
+    description: "Human-like memory patterns for AI agents with short-term, long-term, episodic, and semantic memory types.",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/stacks/agent-memory-kit/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/agent-memory-kit/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/agent-memory-kit/components/agent-memory.tsx",
+        type: "registry:component",
+        target: "components/agent-memory.tsx",
+      },
+    ],
+  },
+
 ]

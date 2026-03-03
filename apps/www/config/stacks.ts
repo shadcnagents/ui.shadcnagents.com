@@ -638,6 +638,108 @@ export const stacksConfig: StackCategory[] = [
     ],
   },
   {
+    name: "Production Infrastructure",
+    id: "production-infra",
+    items: [
+      {
+        text: "Resilience",
+        children: [
+          {
+            text: "Rate Limit Handler",
+            description: "Exponential backoff, jitter, and circuit breaker for API resilience",
+            link: "/stacks/rate-limit-handler",
+            tier: "free",
+          },
+          {
+            text: "Model Fallback Handler",
+            description: "Auto-switch providers on 429/5xx errors with health monitoring",
+            link: "/stacks/model-fallback-handler",
+            tier: "free",
+          },
+          {
+            text: "Streaming Reconnect",
+            description: "SSE reconnection with Last-Event-ID and message recovery",
+            link: "/stacks/streaming-reconnect",
+            tier: "free",
+          },
+        ],
+      },
+      {
+        text: "Security",
+        children: [
+          {
+            text: "Output Sanitizer",
+            description: "XSS prevention for AI-generated content with threat detection",
+            link: "/stacks/output-sanitizer",
+            tier: "free",
+          },
+          {
+            text: "AI Error Boundary",
+            description: "Graceful error recovery and user feedback patterns",
+            link: "/stacks/ai-error-boundary",
+            tier: "free",
+          },
+          {
+            text: "Prompt Injection Guard",
+            description: "OWASP LLM01 protection with jailbreak and extraction detection",
+            link: "/stacks/prompt-injection-guard",
+            tier: "free",
+          },
+        ],
+      },
+      {
+        text: "Observability",
+        children: [
+          {
+            text: "Cost Tracker",
+            description: "Real-time token usage and cost monitoring across models",
+            link: "/stacks/cost-tracker",
+            tier: "free",
+          },
+          {
+            text: "Context Window Manager",
+            description: "Token counting, truncation, and context optimization",
+            link: "/stacks/context-window-manager",
+            tier: "free",
+          },
+        ],
+      },
+      {
+        text: "Persistence",
+        children: [
+          {
+            text: "Chat Persistence Kit",
+            description: "Full-stack conversation history with database adapters",
+            link: "/stacks/chat-persistence-kit",
+            tier: "pro",
+          },
+        ],
+      },
+      {
+        text: "Caching",
+        children: [
+          {
+            text: "Semantic Response Cache",
+            description: "Cut costs 80% with embedding-based semantic caching",
+            link: "/stacks/semantic-cache",
+            tier: "free",
+          },
+        ],
+      },
+      {
+        text: "Agent Memory",
+        children: [
+          {
+            text: "Agent Memory Kit",
+            description: "Human-like memory with short-term, long-term, and semantic types",
+            link: "/stacks/agent-memory-kit",
+            tier: "free",
+          },
+        ],
+      },
+    ],
+  },
+  {
     name: "Landing Blocks",
     id: "marketing-ui",
     items: [
