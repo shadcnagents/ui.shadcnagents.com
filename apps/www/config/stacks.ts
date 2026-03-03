@@ -705,6 +705,17 @@ export const stacksConfig: StackCategory[] = [
         ],
       },
       {
+        text: "Output Validation",
+        children: [
+          {
+            text: "Structured Output Validator",
+            description: "Auto-repair malformed JSON with schema validation and retry",
+            link: "/stacks/structured-output-validator",
+            tier: "free",
+          },
+        ],
+      },
+      {
         text: "Persistence",
         children: [
           {

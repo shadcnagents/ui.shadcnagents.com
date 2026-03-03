@@ -1099,4 +1099,28 @@ export const stacks: Registry["items"] = [
     ],
   },
 
+  {
+    name: "structured-output-validator",
+    type: "registry:block",
+    description: "Auto-repair malformed LLM JSON outputs with intelligent fix strategies and schema validation.",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/stacks/structured-output-validator/app/page.tsx",
+        type: "registry:page",
+        target: "app/page.tsx",
+      },
+      {
+        path: "registry/stacks/structured-output-validator/app/layout.tsx",
+        type: "registry:page",
+        target: "app/layout.tsx",
+      },
+      {
+        path: "registry/stacks/structured-output-validator/components/structured-validator.tsx",
+        type: "registry:component",
+        target: "components/structured-validator.tsx",
+      },
+    ],
+  },
+
 ]
