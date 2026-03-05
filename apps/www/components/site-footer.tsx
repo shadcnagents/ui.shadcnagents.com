@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 
 import { siteConfig } from "@/config/site"
@@ -170,13 +169,7 @@ export function SiteFooter() {
             href="/"
             className="group inline-flex items-center gap-2.5"
           >
-            <Image
-              src="/logo/logo.png"
-              alt="shadcnagents"
-              width={28}
-              height={28}
-              className="size-12 transition-transform group-hover:scale-110"
-            />
+            <Icons.brandLogo className="size-6 text-foreground transition-transform group-hover:scale-110" />
             <span className="font-mono text-xl font-semibold tracking-tight text-foreground">
               shadcnagents
             </span>
