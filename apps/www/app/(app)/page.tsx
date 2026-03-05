@@ -139,8 +139,8 @@ const proFeatures = [
   "Agent patterns & orchestration",
   "Human-in-the-loop workflows",
   "Full-stack templates",
-  "Priority updates & new stacks",
-  "30-day money-back guarantee",
+  "Commercial license",
+  "Lifetime updates included",
 ]
 
 const faqItems = [
@@ -172,13 +172,7 @@ const faqItems = [
     question: "What's included in Pro?",
     tag: "Pro",
     answer:
-      `Access to all ${siteConfig.counts.stacks}+ stacks including agent orchestration, human-in-the-loop, real-world examples, marketing UI, and full-stack templates. Lifetime license — pay once, use forever.`,
-  },
-  {
-    question: "What if it doesn't fit my project?",
-    tag: "Guarantee",
-    answer:
-      "30-day money-back guarantee, no questions asked. If the stacks don't fit your workflow, you get a full refund.",
+      `Access to all ${siteConfig.counts.stacks}+ stacks including agent orchestration, human-in-the-loop, real-world examples, marketing UI, and full-stack templates. One-time $79 payment — own forever. Team plan ($149 for 5 seats) also available.`,
   },
 ]
 
@@ -360,7 +354,7 @@ export default function IndexPage() {
             { value: `${siteConfig.counts.stacks}+`, label: "AI Stacks" },
             { value: `${siteConfig.counts.uiComponents}`, label: "UI Components" },
             { value: "8", label: "Categories" },
-            { value: "$149", label: "Lifetime Access" },
+            { value: "$79", label: "One-Time" },
           ].map((stat) => (
             <div
               key={stat.label}
@@ -412,14 +406,14 @@ export default function IndexPage() {
       <section className="mx-auto max-w-4xl px-4 py-12 md:py-20">
         <div className="mb-10 text-center">
           <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-            Pricing
+            One-time payment
           </p>
           <h2 className="text-2xl tracking-tight md:text-3xl">
             <span className="block font-heading text-[1.1em]">
-              Start Free.
+              Pay Once. Ship Forever.
             </span>
             <span className="block font-mono font-medium tracking-[-0.07em]">
-              Go pro when you&apos;re ready.
+              No subscriptions. No per-seat games.
             </span>
           </h2>
         </div>
@@ -428,13 +422,16 @@ export default function IndexPage() {
           {/* Free */}
           <div className="flex flex-col gap-4 bg-background p-8">
             <div>
-              <h3 className="text-lg font-semibold">Free</h3>
+              <h3 className="text-lg font-semibold">Open Source</h3>
               <p className="mt-1 font-mono text-3xl font-bold tracking-tight">
                 $0
               </p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                forever
+              </p>
             </div>
             <ul className="flex flex-col gap-2 text-[13px] text-muted-foreground">
-              <li>30+ open source stacks</li>
+              <li>15 production-ready stacks</li>
               <li>SDK basics &amp; chat UI elements</li>
               <li>Community support</li>
               <li>MIT licensed</li>
@@ -452,18 +449,21 @@ export default function IndexPage() {
             <div>
               <div className="mb-1 flex items-center gap-2">
                 <h3 className="text-lg font-semibold">Pro</h3>
-                <span className="rounded-full bg-primary px-2 py-0.5 font-mono text-[10px] font-medium text-primary-foreground">
-                  LIFETIME
+                <span className="rounded-full bg-emerald-500 px-2 py-0.5 font-mono text-[10px] font-medium text-white">
+                  MOST POPULAR
                 </span>
               </div>
               <div className="flex items-baseline gap-2">
                 <p className="font-mono text-3xl font-bold tracking-tight">
-                  $149
+                  $79
                 </p>
                 <span className="font-mono text-sm text-muted-foreground line-through">
-                  $249
+                  $129
                 </span>
               </div>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                one-time
+              </p>
             </div>
             <ul className="flex flex-col gap-2 text-[13px] text-muted-foreground">
               {proFeatures.map((f) => (
@@ -477,10 +477,20 @@ export default function IndexPage() {
               href="/pricing"
               className="group mt-auto inline-flex items-center justify-center gap-2 bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Get all access
+              Get Pro Access
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
+        </div>
+
+        {/* Team callout */}
+        <div className="mt-4 flex items-center justify-center text-center">
+          <Link
+            href="/pricing"
+            className="font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Need 5 seats? Team — $149 →
+          </Link>
         </div>
       </section>
 

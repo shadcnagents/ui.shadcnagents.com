@@ -15,12 +15,12 @@ model User {
   emailVerified DateTime?
   image         String?
 
-  // Pro subscription
-  isPro           Boolean   @default(false)
-  plan            String?   // "lifetime" | "monthly" | "yearly"
-  planActivatedAt DateTime?
-  dodoCustomerId  String?
-  dodoPaymentId   String?
+  // Pro subscription (Polar.sh)
+  isPro              Boolean   @default(false)
+  plan               String?   // "pro" | "team"
+  planActivatedAt    DateTime?
+  polarCustomerId    String?
+  polarSubscriptionId String?
 
   // Onboarding
   onboarded Boolean @default(false)
