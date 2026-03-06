@@ -10,9 +10,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Icons } from "@/components/icons"
-
-import { Separator } from "./ui/separator"
+import { AnimatedLogo } from "@/components/ui/animated-logo"
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false)
@@ -59,10 +57,10 @@ export function MobileNav() {
       <SheetContent side="left" className="pr-0">
         <MobileLink
           href="/"
-          className="flex items-center"
+          className="flex items-center gap-2"
           onOpenChange={setOpen}
         >
-          <Icons.brandLogo className="size-5 text-foreground" />
+          <AnimatedLogo size={24} colorFg="#0066FF" />
           <span className="font-mono text-sm font-semibold tracking-tight">shadcnagents</span>
           <span className="sr-only">{siteConfig.name}</span>
         </MobileLink>

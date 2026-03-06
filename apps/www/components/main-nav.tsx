@@ -18,8 +18,8 @@ export function MainNav() {
         <Image
           src="/logo/logo.png"
           alt="shadcnagents"
-          width={24}
-          height={24}
+          width={28}
+          height={28}
           className="size-8"
         />
         <span className="hidden font-mono text-sm font-semibold tracking-tight sm:inline-block">
