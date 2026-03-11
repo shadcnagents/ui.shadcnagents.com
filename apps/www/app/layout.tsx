@@ -1,7 +1,6 @@
 import "@/styles/globals.css"
 
 import { Metadata, Viewport } from "next"
-import { Suspense } from "react"
 
 import { siteConfig } from "@/config/site"
 import { GeistSans } from "geist/font/sans"
@@ -159,7 +158,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             >
               <div vaul-drawer-wrapper="">
                 <div className="relative z-10 flex min-h-screen flex-col">
-                  <Suspense>{children}</Suspense>
+                  {children}
                 </div>
               </div>
               <TailwindIndicator />
