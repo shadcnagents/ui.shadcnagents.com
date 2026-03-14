@@ -42,3 +42,4 @@ registry/pro/
 
 .contentlayer
 tsconfig.tsbuildinfo
+.vercel
