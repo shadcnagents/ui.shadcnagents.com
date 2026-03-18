@@ -42,9 +42,7 @@ export default function TermsPage() {
             3. Payments & Refunds
           </h2>
           <p>
-            Pro access is a one-time lifetime purchase. We offer a 30-day
-            money-back guarantee. Refund requests after 30 days are handled on
-            a case-by-case basis.
+            Pro access is a one-time lifetime purchase. All sales are final.
           </p>
         </section>
 

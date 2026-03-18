@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowRight, Check, Minus, Shield, Zap } from "lucide-react"
+import { ArrowRight, Check, Minus, Zap } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { siteConfig } from "@/config/site"
@@ -32,8 +32,8 @@ const freePlan = {
 
 const proPlan = {
   name: "All Access",
-  price: "$149",
-  originalPrice: "$249",
+  price: `$${siteConfig.pricing.pro}`,
+  originalPrice: `$${siteConfig.pricing.proOriginal}`,
   period: "one-time",
   badge: "Lifetime",
   description:
@@ -52,7 +52,6 @@ const proPlan = {
     "WDK workflow stacks",
     "Priority support",
     "Commercial license",
-    "30-day money-back guarantee",
   ],
 }
 
@@ -177,7 +176,7 @@ const stackCategories = [
 const faqs = [
   {
     q: "Is this a subscription?",
-    a: "No. It's a one-time payment of $149 for lifetime access. You get every stack we've built and everything we'll ever add — no recurring charges, no renewals.",
+    a: `No. It's a one-time payment of $${siteConfig.pricing.pro} for lifetime access. You get every stack we've built and everything we'll ever add — no recurring charges, no renewals.`,
   },
   {
     q: "What do I actually get?",
@@ -190,10 +189,6 @@ const faqs = [
   {
     q: "Can I use these in commercial projects?",
     a: "Yes. The Pro plan includes a commercial license. Use the stacks in unlimited projects — client work, SaaS products, internal tools, whatever you're building.",
-  },
-  {
-    q: "What if I'm not happy?",
-    a: "You have 30 days to try everything. If the stacks aren't right for your workflow, email us for a full refund — no questions asked.",
   },
   {
     q: "Do I get future stacks too?",
@@ -300,7 +295,7 @@ export default function PricingPage() {
                   {proPlan.originalPrice}
                 </span>
                 <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[10px] font-medium text-emerald-600">
-                  SAVE $100
+                  SAVE ${siteConfig.pricing.proOriginal - siteConfig.pricing.pro}
                 </span>
               </div>
               <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -339,10 +334,6 @@ export default function PricingPage() {
 
         {/* Trust signals */}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-center">
-          <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
-            <Shield className="size-3.5" />
-            30-day money-back guarantee
-          </div>
           <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
             <Zap className="size-3.5" />
             Instant access after payment
@@ -555,7 +546,7 @@ export default function PricingPage() {
               href={process.env.NEXT_PUBLIC_DODO_CHECKOUT_URL ?? "#"}
               className="group inline-flex items-center gap-2 bg-primary px-8 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Get Lifetime Access — $149
+              Get Lifetime Access — ${siteConfig.pricing.pro}
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
@@ -566,8 +557,7 @@ export default function PricingPage() {
             </Link>
           </div>
           <p className="font-mono text-[10px] tracking-wider text-muted-foreground/50">
-            30-day money-back guarantee &middot; No recurring charges &middot;
-            Instant access
+            No recurring charges &middot; Instant access
           </p>
         </div>
       </section>
