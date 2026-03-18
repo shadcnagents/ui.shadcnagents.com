@@ -12,6 +12,12 @@
   100% { transform: translateX(-50%); }
 }
 
+/* Scroll left carousel animation */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -503,6 +509,34 @@ html {
 	--animate-rotate-once-down-2s-delay: rotateIconDown 2s ease 0.75s forwards;
 	--animate-slide-down: slideDownShort 0.75s forwards;
 	--animate-slide-up: slideUp 3s forwards;
+
+	/* Gradient shift animation for bento sections */
+	@keyframes gradient-shift {
+		0%, 100% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
+	}
+	--animate-gradient-shift: gradient-shift 8s ease infinite;
+
+	/* Cell ripple animation for grid background */
+	@keyframes cell-ripple {
+		0% {
+			opacity: 0.4;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 0.8;
+			transform: scale(1.05);
+		}
+		100% {
+			opacity: 0.4;
+			transform: scale(1);
+		}
+	}
+	--animate-cell-ripple: cell-ripple var(--duration, 500ms) ease-out var(--delay, 0ms);
 }
 
 /* Base resets */
