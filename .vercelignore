@@ -1,0 +1,38 @@
+# Turborepo cache (can be massive)
+.turbo
+
+# Dependencies (installed fresh on Vercel)
+node_modules
+
+# Local env files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# Build outputs
+.next
+out
+build
+
+# Pro registry (in separate repo)
+registry/pro/
+
+# IDE and editor
+.vscode
+.idea
+
+# OS files
+.DS_Store
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log*
+
+# Claude
+.claude
