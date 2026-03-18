@@ -40,7 +40,7 @@ npx shadcn@latest add https://shadcnagents.com/r/<stack-name>.json
 ## Pricing
 
 - **Free**: 36 open source stacks, MIT licensed
-- **Pro** ($149 lifetime): All 87+ stacks, agent patterns, orchestration, human-in-the-loop workflows, full-stack templates, priority updates
+- **Pro** ($79 lifetime): All 87+ stacks, agent patterns, orchestration, human-in-the-loop workflows, full-stack templates, priority updates
 
 ## Detailed Listing
 

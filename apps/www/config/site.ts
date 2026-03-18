@@ -12,6 +12,12 @@ export const siteConfig = {
     uiComponents: 117,
   },
 
+  /* ───────────────── Pricing ───────────────── */
+  pricing: {
+    pro: 79,
+    proOriginal: 149,
+  },
+
   /* ───────────────── Social links ───────────────── */
   links: {
     twitter: "https://x.com/shadcnagents",
