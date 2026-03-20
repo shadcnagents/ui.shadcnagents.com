@@ -15,8 +15,13 @@ export const stacks: Registry["items"] = [
     name: "basics-generate-text",
     type: "registry:block",
     description: "Server-side text generation with usage metadata and GPT-4o.",
-    dependencies: ["ai", "@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai", "clsx", "tailwind-merge"],
     files: [
+      {
+        path: "registry/stacks/basics-generate-text/app/globals.css",
+        type: "registry:style",
+        target: "app/globals.css",
+      },
       {
         path: "registry/stacks/basics-generate-text/app/page.tsx",
         type: "registry:page",
@@ -36,6 +41,16 @@ export const stacks: Registry["items"] = [
         path: "registry/stacks/basics-generate-text/components/generate-text-demo.tsx",
         type: "registry:component",
         target: "components/generate-text-demo.tsx",
+      },
+      {
+        path: "registry/stacks/basics-generate-text/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
+      {
+        path: "registry/stacks/basics-generate-text/tailwind.config.ts",
+        type: "registry:file",
+        target: "tailwind.config.ts",
       },
     ],
   },
