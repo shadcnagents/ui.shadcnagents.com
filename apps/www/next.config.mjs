@@ -128,6 +128,10 @@ const nextConfig = {
         source: "/docs/:path*.md",
         destination: "/llm/:path*",
       },
+      {
+        source: "/r/:name",
+        destination: "/r/:name.json",
+      },
     ]
   },
 }
