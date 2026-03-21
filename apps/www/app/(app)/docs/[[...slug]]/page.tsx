@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { DocsCopyPage } from "@/components/docs-copy-page"
 import { DocsTableOfContents } from "@/components/docs-toc"
 import { GetProCta } from "@/components/get-pro-cta"
+import { ArticleSchema, BreadcrumbSchema } from "@/components/seo"
 
 export const revalidate = false
 export const dynamic = "force-static"
@@ -88,11 +89,31 @@ export default async function Page(props: {
 
   const links = (doc as any).links
 
+  // Build breadcrumb items
+  const breadcrumbItems = [
+    { name: "Home", href: "/" },
+    { name: "Docs", href: "/docs" },
+    ...(params.slug?.map((segment, index) => ({
+      name: segment
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+      href: `/docs/${params.slug!.slice(0, index + 1).join("/")}`,
+    })) || []),
+  ]
+
   return (
-    <div
-      data-slot="docs"
-      className="flex min-w-0 items-stretch text-[1.05rem] sm:text-[15px]"
-    >
+    <>
+      <ArticleSchema
+        title={doc.title}
+        description={doc.description || ""}
+        url={absoluteUrl(page.url)}
+      />
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <div
+        data-slot="docs"
+        className="flex min-w-0 items-stretch text-[1.05rem] sm:text-[15px]"
+      >
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="h-(--top-spacing) shrink-0" />
         <div className="flex w-full min-w-0 flex-1 flex-col gap-4 px-5 py-6 text-neutral-800 sm:px-6 md:px-8 lg:px-10 lg:py-8 dark:text-neutral-300">
@@ -186,5 +207,6 @@ export default async function Page(props: {
         </div>
       </div>
     </div>
+    </>
   )
 }

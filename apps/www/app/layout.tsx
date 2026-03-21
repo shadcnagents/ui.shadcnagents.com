@@ -48,6 +48,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { SessionProvider } from "@/components/session-provider"
 import { PostHogProvider } from "@/components/posthog-provider"
+import { OrganizationSchema } from "@/components/seo"
 
 export const metadata: Metadata = {
   title: {
@@ -118,7 +119,9 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <OrganizationSchema />
+      </head>
       <body
         className={cn(
           "relative min-h-screen bg-background font-sans antialiased",
