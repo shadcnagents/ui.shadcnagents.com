@@ -18,21 +18,6 @@ export const stacks: Registry["items"] = [
     dependencies: ["ai", "@ai-sdk/openai", "clsx", "tailwind-merge"],
     files: [
       {
-        path: "registry/stacks/basics-generate-text/app/globals.css",
-        type: "registry:style",
-        target: "app/globals.css",
-      },
-      {
-        path: "registry/stacks/basics-generate-text/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-generate-text/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
-      {
         path: "registry/stacks/basics-generate-text/app/api/generate-text/route.ts",
         type: "registry:file",
         target: "app/api/generate-text/route.ts",
@@ -47,11 +32,6 @@ export const stacks: Registry["items"] = [
         type: "registry:lib",
         target: "lib/utils.ts",
       },
-      {
-        path: "registry/stacks/basics-generate-text/tailwind.config.ts",
-        type: "registry:file",
-        target: "tailwind.config.ts",
-      },
     ],
   },
 
@@ -65,18 +45,10 @@ export const stacks: Registry["items"] = [
       "@ai-sdk/openai",
       "@ai-sdk/anthropic",
       "@ai-sdk/google",
+      "clsx",
+      "tailwind-merge",
     ],
     files: [
-      {
-        path: "registry/stacks/basics-generate-text-multi-model/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-generate-text-multi-model/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-generate-text-multi-model/app/api/compare/route.ts",
         type: "registry:file",
@@ -87,6 +59,11 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/multi-model-demo.tsx",
       },
+      {
+        path: "registry/stacks/basics-generate-text-multi-model/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
@@ -95,18 +72,8 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "System prompts, persona presets, and temperature control for text generation.",
-    dependencies: ["ai", "@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/basics-generate-text-prompt/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-generate-text-prompt/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-generate-text-prompt/app/api/generate/route.ts",
         type: "registry:file",
@@ -117,25 +84,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/prompt-demo.tsx",
       },
+      {
+        path: "registry/stacks/basics-generate-text-prompt/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "basics-stream-text",
     type: "registry:block",
-    description: "Stream text token-by-token using the Vercel AI SDK useCompletion hook.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react"],
+    description:
+      "Stream text token-by-token using the Vercel AI SDK useCompletion hook.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/basics-stream-text/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-stream-text/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-stream-text/app/api/completion/route.ts",
         type: "registry:file",
@@ -146,25 +109,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/stream-text-demo.tsx",
       },
+      {
+        path: "registry/stacks/basics-stream-text/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "basics-generate-image",
     type: "registry:block",
-    description: "Generate images from text prompts using DALL·E 3 and the Vercel AI SDK.",
-    dependencies: ["ai", "@ai-sdk/openai"],
+    description:
+      "Generate images from text prompts using DALL·E 3 and the Vercel AI SDK.",
+    dependencies: ["ai", "@ai-sdk/openai", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/basics-generate-image/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-generate-image/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-generate-image/app/api/generate-image/route.ts",
         type: "registry:file",
@@ -175,25 +134,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/generate-image-demo.tsx",
       },
+      {
+        path: "registry/stacks/basics-generate-image/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "basics-generate-speech",
     type: "registry:block",
-    description: "Text-to-speech with audio-reactive orb and live waveform visualization. OpenAI TTS, 6 voices, Web Audio API volume tracking.",
-    dependencies: ["ai", "@ai-sdk/openai", "@react-three/fiber", "three"],
+    description:
+      "Text-to-speech with audio-reactive orb and live waveform visualization. OpenAI TTS, 6 voices, Web Audio API volume tracking.",
+    dependencies: ["ai", "@ai-sdk/openai", "@react-three/fiber", "three", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/basics-generate-speech/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-generate-speech/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-generate-speech/app/api/speech/route.ts",
         type: "registry:file",
@@ -214,25 +169,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/generate-speech-demo.tsx",
       },
+      {
+        path: "registry/stacks/basics-generate-speech/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "basics-transcribe",
     type: "registry:block",
-    description: "Transcribe audio files to text using OpenAI Whisper and the Vercel AI SDK.",
-    dependencies: ["ai", "@ai-sdk/openai"],
+    description:
+      "Transcribe audio files to text using OpenAI Whisper and the Vercel AI SDK.",
+    dependencies: ["ai", "@ai-sdk/openai", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/basics-transcribe/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-transcribe/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-transcribe/app/api/transcribe/route.ts",
         type: "registry:file",
@@ -243,25 +194,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/transcribe-demo.tsx",
       },
+      {
+        path: "registry/stacks/basics-transcribe/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "basics-tool",
     type: "registry:block",
-    description: "Type-safe tool calling with the Vercel AI SDK. Define functions the model can invoke.",
-    dependencies: ["ai", "@ai-sdk/openai", "zod"],
+    description:
+      "Type-safe tool calling with the Vercel AI SDK. Define functions the model can invoke.",
+    dependencies: ["ai", "@ai-sdk/openai", "zod", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/basics-tool/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-tool/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-tool/app/api/tool-call/route.ts",
         type: "registry:file",
@@ -272,25 +219,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/tool-call-demo.tsx",
       },
+      {
+        path: "registry/stacks/basics-tool/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "basics-agent",
     type: "registry:block",
-    description: "Multi-step AI agent with up to 5 tool-calling iterations using the Vercel AI SDK.",
-    dependencies: ["ai", "@ai-sdk/openai", "zod"],
+    description:
+      "Multi-step AI agent with up to 5 tool-calling iterations using the Vercel AI SDK.",
+    dependencies: ["ai", "@ai-sdk/openai", "zod", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/basics-agent/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/basics-agent/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/basics-agent/app/api/agent/route.ts",
         type: "registry:file",
@@ -300,6 +243,11 @@ export const stacks: Registry["items"] = [
         path: "registry/stacks/basics-agent/components/agent-demo.tsx",
         type: "registry:component",
         target: "components/agent-demo.tsx",
+      },
+      {
+        path: "registry/stacks/basics-agent/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
       },
     ],
   },
@@ -311,23 +259,24 @@ export const stacks: Registry["items"] = [
   {
     name: "ai-elements-chat",
     type: "registry:block",
-    description: "Full-screen streaming chat UI with GPT-4o using the Vercel AI SDK useChat hook.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react"],
+    description:
+      "Full-screen streaming chat UI with GPT-4o using the Vercel AI SDK useChat hook.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/ai-elements-chat/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/ai-elements-chat/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/ai-elements-chat/app/api/chat/route.ts",
         type: "registry:file",
         target: "app/api/chat/route.ts",
+      },
+      {
+        path: "registry/stacks/ai-elements-chat/components/chat-demo.tsx",
+        type: "registry:component",
+        target: "components/chat-demo.tsx",
+      },
+      {
+        path: "registry/stacks/ai-elements-chat/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
       },
     ],
   },
@@ -336,7 +285,7 @@ export const stacks: Registry["items"] = [
     name: "ai-elements-reasoning-chat",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/react","@ai-sdk/anthropic"],
+    dependencies: ["ai", "@ai-sdk/react", "@ai-sdk/anthropic"],
     files: [
       {
         path: "registry/stacks/ai-elements-reasoning-chat/page.tsx",
@@ -411,7 +360,7 @@ export const stacks: Registry["items"] = [
     name: "ai-agents-routing",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai"],
     files: [
       {
         path: "registry/stacks/ai-agents-routing/page.tsx",
@@ -425,7 +374,7 @@ export const stacks: Registry["items"] = [
     name: "ai-agents-parallel-processing",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai"],
     files: [
       {
         path: "registry/stacks/ai-agents-parallel-processing/page.tsx",
@@ -453,7 +402,7 @@ export const stacks: Registry["items"] = [
     name: "tool-websearch-claude",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/anthropic"],
+    dependencies: ["ai", "@ai-sdk/anthropic"],
     files: [
       {
         path: "registry/stacks/tool-websearch-claude/page.tsx",
@@ -467,7 +416,7 @@ export const stacks: Registry["items"] = [
     name: "tool-websearch-exa",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai","zod"],
+    dependencies: ["ai", "@ai-sdk/openai", "zod"],
     files: [
       {
         path: "registry/stacks/tool-websearch-exa/page.tsx",
@@ -481,7 +430,7 @@ export const stacks: Registry["items"] = [
     name: "cheerio-scraper",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai","zod"],
+    dependencies: ["ai", "@ai-sdk/openai", "zod"],
     files: [
       {
         path: "registry/stacks/cheerio-scraper/page.tsx",
@@ -495,7 +444,7 @@ export const stacks: Registry["items"] = [
     name: "jina-scraper",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai","zod"],
+    dependencies: ["ai", "@ai-sdk/openai", "zod"],
     files: [
       {
         path: "registry/stacks/jina-scraper/page.tsx",
@@ -509,7 +458,7 @@ export const stacks: Registry["items"] = [
     name: "markdown-new-scraper",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai","zod"],
+    dependencies: ["ai", "@ai-sdk/openai", "zod"],
     files: [
       {
         path: "registry/stacks/markdown-new-scraper/page.tsx",
@@ -537,7 +486,7 @@ export const stacks: Registry["items"] = [
     name: "ai-workflow-basic",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai"],
     files: [
       {
         path: "registry/stacks/ai-workflow-basic/page.tsx",
@@ -579,7 +528,7 @@ export const stacks: Registry["items"] = [
     name: "marketing-feature-code-block-1",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai"],
     files: [
       {
         path: "registry/stacks/marketing-feature-code-block-1/component.tsx",
@@ -593,7 +542,7 @@ export const stacks: Registry["items"] = [
     name: "marketing-feature-code-block-2",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai","@ai-sdk/react"],
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react"],
     files: [
       {
         path: "registry/stacks/marketing-feature-code-block-2/component.tsx",
@@ -607,7 +556,7 @@ export const stacks: Registry["items"] = [
     name: "marketing-feature-code-block-3",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/anthropic","zod"],
+    dependencies: ["ai", "@ai-sdk/anthropic", "zod"],
     files: [
       {
         path: "registry/stacks/marketing-feature-code-block-3/component.tsx",
@@ -649,7 +598,7 @@ export const stacks: Registry["items"] = [
     name: "streaming-markdown-renderer",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai","@ai-sdk/react"],
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react"],
     files: [
       {
         path: "registry/stacks/streaming-markdown-renderer/streaming-markdown.tsx",
@@ -668,7 +617,7 @@ export const stacks: Registry["items"] = [
     name: "voice-input-button",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai"],
     files: [
       {
         path: "registry/stacks/voice-input-button/voice-input.tsx",
@@ -743,7 +692,7 @@ export const stacks: Registry["items"] = [
     name: "structured-output-viewer",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai","zod"],
+    dependencies: ["ai", "@ai-sdk/openai", "zod"],
     files: [
       {
         path: "registry/stacks/structured-output-viewer/structured-output-viewer.tsx",
@@ -762,7 +711,7 @@ export const stacks: Registry["items"] = [
     name: "ai-image-output",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/openai"],
+    dependencies: ["ai", "@ai-sdk/openai"],
     files: [
       {
         path: "registry/stacks/ai-image-output/ai-image-output.tsx",
@@ -781,7 +730,7 @@ export const stacks: Registry["items"] = [
     name: "artifact-canvas",
     type: "registry:block",
     description: "",
-    dependencies: ["ai","@ai-sdk/react","@ai-sdk/anthropic"],
+    dependencies: ["ai", "@ai-sdk/react", "@ai-sdk/anthropic"],
     files: [
       {
         path: "registry/stacks/artifact-canvas/artifact-canvas.tsx",
@@ -803,19 +752,10 @@ export const stacks: Registry["items"] = [
   {
     name: "rate-limit-handler",
     type: "registry:block",
-    description: "Production-ready rate limit handling with exponential backoff, jitter, circuit breaker, and visual retry queue.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    description:
+      "Production-ready rate limit handling with exponential backoff, jitter, circuit breaker, and visual retry queue.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/rate-limit-handler/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/rate-limit-handler/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/rate-limit-handler/app/api/chat/route.ts",
         type: "registry:file",
@@ -826,25 +766,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/rate-limiter.tsx",
       },
+      {
+        path: "registry/stacks/rate-limit-handler/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "cost-tracker",
     type: "registry:block",
-    description: "Real-time token usage and cost monitoring with per-model pricing, budget alerts, and usage analytics.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    description:
+      "Real-time token usage and cost monitoring with per-model pricing, budget alerts, and usage analytics.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/cost-tracker/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/cost-tracker/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/cost-tracker/app/api/chat/route.ts",
         type: "registry:file",
@@ -855,25 +791,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/cost-tracker.tsx",
       },
+      {
+        path: "registry/stacks/cost-tracker/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "chat-persistence-kit",
     type: "registry:block",
-    description: "Full-stack chat persistence with conversation history, database adapters (LocalStorage + Prisma), and message serialization.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    description:
+      "Full-stack chat persistence with conversation history, database adapters (LocalStorage + Prisma), and message serialization.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/chat-persistence-kit/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/chat-persistence-kit/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/chat-persistence-kit/app/api/chat/route.ts",
         type: "registry:file",
@@ -889,25 +821,21 @@ export const stacks: Registry["items"] = [
         type: "registry:lib",
         target: "lib/persistence.ts",
       },
+      {
+        path: "registry/stacks/chat-persistence-kit/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "ai-error-boundary",
     type: "registry:block",
-    description: "Graceful AI error recovery with retry logic, user feedback, and fallback strategies.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    description:
+      "Graceful AI error recovery with retry logic, user feedback, and fallback strategies.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/ai-error-boundary/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/ai-error-boundary/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/ai-error-boundary/app/api/chat/route.ts",
         type: "registry:file",
@@ -918,25 +846,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/error-boundary.tsx",
       },
+      {
+        path: "registry/stacks/ai-error-boundary/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "context-window-manager",
     type: "registry:block",
-    description: "Token counting, context truncation, and window optimization for AI conversations.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    description:
+      "Token counting, context truncation, and window optimization for AI conversations.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/context-window-manager/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/context-window-manager/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/context-window-manager/app/api/chat/route.ts",
         type: "registry:file",
@@ -947,25 +871,30 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/context-manager.tsx",
       },
+      {
+        path: "registry/stacks/context-window-manager/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "model-fallback-handler",
     type: "registry:block",
-    description: "Automatic provider failover with exponential backoff, circuit breaker, and real-time health monitoring across OpenAI, Anthropic, and Google.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/anthropic", "@ai-sdk/google", "@ai-sdk/react", "motion"],
+    description:
+      "Automatic provider failover with exponential backoff, circuit breaker, and real-time health monitoring across OpenAI, Anthropic, and Google.",
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/anthropic",
+      "@ai-sdk/google",
+      "@ai-sdk/react",
+      "motion",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
-      {
-        path: "registry/stacks/model-fallback-handler/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/model-fallback-handler/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/model-fallback-handler/app/api/chat/route.ts",
         type: "registry:file",
@@ -976,29 +905,30 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/model-fallback.tsx",
       },
+      {
+        path: "registry/stacks/model-fallback-handler/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "output-sanitizer",
     type: "registry:block",
-    description: "XSS prevention for AI-generated content with threat detection, security scoring, and detailed sanitization reports.",
-    dependencies: ["motion"],
+    description:
+      "XSS prevention for AI-generated content with threat detection, security scoring, and detailed sanitization reports.",
+    dependencies: ["motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/output-sanitizer/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/output-sanitizer/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/output-sanitizer/components/sanitizer.tsx",
         type: "registry:component",
         target: "components/sanitizer.tsx",
+      },
+      {
+        path: "registry/stacks/output-sanitizer/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
       },
     ],
   },
@@ -1006,19 +936,10 @@ export const stacks: Registry["items"] = [
   {
     name: "streaming-reconnect",
     type: "registry:block",
-    description: "Automatic SSE reconnection with exponential backoff, Last-Event-ID tracking, partial message recovery, and real-time connection monitoring.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion"],
+    description:
+      "Automatic SSE reconnection with exponential backoff, Last-Event-ID tracking, partial message recovery, and real-time connection monitoring.",
+    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/streaming-reconnect/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/streaming-reconnect/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/streaming-reconnect/app/api/chat/route.ts",
         type: "registry:file",
@@ -1029,25 +950,21 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/streaming-reconnect.tsx",
       },
+      {
+        path: "registry/stacks/streaming-reconnect/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "semantic-cache",
     type: "registry:block",
-    description: "Cut LLM costs by 80% with intelligent semantic caching using embeddings and cosine similarity.",
-    dependencies: ["ai", "@ai-sdk/openai", "motion"],
+    description:
+      "Cut LLM costs by 80% with intelligent semantic caching using embeddings and cosine similarity.",
+    dependencies: ["ai", "@ai-sdk/openai", "motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/semantic-cache/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/semantic-cache/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/semantic-cache/app/api/chat/route.ts",
         type: "registry:file",
@@ -1063,29 +980,30 @@ export const stacks: Registry["items"] = [
         type: "registry:component",
         target: "components/semantic-cache.tsx",
       },
+      {
+        path: "registry/stacks/semantic-cache/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
 
   {
     name: "prompt-injection-guard",
     type: "registry:block",
-    description: "OWASP LLM01 protection with real-time detection of jailbreaks, data extraction, and manipulation attempts.",
-    dependencies: ["motion"],
+    description:
+      "OWASP LLM01 protection with real-time detection of jailbreaks, data extraction, and manipulation attempts.",
+    dependencies: ["motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/prompt-injection-guard/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/prompt-injection-guard/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/prompt-injection-guard/components/prompt-guard.tsx",
         type: "registry:component",
         target: "components/prompt-guard.tsx",
+      },
+      {
+        path: "registry/stacks/prompt-injection-guard/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
       },
     ],
   },
@@ -1093,23 +1011,19 @@ export const stacks: Registry["items"] = [
   {
     name: "agent-memory-kit",
     type: "registry:block",
-    description: "Human-like memory patterns for AI agents with short-term, long-term, episodic, and semantic memory types.",
-    dependencies: ["motion"],
+    description:
+      "Human-like memory patterns for AI agents with short-term, long-term, episodic, and semantic memory types.",
+    dependencies: ["motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/agent-memory-kit/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/agent-memory-kit/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/agent-memory-kit/components/agent-memory.tsx",
         type: "registry:component",
         target: "components/agent-memory.tsx",
+      },
+      {
+        path: "registry/stacks/agent-memory-kit/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
       },
     ],
   },
@@ -1117,25 +1031,20 @@ export const stacks: Registry["items"] = [
   {
     name: "structured-output-validator",
     type: "registry:block",
-    description: "Auto-repair malformed LLM JSON outputs with intelligent fix strategies and schema validation.",
-    dependencies: ["motion"],
+    description:
+      "Auto-repair malformed LLM JSON outputs with intelligent fix strategies and schema validation.",
+    dependencies: ["motion", "clsx", "tailwind-merge"],
     files: [
-      {
-        path: "registry/stacks/structured-output-validator/app/page.tsx",
-        type: "registry:page",
-        target: "app/page.tsx",
-      },
-      {
-        path: "registry/stacks/structured-output-validator/app/layout.tsx",
-        type: "registry:page",
-        target: "app/layout.tsx",
-      },
       {
         path: "registry/stacks/structured-output-validator/components/structured-validator.tsx",
         type: "registry:component",
         target: "components/structured-validator.tsx",
       },
+      {
+        path: "registry/stacks/structured-output-validator/lib/utils.ts",
+        type: "registry:lib",
+        target: "lib/utils.ts",
+      },
     ],
   },
-
 ]
