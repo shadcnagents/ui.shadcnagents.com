@@ -18,8 +18,10 @@ import { useControllableState } from "@radix-ui/react-use-controllable-state"
 
 export type VoteTallyValue = Record<string, number>
 
-export interface VoteTallyRootProps
-  extends Omit<ComponentProps<"ul">, "defaultValue"> {
+export interface VoteTallyRootProps extends Omit<
+  ComponentProps<"ul">,
+  "defaultValue"
+> {
   /** Current vote counts (controlled) */
   value?: VoteTallyValue
   /** Initial vote counts (uncontrolled) */

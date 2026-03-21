@@ -5,8 +5,10 @@ import { AnimatePresence, motion, MotionProps } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-interface ShiftCardProps
-  extends Omit<MotionProps, "onAnimationStart" | "onAnimationComplete"> {
+interface ShiftCardProps extends Omit<
+  MotionProps,
+  "onAnimationStart" | "onAnimationComplete"
+> {
   className?: string
   topContent?: React.ReactNode
   middleContent?: React.ReactNode

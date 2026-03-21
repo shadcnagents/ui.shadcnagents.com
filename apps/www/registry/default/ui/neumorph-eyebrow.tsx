@@ -17,8 +17,9 @@ const neumorphEyebrowVariants = cva(
   }
 )
 
-interface NeumorphEyebrowProps
-  extends VariantProps<typeof neumorphEyebrowVariants> {
+interface NeumorphEyebrowProps extends VariantProps<
+  typeof neumorphEyebrowVariants
+> {
   children: React.ReactNode
   className?: string
 }

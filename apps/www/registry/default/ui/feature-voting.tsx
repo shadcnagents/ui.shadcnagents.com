@@ -18,8 +18,10 @@ import { useControllableState } from "@radix-ui/react-use-controllable-state"
 
 export type FeatureVotingValue = Record<string, number>
 
-export interface FeatureVotingRootProps
-  extends Omit<ComponentProps<"ul">, "defaultValue"> {
+export interface FeatureVotingRootProps extends Omit<
+  ComponentProps<"ul">,
+  "defaultValue"
+> {
   /** Current vote counts (controlled) */
   value?: FeatureVotingValue
   /** Initial vote counts (uncontrolled) */

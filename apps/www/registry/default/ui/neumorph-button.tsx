@@ -82,8 +82,7 @@ const buttonVariants = cva(
 )
 
 export interface NeumorphButtonProps
-  extends HTMLMotionProps<"button">,
-    VariantProps<typeof buttonVariants> {
+  extends HTMLMotionProps<"button">, VariantProps<typeof buttonVariants> {
   children: React.ReactNode
   loading?: boolean
 }

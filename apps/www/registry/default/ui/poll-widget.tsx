@@ -60,8 +60,10 @@ export type PollWidgetMode = "inline" | "popover" | "dialog"
 
 export type PollWidgetAnimationPhase = "idle" | "voting" | "results" | "success"
 
-export interface PollWidgetRootProps
-  extends Omit<PropsWithChildren, "children"> {
+export interface PollWidgetRootProps extends Omit<
+  PropsWithChildren,
+  "children"
+> {
   /** Poll question text */
   question: string
   /** Optional description for the poll */

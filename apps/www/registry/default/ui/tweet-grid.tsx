@@ -34,7 +34,8 @@ const tweetItemVariants = cva("break-inside-avoid", {
 })
 
 export interface TweetGridProps
-  extends VariantProps<typeof tweetGridVariants>,
+  extends
+    VariantProps<typeof tweetGridVariants>,
     VariantProps<typeof tweetItemVariants> {
   tweets: string[]
   className?: string

@@ -20,8 +20,10 @@ import { cn } from "@/lib/utils"
  * Types
  * -------------------------------------------------------------------------- */
 
-export interface FeaturePollRootProps
-  extends Omit<ComponentProps<"div">, "defaultValue"> {
+export interface FeaturePollRootProps extends Omit<
+  ComponentProps<"div">,
+  "defaultValue"
+> {
   /** Currently selected option(s) - controlled */
   value?: string | string[]
   /** Default selected option(s) - uncontrolled */
