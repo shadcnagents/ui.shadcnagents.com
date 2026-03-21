@@ -1,7 +1,7 @@
 "use client"
 
-import { useChat } from "@ai-sdk/react"
 import { useState } from "react"
+import { useChat } from "@ai-sdk/react"
 
 export default function TableEditor() {
   const { messages, input, handleInputChange, handleSubmit } = useChat()
@@ -23,7 +23,10 @@ export default function TableEditor() {
                     <thead>
                       <tr>
                         {cols.map((col: string) => (
-                          <th key={col} className="border p-2 text-left text-xs">
+                          <th
+                            key={col}
+                            className="border p-2 text-left text-xs"
+                          >
                             {col}
                           </th>
                         ))}
@@ -44,7 +47,11 @@ export default function TableEditor() {
                 )
               }
               if (part.type === "text") {
-                return <p key={i} className="text-sm">{part.text}</p>
+                return (
+                  <p key={i} className="text-sm">
+                    {part.text}
+                  </p>
+                )
               }
               return null
             })}

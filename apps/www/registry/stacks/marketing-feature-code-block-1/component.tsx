@@ -13,7 +13,7 @@ export function FeatureCodeBlock() {
             <span className="text-xs text-muted-foreground">page.tsx</span>
           </div>
           <pre className="overflow-x-auto p-4 text-sm">
-{`import { generateText } from "ai"
+            {`import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
 
 const { text } = await generateText({

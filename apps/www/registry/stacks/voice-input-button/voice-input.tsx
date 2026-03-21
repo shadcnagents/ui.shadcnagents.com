@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { Mic, Square, Loader2, Check } from "lucide-react"
+import { useRef, useState } from "react"
+import { Check, Loader2, Mic, Square } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 type State = "idle" | "listening" | "processing" | "done"
@@ -52,12 +53,14 @@ export function VoiceInput({
         state === "idle" && "border-border hover:border-foreground/40",
         state === "listening" && "border-foreground bg-foreground",
         state === "processing" && "border-border/40 bg-muted/30",
-        state === "done" && "border-green-500/60 bg-green-500/10",
+        state === "done" && "border-green-500/60 bg-green-500/10"
       )}
     >
       {state === "idle" && <Mic className="size-6" />}
       {state === "listening" && <Square className="size-5 text-background" />}
-      {state === "processing" && <Loader2 className="size-5 animate-spin text-muted-foreground" />}
+      {state === "processing" && (
+        <Loader2 className="size-5 animate-spin text-muted-foreground" />
+      )}
       {state === "done" && <Check className="size-6 text-green-500" />}
     </button>
   )

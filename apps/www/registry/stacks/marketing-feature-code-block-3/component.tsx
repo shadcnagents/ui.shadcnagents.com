@@ -17,7 +17,7 @@ export function FeatureCodeBlockDark() {
             </div>
           </div>
           <pre className="p-4 text-xs leading-relaxed">
-{`import { generateText, tool } from "ai"
+            {`import { generateText, tool } from "ai"
 import { anthropic } from "@ai-sdk/anthropic"
 import { z } from "zod"
 

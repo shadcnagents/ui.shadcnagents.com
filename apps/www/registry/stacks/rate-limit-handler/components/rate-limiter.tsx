@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 // ============================================================================
 // TYPES
@@ -49,12 +49,16 @@ const DEFAULT_CONFIG: Required<RateLimitConfig> = {
   circuitBreakerResetTime: 30000,
 }
 
-function calculateBackoff(attempt: number, config: Required<RateLimitConfig>): number {
+function calculateBackoff(
+  attempt: number,
+  config: Required<RateLimitConfig>
+): number {
   const exponentialDelay = Math.min(
     config.baseDelay * Math.pow(2, attempt),
     config.maxDelay
   )
-  const jitter = exponentialDelay * config.jitterFactor * (Math.random() * 2 - 1)
+  const jitter =
+    exponentialDelay * config.jitterFactor * (Math.random() * 2 - 1)
   return Math.max(0, exponentialDelay + jitter)
 }
 
@@ -82,9 +86,15 @@ export function useRateLimiter(userConfig?: RateLimitConfig) {
     } else if (metrics.consecutiveErrors >= config.circuitBreakerThreshold) {
       circuitOpenUntil.current = Date.now() + config.circuitBreakerResetTime
       setState("circuit-open")
-    } else if (metrics.remainingRequests !== null && metrics.remainingRequests < 10) {
+    } else if (
+      metrics.remainingRequests !== null &&
+      metrics.remainingRequests < 10
+    ) {
       setState("limited")
-    } else if (metrics.remainingRequests !== null && metrics.remainingRequests < 50) {
+    } else if (
+      metrics.remainingRequests !== null &&
+      metrics.remainingRequests < 50
+    ) {
       setState("warning")
     } else {
       setState("healthy")
@@ -96,10 +106,14 @@ export function useRateLimiter(userConfig?: RateLimitConfig) {
     const remainingTokens = headers.get("x-ratelimit-remaining-tokens")
     const reset = headers.get("x-ratelimit-reset-requests")
 
-    setMetrics(prev => ({
+    setMetrics((prev) => ({
       ...prev,
-      remainingRequests: remaining ? parseInt(remaining) : prev.remainingRequests,
-      remainingTokens: remainingTokens ? parseInt(remainingTokens) : prev.remainingTokens,
+      remainingRequests: remaining
+        ? parseInt(remaining)
+        : prev.remainingRequests,
+      remainingTokens: remainingTokens
+        ? parseInt(remainingTokens)
+        : prev.remainingTokens,
       resetAt: reset ? Date.now() + parseResetTime(reset) : prev.resetAt,
       consecutiveErrors: 0,
       lastError: null,
@@ -107,100 +121,109 @@ export function useRateLimiter(userConfig?: RateLimitConfig) {
   }, [])
 
   const recordError = useCallback((error: string, statusCode?: number) => {
-    setMetrics(prev => ({
+    setMetrics((prev) => ({
       ...prev,
       consecutiveErrors: prev.consecutiveErrors + 1,
       lastError: error,
     }))
   }, [])
 
-  const addToRetryQueue = useCallback((id: string): RetryQueueItem => {
-    const item: RetryQueueItem = {
-      id,
-      attempt: 1,
-      maxAttempts: config.maxRetries,
-      nextRetryAt: Date.now() + calculateBackoff(0, config),
-      status: "waiting",
-    }
-    setRetryQueue(prev => [...prev, item])
-    return item
-  }, [config])
+  const addToRetryQueue = useCallback(
+    (id: string): RetryQueueItem => {
+      const item: RetryQueueItem = {
+        id,
+        attempt: 1,
+        maxAttempts: config.maxRetries,
+        nextRetryAt: Date.now() + calculateBackoff(0, config),
+        status: "waiting",
+      }
+      setRetryQueue((prev) => [...prev, item])
+      return item
+    },
+    [config]
+  )
 
-  const updateRetryItem = useCallback((id: string, updates: Partial<RetryQueueItem>) => {
-    setRetryQueue(prev =>
-      prev.map(item => item.id === id ? { ...item, ...updates } : item)
-    )
-  }, [])
+  const updateRetryItem = useCallback(
+    (id: string, updates: Partial<RetryQueueItem>) => {
+      setRetryQueue((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
+      )
+    },
+    []
+  )
 
   const removeFromQueue = useCallback((id: string) => {
-    setRetryQueue(prev => prev.filter(item => item.id !== id))
+    setRetryQueue((prev) => prev.filter((item) => item.id !== id))
   }, [])
 
-  const executeWithRetry = useCallback(async <T,>(
-    fn: () => Promise<T>,
-    requestId?: string
-  ): Promise<T> => {
-    const id = requestId || crypto.randomUUID()
-    let attempt = 0
+  const executeWithRetry = useCallback(
+    async <T,>(fn: () => Promise<T>, requestId?: string): Promise<T> => {
+      const id = requestId || crypto.randomUUID()
+      let attempt = 0
 
-    while (attempt < config.maxRetries) {
-      // Check circuit breaker
-      if (Date.now() < circuitOpenUntil.current) {
-        const waitTime = circuitOpenUntil.current - Date.now()
-        await new Promise(resolve => setTimeout(resolve, waitTime))
-      }
-
-      try {
-        if (attempt > 0) {
-          updateRetryItem(id, { status: "retrying", attempt: attempt + 1 })
+      while (attempt < config.maxRetries) {
+        // Check circuit breaker
+        if (Date.now() < circuitOpenUntil.current) {
+          const waitTime = circuitOpenUntil.current - Date.now()
+          await new Promise((resolve) => setTimeout(resolve, waitTime))
         }
 
-        const result = await fn()
-
-        if (attempt > 0) {
-          updateRetryItem(id, { status: "success" })
-          setTimeout(() => removeFromQueue(id), 2000)
-        }
-
-        setMetrics(prev => ({
-          ...prev,
-          requestsThisMinute: prev.requestsThisMinute + 1,
-          consecutiveErrors: 0,
-        }))
-
-        return result
-      } catch (error: any) {
-        attempt++
-
-        const is429 = error?.status === 429 || error?.message?.includes("429")
-
-        if (is429 && attempt < config.maxRetries) {
-          const delay = calculateBackoff(attempt - 1, config)
-
-          if (attempt === 1) {
-            addToRetryQueue(id)
-          }
-
-          updateRetryItem(id, {
-            nextRetryAt: Date.now() + delay,
-            attempt,
-          })
-
-          recordError(`Rate limited (attempt ${attempt}/${config.maxRetries})`, 429)
-          await new Promise(resolve => setTimeout(resolve, delay))
-        } else {
+        try {
           if (attempt > 0) {
-            updateRetryItem(id, { status: "failed" })
-            setTimeout(() => removeFromQueue(id), 3000)
+            updateRetryItem(id, { status: "retrying", attempt: attempt + 1 })
           }
-          recordError(error?.message || "Unknown error", error?.status)
-          throw error
+
+          const result = await fn()
+
+          if (attempt > 0) {
+            updateRetryItem(id, { status: "success" })
+            setTimeout(() => removeFromQueue(id), 2000)
+          }
+
+          setMetrics((prev) => ({
+            ...prev,
+            requestsThisMinute: prev.requestsThisMinute + 1,
+            consecutiveErrors: 0,
+          }))
+
+          return result
+        } catch (error: any) {
+          attempt++
+
+          const is429 = error?.status === 429 || error?.message?.includes("429")
+
+          if (is429 && attempt < config.maxRetries) {
+            const delay = calculateBackoff(attempt - 1, config)
+
+            if (attempt === 1) {
+              addToRetryQueue(id)
+            }
+
+            updateRetryItem(id, {
+              nextRetryAt: Date.now() + delay,
+              attempt,
+            })
+
+            recordError(
+              `Rate limited (attempt ${attempt}/${config.maxRetries})`,
+              429
+            )
+            await new Promise((resolve) => setTimeout(resolve, delay))
+          } else {
+            if (attempt > 0) {
+              updateRetryItem(id, { status: "failed" })
+              setTimeout(() => removeFromQueue(id), 3000)
+            }
+            recordError(error?.message || "Unknown error", error?.status)
+            throw error
+          }
         }
       }
-    }
 
-    throw new Error("Max retries exceeded")
-  }, [config, addToRetryQueue, updateRetryItem, removeFromQueue, recordError])
+      throw new Error("Max retries exceeded")
+    },
+    [config, addToRetryQueue, updateRetryItem, removeFromQueue, recordError]
+  )
 
   const reset = useCallback(() => {
     setMetrics({
@@ -304,7 +327,9 @@ export function RateLimitStatus({
           />
           <div>
             <p className="text-sm font-semibold">{config.label}</p>
-            <p className="text-xs text-muted-foreground">{config.description}</p>
+            <p className="text-xs text-muted-foreground">
+              {config.description}
+            </p>
           </div>
         </div>
 
@@ -328,7 +353,7 @@ export function RateLimitStatus({
               className={`h-full ${config.color}`}
               initial={{ width: "100%" }}
               animate={{
-                width: `${Math.min(100, (metrics.remainingRequests / 100) * 100)}%`
+                width: `${Math.min(100, (metrics.remainingRequests / 100) * 100)}%`,
               }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             />
@@ -382,9 +407,13 @@ export function RetryQueue({ items }: { items: RetryQueueItem[] }) {
         <AnimatePresence mode="popLayout">
           {items.map((item) => {
             const timeUntilRetry = Math.max(0, item.nextRetryAt - now)
-            const progress = item.status === "waiting"
-              ? Math.min(100, ((now - (item.nextRetryAt - 5000)) / 5000) * 100)
-              : 100
+            const progress =
+              item.status === "waiting"
+                ? Math.min(
+                    100,
+                    ((now - (item.nextRetryAt - 5000)) / 5000) * 100
+                  )
+                : 100
 
             return (
               <motion.div
@@ -401,8 +430,8 @@ export function RetryQueue({ items }: { items: RetryQueueItem[] }) {
                     item.status === "success"
                       ? "bg-emerald-500/20"
                       : item.status === "failed"
-                      ? "bg-destructive/20"
-                      : "bg-primary/10"
+                        ? "bg-destructive/20"
+                        : "bg-primary/10"
                   }`}
                   initial={{ width: "0%" }}
                   animate={{ width: `${progress}%` }}
@@ -476,7 +505,11 @@ export function RetryQueue({ items }: { items: RetryQueueItem[] }) {
 // METRICS PANEL
 // ============================================================================
 
-export function RateLimitMetricsPanel({ metrics }: { metrics: RateLimitMetrics }) {
+export function RateLimitMetricsPanel({
+  metrics,
+}: {
+  metrics: RateLimitMetrics
+}) {
   return (
     <div className="grid grid-cols-2 gap-3">
       <MetricCard
@@ -498,7 +531,11 @@ export function RateLimitMetricsPanel({ metrics }: { metrics: RateLimitMetrics }
       />
       <MetricCard
         label="Reset in"
-        value={metrics.resetAt ? Math.max(0, Math.floor((metrics.resetAt - Date.now()) / 1000)) : null}
+        value={
+          metrics.resetAt
+            ? Math.max(0, Math.floor((metrics.resetAt - Date.now()) / 1000))
+            : null
+        }
         suffix="s"
         variant="muted"
       />
@@ -521,24 +558,27 @@ function MetricCard({
   format?: "compact"
   variant?: "default" | "danger" | "muted"
 }) {
-  const displayValue = value === null
-    ? "—"
-    : format === "compact"
-    ? Intl.NumberFormat("en", { notation: "compact" }).format(value)
-    : value.toLocaleString()
+  const displayValue =
+    value === null
+      ? "—"
+      : format === "compact"
+        ? Intl.NumberFormat("en", { notation: "compact" }).format(value)
+        : value.toLocaleString()
 
   return (
     <div className="rounded-lg border border-border/30 bg-muted/20 p-3">
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
-      <p className={`mt-1 text-xl font-bold tabular-nums ${
-        variant === "danger" && value && value > 0
-          ? "text-destructive"
-          : variant === "muted"
-          ? "text-muted-foreground"
-          : ""
-      }`}>
+      <p
+        className={`mt-1 text-xl font-bold tabular-nums ${
+          variant === "danger" && value && value > 0
+            ? "text-destructive"
+            : variant === "muted"
+              ? "text-muted-foreground"
+              : ""
+        }`}
+      >
         {displayValue}
         {suffix && <span className="text-sm font-normal">{suffix}</span>}
       </p>

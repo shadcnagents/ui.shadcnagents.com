@@ -1,23 +1,24 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useChat } from "@ai-sdk/react"
+import { motion } from "motion/react"
+
 import {
-  useCostTracker,
+  BudgetAlertBanner,
   CostDisplay,
   LiveCostMeter,
-  UsageTimeline,
-  ModelCostComparison,
-  BudgetAlertBanner,
   MODEL_PRICING,
+  ModelCostComparison,
+  UsageTimeline,
+  useCostTracker,
 } from "../components/cost-tracker"
-import { motion } from "motion/react"
 
 export default function CostTrackerDemo() {
   const [budget] = useState({
-    session: 0.50,
-    daily: 5.00,
-    monthly: 50.00,
+    session: 0.5,
+    daily: 5.0,
+    monthly: 50.0,
   })
 
   const [dismissed, setDismissed] = useState(false)
@@ -26,20 +27,24 @@ export default function CostTrackerDemo() {
   const alert = costTracker.getBudgetAlert()
   const projection = costTracker.estimateMonthlyProjection()
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    body: { model: costTracker.currentModel },
-    onFinish: (message) => {
-      // Estimate tokens (rough approximation for demo)
-      const inputTokens = messages.reduce((sum, m) => sum + Math.ceil(m.content.length / 4), 0)
-      const outputTokens = Math.ceil(message.content.length / 4)
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      body: { model: costTracker.currentModel },
+      onFinish: (message) => {
+        // Estimate tokens (rough approximation for demo)
+        const inputTokens = messages.reduce(
+          (sum, m) => sum + Math.ceil(m.content.length / 4),
+          0
+        )
+        const outputTokens = Math.ceil(message.content.length / 4)
 
-      costTracker.trackUsage({
-        model: costTracker.currentModel,
-        inputTokens,
-        outputTokens,
-      })
-    },
-  })
+        costTracker.trackUsage({
+          model: costTracker.currentModel,
+          inputTokens,
+          outputTokens,
+        })
+      },
+    })
 
   // Simulate some initial data for demo
   useEffect(() => {
@@ -64,7 +69,9 @@ export default function CostTrackerDemo() {
         <div className="mx-auto max-w-6xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-semibold tracking-tight">Cost Tracker</h1>
+              <h1 className="text-lg font-semibold tracking-tight">
+                Cost Tracker
+              </h1>
               <p className="text-sm text-muted-foreground">
                 Real-time token usage and cost monitoring
               </p>
@@ -99,7 +106,10 @@ export default function CostTrackerDemo() {
         {/* Budget Alert */}
         {!dismissed && alert !== "none" && (
           <div className="mb-6">
-            <BudgetAlertBanner alert={alert} onDismiss={() => setDismissed(true)} />
+            <BudgetAlertBanner
+              alert={alert}
+              onDismiss={() => setDismissed(true)}
+            />
           </div>
         )}
 
@@ -141,13 +151,21 @@ export default function CostTrackerDemo() {
                 <div>
                   <h2 className="text-sm font-medium">Test Chat</h2>
                   <p className="text-xs text-muted-foreground">
-                    Using {MODEL_PRICING[costTracker.currentModel]?.name || costTracker.currentModel}
+                    Using{" "}
+                    {MODEL_PRICING[costTracker.currentModel]?.name ||
+                      costTracker.currentModel}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Est. cost per message</p>
+                  <p className="text-xs text-muted-foreground">
+                    Est. cost per message
+                  </p>
                   <p className="text-sm font-mono">
-                    ~${((MODEL_PRICING[costTracker.currentModel]?.input || 0.15) * 0.001).toFixed(4)}
+                    ~$
+                    {(
+                      (MODEL_PRICING[costTracker.currentModel]?.input || 0.15) *
+                      0.001
+                    ).toFixed(4)}
                   </p>
                 </div>
               </div>
@@ -240,9 +258,21 @@ export default function CostTrackerDemo() {
             <div className="rounded-xl border border-border/50 bg-card p-4">
               <h3 className="text-sm font-semibold mb-3">Budget Limits</h3>
               <div className="space-y-3">
-                <BudgetRow label="Session" value={budget.session} current={costTracker.metrics.sessionCost} />
-                <BudgetRow label="Daily" value={budget.daily} current={costTracker.metrics.todayCost} />
-                <BudgetRow label="Monthly" value={budget.monthly} current={costTracker.metrics.totalCost} />
+                <BudgetRow
+                  label="Session"
+                  value={budget.session}
+                  current={costTracker.metrics.sessionCost}
+                />
+                <BudgetRow
+                  label="Daily"
+                  value={budget.daily}
+                  current={costTracker.metrics.todayCost}
+                />
+                <BudgetRow
+                  label="Monthly"
+                  value={budget.monthly}
+                  current={costTracker.metrics.totalCost}
+                />
               </div>
             </div>
 
@@ -259,7 +289,8 @@ export default function CostTrackerDemo() {
                   value={
                     costTracker.metrics.usageHistory.length > 0
                       ? Math.round(
-                          (costTracker.metrics.totalInputTokens + costTracker.metrics.totalOutputTokens) /
+                          (costTracker.metrics.totalInputTokens +
+                            costTracker.metrics.totalOutputTokens) /
                             costTracker.metrics.usageHistory.length
                         ).toLocaleString()
                       : "0"
@@ -269,7 +300,10 @@ export default function CostTrackerDemo() {
                   label="Input/Output Ratio"
                   value={
                     costTracker.metrics.totalOutputTokens > 0
-                      ? (costTracker.metrics.totalInputTokens / costTracker.metrics.totalOutputTokens).toFixed(2)
+                      ? (
+                          costTracker.metrics.totalInputTokens /
+                          costTracker.metrics.totalOutputTokens
+                        ).toFixed(2)
                       : "—"
                   }
                 />
@@ -358,7 +392,9 @@ function BudgetRow({
     <div>
       <div className="flex justify-between text-xs mb-1">
         <span className="text-muted-foreground">{label}</span>
-        <span className={`font-mono tabular-nums ${isOver ? "text-destructive" : ""}`}>
+        <span
+          className={`font-mono tabular-nums ${isOver ? "text-destructive" : ""}`}
+        >
           ${current.toFixed(2)} / ${value.toFixed(2)}
         </span>
       </div>
@@ -368,8 +404,8 @@ function BudgetRow({
             isOver
               ? "bg-destructive"
               : percentage >= 70
-              ? "bg-amber-500"
-              : "bg-emerald-500"
+                ? "bg-amber-500"
+                : "bg-emerald-500"
           }`}
           initial={{ width: 0 }}
           animate={{ width: `${Math.min(100, percentage)}%` }}

@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useCallback } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+
 import {
-  useSemanticCache,
+  CacheEntriesList,
   CacheHitIndicator,
   CacheSavingsPanel,
-  SimilarityMeter,
-  CacheEntriesList,
   CostProjection,
+  SimilarityMeter,
+  useSemanticCache,
 } from "@/components/semantic-cache"
 
 // Example queries that demonstrate semantic similarity
@@ -113,8 +114,9 @@ export default function SemanticCachePage() {
             Cut LLM Costs by 80%
           </h1>
           <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
-            Intelligent caching using embeddings and cosine similarity. Semantically
-            similar queries return cached responses instantly—no API call needed.
+            Intelligent caching using embeddings and cosine similarity.
+            Semantically similar queries return cached responses instantly—no
+            API call needed.
           </p>
         </div>
 
@@ -162,7 +164,9 @@ export default function SemanticCachePage() {
 
           {EXAMPLE_QUERIES.map((group) => (
             <div key={group.category}>
-              <p className="text-xs text-muted-foreground mb-2">{group.category}</p>
+              <p className="text-xs text-muted-foreground mb-2">
+                {group.category}
+              </p>
               <div className="flex flex-wrap gap-2">
                 {group.queries.map((query) => (
                   <button
@@ -200,11 +204,7 @@ export default function SemanticCachePage() {
             disabled={isLoading || !input.trim()}
             className="rounded-lg bg-foreground px-6 py-3 text-sm font-medium text-background hover:bg-foreground/90 transition-colors disabled:opacity-50"
           >
-            {isLoading ? (
-              <LoadingSpinner className="size-4" />
-            ) : (
-              "Send"
-            )}
+            {isLoading ? <LoadingSpinner className="size-4" /> : "Send"}
           </button>
         </form>
 
@@ -229,7 +229,9 @@ export default function SemanticCachePage() {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <LoadingSpinner className="size-4" />
                   <span className="text-sm">
-                    {lastResult?.hit ? "Retrieving from cache..." : "Generating response..."}
+                    {lastResult?.hit
+                      ? "Retrieving from cache..."
+                      : "Generating response..."}
                   </span>
                 </div>
               ) : (
@@ -260,7 +262,9 @@ export default function SemanticCachePage() {
 
         {/* How it works */}
         <div className="rounded-xl border border-border/50 bg-muted/30 p-6">
-          <h3 className="text-sm font-semibold mb-4">How Semantic Caching Works</h3>
+          <h3 className="text-sm font-semibold mb-4">
+            How Semantic Caching Works
+          </h3>
           <div className="grid gap-4 md:grid-cols-3">
             <Step
               number={1}
@@ -308,25 +312,60 @@ function Step({
 
 function DatabaseIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"
+      />
     </svg>
   )
 }
 
 function MessageIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"
+      />
     </svg>
   )
 }
 
 function LoadingSpinner({ className }: { className?: string }) {
   return (
-    <svg className={`animate-spin ${className}`} fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    <svg
+      className={`animate-spin ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
     </svg>
   )
 }

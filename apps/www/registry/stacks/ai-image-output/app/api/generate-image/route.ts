@@ -1,5 +1,5 @@
-import { generateImage } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateImage } from "ai"
 
 export async function POST(req: Request) {
   const { prompt } = await req.json()

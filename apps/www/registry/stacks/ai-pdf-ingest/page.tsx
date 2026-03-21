@@ -1,7 +1,7 @@
 "use client"
 
-import { useChat } from "@ai-sdk/react"
 import { useState } from "react"
+import { useChat } from "@ai-sdk/react"
 
 export default function PDFAnalysis() {
   const { messages, input, handleInputChange, handleSubmit } = useChat()

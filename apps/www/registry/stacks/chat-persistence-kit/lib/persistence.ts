@@ -27,7 +27,10 @@ export interface PersistenceAdapter {
   createConversation(title?: string): Promise<Conversation>
   getConversation(id: string): Promise<Conversation | null>
   listConversations(limit?: number): Promise<Conversation[]>
-  updateConversation(id: string, updates: Partial<Conversation>): Promise<Conversation>
+  updateConversation(
+    id: string,
+    updates: Partial<Conversation>
+  ): Promise<Conversation>
   deleteConversation(id: string): Promise<void>
 
   // Messages
@@ -70,7 +73,10 @@ export function createLocalStorageAdapter(): PersistenceAdapter {
       }
 
       if (typeof window !== "undefined") {
-        localStorage.setItem(getKey("conversation", id), JSON.stringify(conversation))
+        localStorage.setItem(
+          getKey("conversation", id),
+          JSON.stringify(conversation)
+        )
         const ids = getConversationIds()
         saveConversationIds([id, ...ids])
       }
@@ -125,7 +131,10 @@ export function createLocalStorageAdapter(): PersistenceAdapter {
       }
 
       if (typeof window !== "undefined") {
-        localStorage.setItem(getKey("conversation", id), JSON.stringify(updated))
+        localStorage.setItem(
+          getKey("conversation", id),
+          JSON.stringify(updated)
+        )
       }
 
       return updated
@@ -184,7 +193,10 @@ export function createLocalStorageAdapter(): PersistenceAdapter {
     async deleteMessages(conversationId) {
       if (typeof window === "undefined") return
       localStorage.removeItem(getKey("messages", conversationId))
-      await this.updateConversation(conversationId, { messageCount: 0, preview: undefined })
+      await this.updateConversation(conversationId, {
+        messageCount: 0,
+        preview: undefined,
+      })
     },
   }
 }

@@ -11,7 +11,7 @@ export function FeatureCodeBlockSplit() {
               <span className="text-xs text-muted-foreground">actions.ts</span>
             </div>
             <pre className="p-4 text-xs">
-{`"use server"
+              {`"use server"
 import { streamText } from "ai"
 import { openai } from "@ai-sdk/openai"
 
@@ -29,7 +29,7 @@ export async function chat(messages) {
               <span className="text-xs text-muted-foreground">page.tsx</span>
             </div>
             <pre className="p-4 text-xs">
-{`"use client"
+              {`"use client"
 import { useChat } from "@ai-sdk/react"
 
 export default function Chat() {

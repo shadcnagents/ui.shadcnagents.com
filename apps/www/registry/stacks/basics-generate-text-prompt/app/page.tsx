@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { PromptEngineeringDemo } from "@/components/prompt-demo"
 
 export const metadata: Metadata = {

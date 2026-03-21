@@ -78,7 +78,9 @@ export function MultiModelDemo() {
                   className="size-1.5 rounded-full"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-[11px] text-muted-foreground">{name}</span>
+                <span className="text-[11px] text-muted-foreground">
+                  {name}
+                </span>
               </span>
             ))}
           </div>

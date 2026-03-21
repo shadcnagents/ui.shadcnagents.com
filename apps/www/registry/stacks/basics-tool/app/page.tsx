@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
+
 import { ToolCallDemo } from "@/components/tool-call-demo"
 
 export const metadata: Metadata = {
   title: "Tool Calling — AI SDK Demo",
-  description: "Type-safe tool calling with the Vercel AI SDK. Define functions the model can invoke.",
+  description:
+    "Type-safe tool calling with the Vercel AI SDK. Define functions the model can invoke.",
 }
 
 export default function Page() {

@@ -1,5 +1,5 @@
-import { generateText, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateText, tool } from "ai"
 import * as cheerio from "cheerio"
 import { z } from "zod"
 

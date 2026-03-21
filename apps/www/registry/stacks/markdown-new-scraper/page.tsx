@@ -1,7 +1,7 @@
-import { generateText, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { z } from "zod"
+import { generateText, tool } from "ai"
 import TurndownService from "turndown"
+import { z } from "zod"
 
 const turndown = new TurndownService({
   headingStyle: "atx",

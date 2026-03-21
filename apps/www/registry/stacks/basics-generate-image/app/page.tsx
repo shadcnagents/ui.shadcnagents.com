@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { GenerateImageDemo } from "@/components/generate-image-demo"
 
 export const metadata: Metadata = {

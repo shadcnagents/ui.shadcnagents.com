@@ -17,7 +17,10 @@ export default function PlanDisplay() {
         {messages.map((m) => (
           <div key={m.id}>
             {m.parts?.map((part, i) => {
-              if (part.type === "tool-invocation" && part.toolName === "createPlan") {
+              if (
+                part.type === "tool-invocation" &&
+                part.toolName === "createPlan"
+              ) {
                 const steps: Step[] = part.result?.steps ?? []
                 return (
                   <div key={i} className="space-y-1 rounded-md border p-3">

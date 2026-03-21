@@ -1,5 +1,5 @@
-import { generateText, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateText, tool } from "ai"
 import { z } from "zod"
 
 export default async function Page() {

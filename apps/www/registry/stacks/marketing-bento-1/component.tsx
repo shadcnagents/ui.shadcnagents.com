@@ -19,7 +19,10 @@ export function BentoGrid() {
             </div>
             <div className="mt-4 space-y-1">
               {["OpenAI", "Anthropic", "Google", "Meta"].map((p) => (
-                <div key={p} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div
+                  key={p}
+                  className="flex items-center gap-2 text-sm text-muted-foreground"
+                >
                   <div className="size-1.5 rounded-full bg-foreground/30" />
                   {p}
                 </div>
@@ -28,13 +31,17 @@ export function BentoGrid() {
           </div>
 
           <div className="rounded-lg border p-4">
-            <span className="text-[10px] uppercase text-muted-foreground">Latency</span>
+            <span className="text-[10px] uppercase text-muted-foreground">
+              Latency
+            </span>
             <p className="mt-2 text-2xl font-semibold">&lt;100ms</p>
             <p className="text-xs text-muted-foreground">First token</p>
           </div>
 
           <div className="rounded-lg border p-4">
-            <span className="text-[10px] uppercase text-muted-foreground">Uptime</span>
+            <span className="text-[10px] uppercase text-muted-foreground">
+              Uptime
+            </span>
             <p className="mt-2 text-2xl font-semibold">99.9%</p>
             <p className="text-xs text-muted-foreground">SLA</p>
           </div>

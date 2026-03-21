@@ -75,7 +75,9 @@ export function GenerateTextDemo() {
               gpt-4o
             </span>
             <span className="text-[11px] text-muted-foreground/50">
-              {wordCount > 0 ? `${wordCount} words` : "\u2318\u21B5 to generate"}
+              {wordCount > 0
+                ? `${wordCount} words`
+                : "\u2318\u21B5 to generate"}
             </span>
           </div>
           <button
@@ -121,7 +123,11 @@ export function GenerateTextDemo() {
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             ) : (
               <svg

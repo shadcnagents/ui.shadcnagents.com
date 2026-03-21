@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useRef, useMemo } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useMemo, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 // ============================================================================
 // TYPES
@@ -68,7 +68,9 @@ class MemoryStore {
   }
 
   // Add a new memory
-  add(memory: Omit<Memory, "id" | "accessCount" | "createdAt" | "lastAccessedAt">): Memory {
+  add(
+    memory: Omit<Memory, "id" | "accessCount" | "createdAt" | "lastAccessedAt">
+  ): Memory {
     const newMemory: Memory = {
       ...memory,
       id: crypto.randomUUID(),
@@ -123,7 +125,8 @@ class MemoryStore {
       score *= 1 + memory.importance * 0.5
       score *= 1 + Math.min(1, memory.accessCount / 10) * 0.3
 
-      const hoursSinceAccess = (Date.now() - memory.lastAccessedAt.getTime()) / 3600000
+      const hoursSinceAccess =
+        (Date.now() - memory.lastAccessedAt.getTime()) / 3600000
       score *= Math.exp(-hoursSinceAccess * 0.01) // Decay factor
 
       if (score > 0) {
@@ -142,7 +145,10 @@ class MemoryStore {
     const consolidated: Memory[] = []
 
     for (const memory of shortTermMemories) {
-      if (memory.importance >= this.importanceThreshold || memory.accessCount >= 3) {
+      if (
+        memory.importance >= this.importanceThreshold ||
+        memory.accessCount >= 3
+      ) {
         // Promote to long-term
         const longTermMemory: Memory = {
           ...memory,
@@ -173,8 +179,9 @@ class MemoryStore {
 
   // Get all memories
   getAll(): Memory[] {
-    return Array.from(this.memories.values())
-      .sort((a, b) => b.lastAccessedAt.getTime() - a.lastAccessedAt.getTime())
+    return Array.from(this.memories.values()).sort(
+      (a, b) => b.lastAccessedAt.getTime() - a.lastAccessedAt.getTime()
+    )
   }
 
   // Get statistics
@@ -187,9 +194,10 @@ class MemoryStore {
       episodicCount: memories.filter((m) => m.type === "episodic").length,
       semanticCount: memories.filter((m) => m.type === "semantic").length,
       totalAccesses: memories.reduce((sum, m) => sum + m.accessCount, 0),
-      avgImportance: memories.length > 0
-        ? memories.reduce((sum, m) => sum + m.importance, 0) / memories.length
-        : 0,
+      avgImportance:
+        memories.length > 0
+          ? memories.reduce((sum, m) => sum + m.importance, 0) / memories.length
+          : 0,
     }
   }
 
@@ -214,7 +222,8 @@ class MemoryStore {
 
   // Enforce memory limits by evicting least accessed
   private enforceLimit(type: Memory["type"]): void {
-    const limit = type === "short_term" ? this.shortTermLimit : this.longTermLimit
+    const limit =
+      type === "short_term" ? this.shortTermLimit : this.longTermLimit
     const memories = this.getByType(type)
 
     if (memories.length >= limit) {
@@ -241,7 +250,8 @@ interface UseAgentMemoryOptions extends MemoryConfig {
 }
 
 export function useAgentMemory(options: UseAgentMemoryOptions = {}) {
-  const { onMemoryAdded, onMemoryConsolidated, onMemoryDecayed, ...config } = options
+  const { onMemoryAdded, onMemoryConsolidated, onMemoryDecayed, ...config } =
+    options
 
   const storeRef = useRef(new MemoryStore(config))
   const [version, setVersion] = useState(0)
@@ -376,28 +386,33 @@ export function MemoryTypeBadge({ type, size = "sm" }: MemoryTypeBadgeProps) {
   const config = {
     short_term: {
       label: "Short-Term",
-      color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30",
+      color:
+        "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30",
       icon: <ClockIcon className="size-3" />,
     },
     long_term: {
       label: "Long-Term",
-      color: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
+      color:
+        "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
       icon: <ArchiveIcon className="size-3" />,
     },
     episodic: {
       label: "Episodic",
-      color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
+      color:
+        "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
       icon: <FilmIcon className="size-3" />,
     },
     semantic: {
       label: "Semantic",
-      color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+      color:
+        "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
       icon: <BrainIcon className="size-3" />,
     },
   }
 
   const { label, color, icon } = config[type]
-  const sizeClasses = size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-3 py-1 text-xs"
+  const sizeClasses =
+    size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-3 py-1 text-xs"
 
   return (
     <span
@@ -419,7 +434,10 @@ interface MemoryStatsPanelProps {
 
 export function MemoryStatsPanel({ stats }: MemoryStatsPanelProps) {
   const totalMemories =
-    stats.shortTermCount + stats.longTermCount + stats.episodicCount + stats.semanticCount
+    stats.shortTermCount +
+    stats.longTermCount +
+    stats.episodicCount +
+    stats.semanticCount
 
   return (
     <div className="rounded-xl border border-border/50 bg-card p-4">
@@ -463,25 +481,33 @@ export function MemoryStatsPanel({ stats }: MemoryStatsPanelProps) {
             <motion.div
               className="bg-blue-500"
               initial={{ width: 0 }}
-              animate={{ width: `${(stats.shortTermCount / totalMemories) * 100}%` }}
+              animate={{
+                width: `${(stats.shortTermCount / totalMemories) * 100}%`,
+              }}
               transition={{ duration: 0.5 }}
             />
             <motion.div
               className="bg-purple-500"
               initial={{ width: 0 }}
-              animate={{ width: `${(stats.longTermCount / totalMemories) * 100}%` }}
+              animate={{
+                width: `${(stats.longTermCount / totalMemories) * 100}%`,
+              }}
               transition={{ duration: 0.5 }}
             />
             <motion.div
               className="bg-amber-500"
               initial={{ width: 0 }}
-              animate={{ width: `${(stats.episodicCount / totalMemories) * 100}%` }}
+              animate={{
+                width: `${(stats.episodicCount / totalMemories) * 100}%`,
+              }}
               transition={{ duration: 0.5 }}
             />
             <motion.div
               className="bg-emerald-500"
               initial={{ width: 0 }}
-              animate={{ width: `${(stats.semanticCount / totalMemories) * 100}%` }}
+              animate={{
+                width: `${(stats.semanticCount / totalMemories) * 100}%`,
+              }}
               transition={{ duration: 0.5 }}
             />
           </div>
@@ -495,7 +521,9 @@ export function MemoryStatsPanel({ stats }: MemoryStatsPanelProps) {
           <p className="text-xs text-muted-foreground">Total Accesses</p>
         </div>
         <div>
-          <p className="text-lg font-bold">{(stats.avgImportance * 100).toFixed(0)}%</p>
+          <p className="text-lg font-bold">
+            {(stats.avgImportance * 100).toFixed(0)}%
+          </p>
           <p className="text-xs text-muted-foreground">Avg Importance</p>
         </div>
       </div>
@@ -523,7 +551,9 @@ function StatCard({
 
   return (
     <div className="rounded-lg border border-border/50 bg-background p-3">
-      <div className={`inline-flex rounded-md p-1.5 ${colorClasses[color]}`}>{icon}</div>
+      <div className={`inline-flex rounded-md p-1.5 ${colorClasses[color]}`}>
+        {icon}
+      </div>
       <p className="mt-2 text-lg font-bold">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
@@ -540,7 +570,11 @@ interface MemoryListProps {
   title?: string
 }
 
-export function MemoryList({ memories, onClear, title = "Memories" }: MemoryListProps) {
+export function MemoryList({
+  memories,
+  onClear,
+  title = "Memories",
+}: MemoryListProps) {
   if (memories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -687,7 +721,10 @@ interface ContextPreviewProps {
   tokenEstimate?: number
 }
 
-export function ContextPreview({ context, tokenEstimate }: ContextPreviewProps) {
+export function ContextPreview({
+  context,
+  tokenEstimate,
+}: ContextPreviewProps) {
   if (!context) {
     return (
       <div className="rounded-lg border border-dashed border-border/50 bg-muted/30 p-4 text-center">
@@ -779,40 +816,90 @@ function formatRelativeTime(date: Date): string {
 
 function ClockIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
     </svg>
   )
 }
 
 function ArchiveIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+      />
     </svg>
   )
 }
 
 function FilmIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+      />
     </svg>
   )
 }
 
 function BrainIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+      />
     </svg>
   )
 }
 
 function ConsolidateIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+      />
     </svg>
   )
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { AgentDemo } from "@/components/agent-demo"
 
 export const metadata: Metadata = {

@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+
 import {
-  useStreamingReconnect,
   ConnectionStatusBar,
   EventLog,
   StreamProgress,
+  useStreamingReconnect,
 } from "../components/streaming-reconnect"
 
 export default function StreamingReconnectDemo() {
@@ -171,7 +172,9 @@ export default function StreamingReconnectDemo() {
                 <SidebarIcon className="size-5 text-muted-foreground" />
               </button>
               <div>
-                <h1 className="text-sm font-semibold">Streaming Reconnect Handler</h1>
+                <h1 className="text-sm font-semibold">
+                  Streaming Reconnect Handler
+                </h1>
                 <p className="text-xs text-muted-foreground">
                   Auto-recovery for dropped SSE connections
                 </p>
@@ -206,7 +209,10 @@ export default function StreamingReconnectDemo() {
                     .find((m) => m.role === "user")
                   if (lastUserMessage) {
                     connect(
-                      messages.map((m) => ({ role: m.role, content: m.content })),
+                      messages.map((m) => ({
+                        role: m.role,
+                        content: m.content,
+                      })),
                       () => {},
                       () => {}
                     )
@@ -230,7 +236,9 @@ export default function StreamingReconnectDemo() {
                     onChange={(e) => setSimulateDisconnect(e.target.checked)}
                     className="rounded border-border"
                   />
-                  <span className="text-xs font-medium">Simulate Disconnect</span>
+                  <span className="text-xs font-medium">
+                    Simulate Disconnect
+                  </span>
                 </label>
 
                 {simulateDisconnect && (
@@ -239,7 +247,9 @@ export default function StreamingReconnectDemo() {
                     <input
                       type="number"
                       value={disconnectAfter}
-                      onChange={(e) => setDisconnectAfter(Number(e.target.value))}
+                      onChange={(e) =>
+                        setDisconnectAfter(Number(e.target.value))
+                      }
                       className="w-20 rounded-md border border-border bg-background px-2 py-1 text-xs"
                       min={10}
                       max={500}
@@ -321,7 +331,10 @@ export default function StreamingReconnectDemo() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Send a message to test streaming..."
-                  disabled={connectionState === "connecting" || connectionState === "reconnecting"}
+                  disabled={
+                    connectionState === "connecting" ||
+                    connectionState === "reconnecting"
+                  }
                   className="flex-1 rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
                 />
                 <button
@@ -357,8 +370,8 @@ function EmptyState() {
       <div>
         <p className="text-sm font-medium">Resilient Streaming</p>
         <p className="mt-1 text-xs text-muted-foreground max-w-sm">
-          Send a message to test streaming. Enable &quot;Simulate Disconnect&quot;
-          to see automatic reconnection with message recovery.
+          Send a message to test streaming. Enable &quot;Simulate
+          Disconnect&quot; to see automatic reconnection with message recovery.
         </p>
       </div>
 
@@ -408,32 +421,72 @@ function LoadingDots() {
 
 function SidebarIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"
+      />
     </svg>
   )
 }
 
 function StreamIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605"
+      />
     </svg>
   )
 }
 
 function CheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m4.5 12.75 6 6 9-13.5"
+      />
     </svg>
   )
 }
 
 function RecoveryIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3"
+      />
     </svg>
   )
 }

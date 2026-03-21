@@ -1,19 +1,25 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+
 import {
-  useModelFallback,
-  ProviderStatusGrid,
-  FallbackTimeline,
   ActiveProviderBadge,
-  HealthCheckPanel,
   DEFAULT_PROVIDERS,
+  FallbackTimeline,
+  HealthCheckPanel,
+  ProviderStatusGrid,
+  useModelFallback,
 } from "../components/model-fallback"
 
 export default function ModelFallbackDemo() {
   const [messages, setMessages] = useState<
-    Array<{ id: string; role: "user" | "assistant"; content: string; provider?: string }>
+    Array<{
+      id: string
+      role: "user" | "assistant"
+      content: string
+      provider?: string
+    }>
   >([])
   const [input, setInput] = useState("")
   const [isChecking, setIsChecking] = useState(false)
@@ -43,7 +49,8 @@ export default function ModelFallbackDemo() {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "All providers are currently unavailable. Please try again later.",
+          content:
+            "All providers are currently unavailable. Please try again later.",
         },
       ])
     },
@@ -71,7 +78,12 @@ export default function ModelFallbackDemo() {
     const assistantId = crypto.randomUUID()
     setMessages((prev) => [
       ...prev,
-      { id: assistantId, role: "assistant", content: "", provider: activeProvider.id },
+      {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+        provider: activeProvider.id,
+      },
     ])
 
     await sendMessage({
@@ -142,7 +154,10 @@ export default function ModelFallbackDemo() {
             {/* Fallback timeline */}
             <div className="mt-6">
               <h3 className="mb-3 text-sm font-semibold">Fallback History</h3>
-              <FallbackTimeline events={fallbackHistory} providers={providers} />
+              <FallbackTimeline
+                events={fallbackHistory}
+                providers={providers}
+              />
             </div>
           </div>
 
@@ -165,7 +180,9 @@ export default function ModelFallbackDemo() {
           <div className="flex h-14 items-center justify-between px-4">
             <div className="flex items-center gap-3">
               <div>
-                <h1 className="text-sm font-semibold">Model Fallback Handler</h1>
+                <h1 className="text-sm font-semibold">
+                  Model Fallback Handler
+                </h1>
                 <p className="text-xs text-muted-foreground">
                   Auto-switch providers on errors
                 </p>
@@ -220,9 +237,10 @@ export default function ModelFallbackDemo() {
                       ))}
                     </AnimatePresence>
 
-                    {isProcessing && messages[messages.length - 1]?.content === "" && (
-                      <LoadingIndicator provider={activeProvider} />
-                    )}
+                    {isProcessing &&
+                      messages[messages.length - 1]?.content === "" && (
+                        <LoadingIndicator provider={activeProvider} />
+                      )}
 
                     <div ref={bottomRef} />
                   </div>
@@ -313,7 +331,11 @@ function MessageBubble({
 // LOADING INDICATOR
 // ============================================================================
 
-function LoadingIndicator({ provider }: { provider: typeof DEFAULT_PROVIDERS[0] }) {
+function LoadingIndicator({
+  provider,
+}: {
+  provider: (typeof DEFAULT_PROVIDERS)[0]
+}) {
   return (
     <div className="flex justify-start">
       <div className="rounded-2xl rounded-bl-sm bg-muted px-4 py-3">
@@ -456,7 +478,9 @@ function FallbackTestPanel({
             <ol className="mt-2 space-y-2 text-xs text-muted-foreground">
               <li>1. Click &quot;Simulate 429&quot; on any provider</li>
               <li>2. Send a message in the chat</li>
-              <li>3. Watch the system automatically fallback to next provider</li>
+              <li>
+                3. Watch the system automatically fallback to next provider
+              </li>
               <li>4. Check the Fallback History in the sidebar</li>
             </ol>
           </div>
@@ -493,16 +517,36 @@ await sendMessage({ messages, onChunk, onComplete })`}</code>
 
 function ShieldIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+      />
     </svg>
   )
 }
 
 function CheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m4.5 12.75 6 6 9-13.5"
+      />
     </svg>
   )
 }

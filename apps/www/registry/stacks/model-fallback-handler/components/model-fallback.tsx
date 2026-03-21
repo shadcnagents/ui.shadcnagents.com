@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 // ============================================================================
 // TYPES
@@ -106,7 +106,11 @@ export function useModelFallback(options: UseModelFallbackOptions = {}) {
     providerHealth: new Map(
       providers.map((p) => [
         p.id,
-        { status: "unknown" as ProviderStatus, lastCheck: new Date(), errorCount: 0 },
+        {
+          status: "unknown" as ProviderStatus,
+          lastCheck: new Date(),
+          errorCount: 0,
+        },
       ])
     ),
     fallbackHistory: [],
@@ -126,7 +130,11 @@ export function useModelFallback(options: UseModelFallbackOptions = {}) {
           lastCheck: new Date(),
           errorCount: 0,
         }
-        newHealth.set(providerId, { ...current, ...update, lastCheck: new Date() })
+        newHealth.set(providerId, {
+          ...current,
+          ...update,
+          lastCheck: new Date(),
+        })
         return { ...prev, providerHealth: newHealth }
       })
     },
@@ -365,7 +373,11 @@ export function useModelFallback(options: UseModelFallbackOptions = {}) {
       providerHealth: new Map(
         providers.map((p) => [
           p.id,
-          { status: "unknown" as ProviderStatus, lastCheck: new Date(), errorCount: 0 },
+          {
+            status: "unknown" as ProviderStatus,
+            lastCheck: new Date(),
+            errorCount: 0,
+          },
         ])
       ),
       fallbackHistory: [],
@@ -623,7 +635,9 @@ function StatusDot({ status }: { status: ProviderStatus }) {
         className={`absolute inline-flex size-full animate-ping rounded-full opacity-75 ${colors[status]}`}
         style={{ animationDuration: "2s" }}
       />
-      <span className={`relative inline-flex size-2 rounded-full ${colors[status]}`} />
+      <span
+        className={`relative inline-flex size-2 rounded-full ${colors[status]}`}
+      />
     </span>
   )
 }
@@ -754,32 +768,72 @@ function GoogleIcon() {
 
 function AlertIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+      />
     </svg>
   )
 }
 
 function CheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m4.5 12.75 6 6 9-13.5"
+      />
     </svg>
   )
 }
 
 function ArrowRightIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+      />
     </svg>
   )
 }
 
 function RefreshIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+      />
     </svg>
   )
 }

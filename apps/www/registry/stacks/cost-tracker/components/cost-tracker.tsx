@@ -1,21 +1,24 @@
 "use client"
 
-import { useState, useCallback, useEffect, useMemo } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 // ============================================================================
 // MODEL PRICING (per 1M tokens, as of 2025)
 // ============================================================================
 
-export const MODEL_PRICING: Record<string, { input: number; output: number; name: string }> = {
-  "gpt-4o": { input: 2.50, output: 10.00, name: "GPT-4o" },
-  "gpt-4o-mini": { input: 0.15, output: 0.60, name: "GPT-4o Mini" },
-  "gpt-4-turbo": { input: 10.00, output: 30.00, name: "GPT-4 Turbo" },
-  "claude-3-5-sonnet": { input: 3.00, output: 15.00, name: "Claude 3.5 Sonnet" },
-  "claude-3-5-haiku": { input: 0.80, output: 4.00, name: "Claude 3.5 Haiku" },
-  "claude-3-opus": { input: 15.00, output: 75.00, name: "Claude 3 Opus" },
-  "gemini-1.5-pro": { input: 1.25, output: 5.00, name: "Gemini 1.5 Pro" },
-  "gemini-1.5-flash": { input: 0.075, output: 0.30, name: "Gemini 1.5 Flash" },
+export const MODEL_PRICING: Record<
+  string,
+  { input: number; output: number; name: string }
+> = {
+  "gpt-4o": { input: 2.5, output: 10.0, name: "GPT-4o" },
+  "gpt-4o-mini": { input: 0.15, output: 0.6, name: "GPT-4o Mini" },
+  "gpt-4-turbo": { input: 10.0, output: 30.0, name: "GPT-4 Turbo" },
+  "claude-3-5-sonnet": { input: 3.0, output: 15.0, name: "Claude 3.5 Sonnet" },
+  "claude-3-5-haiku": { input: 0.8, output: 4.0, name: "Claude 3.5 Haiku" },
+  "claude-3-opus": { input: 15.0, output: 75.0, name: "Claude 3 Opus" },
+  "gemini-1.5-pro": { input: 1.25, output: 5.0, name: "Gemini 1.5 Pro" },
+  "gemini-1.5-flash": { input: 0.075, output: 0.3, name: "Gemini 1.5 Flash" },
 }
 
 // ============================================================================
@@ -71,9 +74,10 @@ function loadStoredMetrics(): CostMetrics {
       const parsed = JSON.parse(stored)
       // Filter today's usage
       const today = new Date().toDateString()
-      const todayUsage = parsed.usageHistory?.filter(
-        (u: TokenUsage) => new Date(u.timestamp).toDateString() === today
-      ) || []
+      const todayUsage =
+        parsed.usageHistory?.filter(
+          (u: TokenUsage) => new Date(u.timestamp).toDateString() === today
+        ) || []
 
       const todayCost = todayUsage.reduce((sum: number, u: TokenUsage) => {
         const pricing = MODEL_PRICING[u.model] || MODEL_PRICING["gpt-4o-mini"]
@@ -105,7 +109,10 @@ function calculateCost(
   outputTokens: number,
   pricing: { input: number; output: number }
 ): number {
-  return (inputTokens / 1_000_000) * pricing.input + (outputTokens / 1_000_000) * pricing.output
+  return (
+    (inputTokens / 1_000_000) * pricing.input +
+    (outputTokens / 1_000_000) * pricing.output
+  )
 }
 
 export function useCostTracker(budget?: BudgetConfig) {
@@ -123,7 +130,7 @@ export function useCostTracker(budget?: BudgetConfig) {
     const pricing = MODEL_PRICING[usage.model] || MODEL_PRICING["gpt-4o-mini"]
     const cost = calculateCost(usage.inputTokens, usage.outputTokens, pricing)
 
-    setMetrics(prev => {
+    setMetrics((prev) => {
       const newUsage: TokenUsage = {
         ...usage,
         timestamp: Date.now(),
@@ -143,17 +150,24 @@ export function useCostTracker(budget?: BudgetConfig) {
   const getBudgetAlert = useCallback((): BudgetAlert => {
     if (!budget) return "none"
 
-    if (budget.session && metrics.sessionCost >= budget.session) return "exceeded"
+    if (budget.session && metrics.sessionCost >= budget.session)
+      return "exceeded"
     if (budget.daily && metrics.todayCost >= budget.daily) return "exceeded"
     if (budget.monthly && metrics.totalCost >= budget.monthly) return "exceeded"
 
-    if (budget.session && metrics.sessionCost >= budget.session * 0.9) return "critical"
-    if (budget.daily && metrics.todayCost >= budget.daily * 0.9) return "critical"
-    if (budget.monthly && metrics.totalCost >= budget.monthly * 0.9) return "critical"
+    if (budget.session && metrics.sessionCost >= budget.session * 0.9)
+      return "critical"
+    if (budget.daily && metrics.todayCost >= budget.daily * 0.9)
+      return "critical"
+    if (budget.monthly && metrics.totalCost >= budget.monthly * 0.9)
+      return "critical"
 
-    if (budget.session && metrics.sessionCost >= budget.session * 0.7) return "warning"
-    if (budget.daily && metrics.todayCost >= budget.daily * 0.7) return "warning"
-    if (budget.monthly && metrics.totalCost >= budget.monthly * 0.7) return "warning"
+    if (budget.session && metrics.sessionCost >= budget.session * 0.7)
+      return "warning"
+    if (budget.daily && metrics.todayCost >= budget.daily * 0.7)
+      return "warning"
+    if (budget.monthly && metrics.totalCost >= budget.monthly * 0.7)
+      return "warning"
 
     return "none"
   }, [budget, metrics])
@@ -183,7 +197,7 @@ export function useCostTracker(budget?: BudgetConfig) {
         localStorage.removeItem(STORAGE_KEY)
       }
     } else {
-      setMetrics(prev => ({
+      setMetrics((prev) => ({
         ...prev,
         sessionCost: 0,
       }))
@@ -278,7 +292,7 @@ export function CostDisplay({
                 className={`h-full ${alertColors[alert]}`}
                 initial={{ width: "0%" }}
                 animate={{
-                  width: `${Math.min(100, (metrics.sessionCost / budget.session) * 100)}%`
+                  width: `${Math.min(100, (metrics.sessionCost / budget.session) * 100)}%`,
                 }}
                 transition={{ duration: 0.5 }}
               />
@@ -309,7 +323,7 @@ export function CostDisplay({
               {formatTokens(metrics.totalOutputTokens)}
             </p>
             <p className="text-xs text-purple-500">
-              {formatCost((metrics.totalOutputTokens / 1_000_000) * 0.60)}
+              {formatCost((metrics.totalOutputTokens / 1_000_000) * 0.6)}
             </p>
           </div>
         </div>
@@ -388,7 +402,9 @@ export function LiveCostMeter({
           )}
         </div>
       </div>
-      <span className="mt-2 text-xs font-medium text-muted-foreground">{label}</span>
+      <span className="mt-2 text-xs font-medium text-muted-foreground">
+        {label}
+      </span>
     </div>
   )
 }
@@ -411,15 +427,19 @@ export function UsageTimeline({ history }: { history: TokenUsage[] }) {
     )
   }
 
-  const maxTokens = Math.max(...recentHistory.map(u => u.inputTokens + u.outputTokens))
+  const maxTokens = Math.max(
+    ...recentHistory.map((u) => u.inputTokens + u.outputTokens)
+  )
 
   return (
     <div className="rounded-xl border border-border/50 bg-card p-4">
       <h3 className="text-sm font-semibold mb-3">Usage Timeline</h3>
       <div className="flex items-end gap-1 h-24">
         {recentHistory.map((usage, i) => {
-          const height = ((usage.inputTokens + usage.outputTokens) / maxTokens) * 100
-          const inputRatio = usage.inputTokens / (usage.inputTokens + usage.outputTokens)
+          const height =
+            ((usage.inputTokens + usage.outputTokens) / maxTokens) * 100
+          const inputRatio =
+            usage.inputTokens / (usage.inputTokens + usage.outputTokens)
 
           return (
             <motion.div
@@ -443,9 +463,12 @@ export function UsageTimeline({ history }: { history: TokenUsage[] }) {
               {/* Tooltip */}
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
                 <div className="bg-popover border border-border rounded-lg px-2 py-1 text-xs whitespace-nowrap shadow-lg">
-                  <div className="font-medium">{MODEL_PRICING[usage.model]?.name || usage.model}</div>
+                  <div className="font-medium">
+                    {MODEL_PRICING[usage.model]?.name || usage.model}
+                  </div>
                   <div className="text-muted-foreground">
-                    {formatTokens(usage.inputTokens)} in / {formatTokens(usage.outputTokens)} out
+                    {formatTokens(usage.inputTokens)} in /{" "}
+                    {formatTokens(usage.outputTokens)} out
                   </div>
                 </div>
               </div>
@@ -494,13 +517,14 @@ export function ModelCostComparison({
       .sort((a, b) => a.cost - b.cost)
   }, [inputTokens, outputTokens])
 
-  const maxCost = Math.max(...models.map(m => m.cost))
+  const maxCost = Math.max(...models.map((m) => m.cost))
 
   return (
     <div className="rounded-xl border border-border/50 bg-card p-4">
       <h3 className="text-sm font-semibold mb-3">Model Comparison</h3>
       <p className="text-xs text-muted-foreground mb-4">
-        Cost for {formatTokens(inputTokens)} input + {formatTokens(outputTokens)} output
+        Cost for {formatTokens(inputTokens)} input +{" "}
+        {formatTokens(outputTokens)} output
       </p>
 
       <div className="space-y-2">
@@ -523,7 +547,9 @@ export function ModelCostComparison({
             <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
               <motion.div
                 className={`h-full ${
-                  selectedModel === model.id ? "bg-primary" : "bg-muted-foreground/30"
+                  selectedModel === model.id
+                    ? "bg-primary"
+                    : "bg-muted-foreground/30"
                 }`}
                 initial={{ width: 0 }}
                 animate={{ width: `${(model.cost / maxCost) * 100}%` }}
@@ -590,8 +616,18 @@ export function BudgetAlertBanner({
             onClick={onDismiss}
             className="text-muted-foreground hover:text-foreground"
           >
-            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="size-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         )}

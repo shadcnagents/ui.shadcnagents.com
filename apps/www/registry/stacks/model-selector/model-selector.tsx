@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Check, ChevronDown, Search } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 const PROVIDERS = [
@@ -43,13 +44,17 @@ export function ModelSelector({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
 
-  const selected = PROVIDERS.flatMap((g) => g.models).find((m) => m.id === value)
-  const selectedGroup = PROVIDERS.find((g) => g.models.some((m) => m.id === value))
+  const selected = PROVIDERS.flatMap((g) => g.models).find(
+    (m) => m.id === value
+  )
+  const selectedGroup = PROVIDERS.find((g) =>
+    g.models.some((m) => m.id === value)
+  )
 
   const filtered = PROVIDERS.map((g) => ({
     ...g,
     models: g.models.filter((m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()),
+      m.name.toLowerCase().includes(search.toLowerCase())
     ),
   })).filter((g) => g.models.length > 0)
 
@@ -59,9 +64,19 @@ export function ModelSelector({
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm transition-colors hover:border-foreground/20"
       >
-        <span className={cn("size-2 rounded-full", selectedGroup?.color ?? "bg-muted")} />
+        <span
+          className={cn(
+            "size-2 rounded-full",
+            selectedGroup?.color ?? "bg-muted"
+          )}
+        />
         <span>{selected?.name ?? "Select model"}</span>
-        <ChevronDown className={cn("size-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
+        <ChevronDown
+          className={cn(
+            "size-3.5 text-muted-foreground transition-transform",
+            open && "rotate-180"
+          )}
+        />
       </button>
 
       {open && (
@@ -88,7 +103,11 @@ export function ModelSelector({
                 {g.models.map((m) => (
                   <button
                     key={m.id}
-                    onClick={() => { onChange(m.id); setOpen(false); setSearch("") }}
+                    onClick={() => {
+                      onChange(m.id)
+                      setOpen(false)
+                      setSearch("")
+                    }}
                     className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-muted/40"
                   >
                     <span className={cn("size-1.5 rounded-full", g.color)} />

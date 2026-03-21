@@ -1,5 +1,5 @@
-import { experimental_generateSpeech as generateSpeech } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { experimental_generateSpeech as generateSpeech } from "ai"
 
 export async function POST(req: Request) {
   try {
@@ -20,6 +20,9 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error("[speech]", error)
-    return Response.json({ error: "Failed to generate speech" }, { status: 500 })
+    return Response.json(
+      { error: "Failed to generate speech" },
+      { status: 500 }
+    )
   }
 }

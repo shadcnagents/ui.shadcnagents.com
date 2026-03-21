@@ -1,5 +1,5 @@
-import { generateText, tool } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateText, tool } from "ai"
 import { z } from "zod"
 
 export async function POST(req: Request) {
@@ -42,7 +42,11 @@ export async function POST(req: Request) {
       })),
     }))
 
-    return Response.json({ text, stepCount: steps.length, steps: serializedSteps })
+    return Response.json({
+      text,
+      stepCount: steps.length,
+      steps: serializedSteps,
+    })
   } catch (error) {
     console.error("[agent]", error)
     return Response.json({ error: "Agent execution failed" }, { status: 500 })

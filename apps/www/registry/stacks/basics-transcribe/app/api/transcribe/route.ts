@@ -1,5 +1,5 @@
-import { experimental_transcribe as transcribe } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { experimental_transcribe as transcribe } from "ai"
 
 export async function POST(req: Request) {
   try {
@@ -18,6 +18,9 @@ export async function POST(req: Request) {
     return Response.json({ text })
   } catch (error) {
     console.error("[transcribe]", error)
-    return Response.json({ error: "Failed to transcribe audio" }, { status: 500 })
+    return Response.json(
+      { error: "Failed to transcribe audio" },
+      { status: 500 }
+    )
   }
 }

@@ -59,9 +59,24 @@ export function GenerateImageDemo() {
           className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? (
-            <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            <svg
+              className="size-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
             </svg>
           ) : (
             "Generate"
@@ -78,9 +93,24 @@ export function GenerateImageDemo() {
       {loading && (
         <div className="flex aspect-square items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/20">
           <div className="flex flex-col items-center gap-3 text-muted-foreground/50">
-            <svg className="size-8 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            <svg
+              className="size-8 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="3"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
             </svg>
             <p className="text-xs">Generating image…</p>
           </div>
@@ -97,7 +127,9 @@ export function GenerateImageDemo() {
                 className="w-full object-cover"
               />
               <div className="border-t bg-muted/30 px-3 py-2">
-                <p className="truncate text-[11px] text-muted-foreground/60">{img.prompt}</p>
+                <p className="truncate text-[11px] text-muted-foreground/60">
+                  {img.prompt}
+                </p>
               </div>
             </div>
           ))}

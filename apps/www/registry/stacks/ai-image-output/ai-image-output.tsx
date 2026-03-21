@@ -16,7 +16,10 @@ export function AIImageOutput() {
     setElapsed(0)
 
     const start = Date.now()
-    const timer = setInterval(() => setElapsed((Date.now() - start) / 1000), 100)
+    const timer = setInterval(
+      () => setElapsed((Date.now() - start) / 1000),
+      100
+    )
 
     const res = await fetch("/api/generate-image", {
       method: "POST",
@@ -53,12 +56,18 @@ export function AIImageOutput() {
         {loading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
             <div className="size-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
-            <span className="text-xs text-muted-foreground">{elapsed.toFixed(1)}s</span>
+            <span className="text-xs text-muted-foreground">
+              {elapsed.toFixed(1)}s
+            </span>
           </div>
         )}
         {imageUrl && (
           <>
-            <img src={imageUrl} alt={prompt} className="h-full w-full object-cover" />
+            <img
+              src={imageUrl}
+              alt={prompt}
+              className="h-full w-full object-cover"
+            />
             <div className="absolute bottom-3 right-3">
               <a
                 href={imageUrl}

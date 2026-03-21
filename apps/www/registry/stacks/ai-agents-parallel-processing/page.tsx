@@ -1,5 +1,5 @@
-import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateText } from "ai"
 
 async function analyzeInParallel(content: string) {
   const [sentiment, entities, topics] = await Promise.all([

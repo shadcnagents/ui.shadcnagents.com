@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useMemo, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 // ============================================================================
 // TYPES
@@ -32,7 +32,12 @@ export interface DetectedThreat {
 }
 
 export interface GuardConfig {
-  enabledCategories?: ("jailbreak" | "extraction" | "manipulation" | "encoding")[]
+  enabledCategories?: (
+    | "jailbreak"
+    | "extraction"
+    | "manipulation"
+    | "encoding"
+  )[]
   customPatterns?: ThreatPattern[]
   blockThreshold?: number
   sanitize?: boolean
@@ -47,15 +52,18 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "jailbreak-dan",
     name: "DAN (Do Anything Now)",
-    pattern: /\b(DAN|do anything now|jailbreak|bypass|ignore previous|forget (your|all) (instructions|rules|training))\b/gi,
+    pattern:
+      /\b(DAN|do anything now|jailbreak|bypass|ignore previous|forget (your|all) (instructions|rules|training))\b/gi,
     severity: "critical",
-    description: "Attempts to override safety guidelines using DAN-style prompts",
+    description:
+      "Attempts to override safety guidelines using DAN-style prompts",
     category: "jailbreak",
   },
   {
     id: "jailbreak-roleplay",
     name: "Roleplay Jailbreak",
-    pattern: /\b(pretend (you are|to be|you're)|act as|roleplay as|you are now|from now on you|imagine you are)\s*(an? )?(evil|unfiltered|uncensored|unrestricted)/gi,
+    pattern:
+      /\b(pretend (you are|to be|you're)|act as|roleplay as|you are now|from now on you|imagine you are)\s*(an? )?(evil|unfiltered|uncensored|unrestricted)/gi,
     severity: "critical",
     description: "Malicious roleplay instructions to bypass restrictions",
     category: "jailbreak",
@@ -63,7 +71,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "jailbreak-ignore",
     name: "Instruction Override",
-    pattern: /\b(ignore|disregard|forget|override|bypass|circumvent)\s+(all\s+)?(previous|prior|above|earlier|system)\s*(instructions|prompts|rules|guidelines|restrictions)/gi,
+    pattern:
+      /\b(ignore|disregard|forget|override|bypass|circumvent)\s+(all\s+)?(previous|prior|above|earlier|system)\s*(instructions|prompts|rules|guidelines|restrictions)/gi,
     severity: "critical",
     description: "Direct attempts to override system instructions",
     category: "jailbreak",
@@ -71,7 +80,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "jailbreak-developer",
     name: "Developer Mode Exploit",
-    pattern: /\b(developer mode|debug mode|admin mode|root access|sudo|maintenance mode|god mode|test mode)\b/gi,
+    pattern:
+      /\b(developer mode|debug mode|admin mode|root access|sudo|maintenance mode|god mode|test mode)\b/gi,
     severity: "high",
     description: "Attempts to activate fictitious privileged modes",
     category: "jailbreak",
@@ -81,7 +91,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "extraction-system",
     name: "System Prompt Extraction",
-    pattern: /\b(what (is|are) your (instructions|system prompt|rules|guidelines)|repeat (your|the) (system|initial) (prompt|instructions)|print your (prompt|instructions)|show me your (prompt|rules))\b/gi,
+    pattern:
+      /\b(what (is|are) your (instructions|system prompt|rules|guidelines)|repeat (your|the) (system|initial) (prompt|instructions)|print your (prompt|instructions)|show me your (prompt|rules))\b/gi,
     severity: "high",
     description: "Attempts to extract system prompt or instructions",
     category: "extraction",
@@ -89,7 +100,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "extraction-api",
     name: "API Key Extraction",
-    pattern: /\b(api[_\s]?key|secret[_\s]?key|access[_\s]?token|auth[_\s]?token|password|credentials|private[_\s]?key)\b/gi,
+    pattern:
+      /\b(api[_\s]?key|secret[_\s]?key|access[_\s]?token|auth[_\s]?token|password|credentials|private[_\s]?key)\b/gi,
     severity: "critical",
     description: "Attempts to extract sensitive credentials",
     category: "extraction",
@@ -97,7 +109,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "extraction-internal",
     name: "Internal Data Extraction",
-    pattern: /\b(internal (data|documents|files)|confidential|proprietary|classified|sensitive (information|data)|database (dump|contents)|user (data|records))\b/gi,
+    pattern:
+      /\b(internal (data|documents|files)|confidential|proprietary|classified|sensitive (information|data)|database (dump|contents)|user (data|records))\b/gi,
     severity: "high",
     description: "Attempts to access internal or sensitive data",
     category: "extraction",
@@ -107,7 +120,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "manipulation-injection",
     name: "SQL/Code Injection",
-    pattern: /(SELECT\s+\*|DROP\s+TABLE|DELETE\s+FROM|INSERT\s+INTO|UNION\s+SELECT|exec\s*\(|eval\s*\(|__import__|subprocess|os\.system)/gi,
+    pattern:
+      /(SELECT\s+\*|DROP\s+TABLE|DELETE\s+FROM|INSERT\s+INTO|UNION\s+SELECT|exec\s*\(|eval\s*\(|__import__|subprocess|os\.system)/gi,
     severity: "critical",
     description: "SQL or code injection attempts",
     category: "manipulation",
@@ -115,7 +129,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "manipulation-indirect",
     name: "Indirect Injection",
-    pattern: /\b(when (you|the model) (see|read|encounter)|if .{0,30} then (ignore|override|forget)|<\/?system>|<\/?user>|<\/?assistant>|\[SYSTEM\]|\[INST\])/gi,
+    pattern:
+      /\b(when (you|the model) (see|read|encounter)|if .{0,30} then (ignore|override|forget)|<\/?system>|<\/?user>|<\/?assistant>|\[SYSTEM\]|\[INST\])/gi,
     severity: "high",
     description: "Indirect prompt injection via content",
     category: "manipulation",
@@ -123,7 +138,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "manipulation-virtualization",
     name: "Prompt Virtualization",
-    pattern: /\b(hypothetically|theoretically|in a (fictional|alternate) (world|scenario)|for educational purposes only|just for fun|let's play a game)\s+(what if|could you|would you)/gi,
+    pattern:
+      /\b(hypothetically|theoretically|in a (fictional|alternate) (world|scenario)|for educational purposes only|just for fun|let's play a game)\s+(what if|could you|would you)/gi,
     severity: "medium",
     description: "Attempts to create hypothetical scenarios for policy bypass",
     category: "manipulation",
@@ -149,7 +165,8 @@ const THREAT_PATTERNS: ThreatPattern[] = [
   {
     id: "encoding-homoglyph",
     name: "Homoglyph Attack",
-    pattern: /[аеіорстухАЕІОРСТУХ]|[\u0430\u0435\u0456\u043E\u0440\u0441\u0442\u0443\u0445]/g,
+    pattern:
+      /[аеіорстухАЕІОРСТУХ]|[\u0430\u0435\u0456\u043E\u0440\u0441\u0442\u0443\u0445]/g,
     severity: "medium",
     description: "Cyrillic or lookalike characters that could bypass filters",
     category: "encoding",
@@ -217,7 +234,10 @@ export function usePromptGuard(options: UsePromptGuardOptions = {}) {
           threats.push({
             pattern,
             match: match[0],
-            position: { start: match.index, end: match.index + match[0].length },
+            position: {
+              start: match.index,
+              end: match.index + match[0].length,
+            },
             confidence,
           })
 
@@ -235,7 +255,10 @@ export function usePromptGuard(options: UsePromptGuardOptions = {}) {
           const base = { critical: 40, high: 25, medium: 15, low: 8 }
           return base[t.pattern.severity] * t.confidence
         })
-        riskScore = Math.min(100, severityScores.reduce((a, b) => a + b, 0))
+        riskScore = Math.min(
+          100,
+          severityScores.reduce((a, b) => a + b, 0)
+        )
       }
 
       const result: DetectionResult = {
@@ -317,7 +340,8 @@ export function ThreatIndicator({ result }: ThreatIndicatorProps) {
   const colors = {
     critical: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30",
     high: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30",
-    medium: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
+    medium:
+      "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
     low: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
   }
 
@@ -335,8 +359,12 @@ export function ThreatIndicator({ result }: ThreatIndicatorProps) {
       <span className="text-xs font-semibold uppercase">
         {result.isThreat ? "BLOCKED" : "SAFE"}
       </span>
-      <span className="text-xs opacity-70">Risk: {result.riskScore.toFixed(0)}%</span>
-      <span className="text-xs opacity-50">{result.analysisTimeMs.toFixed(1)}ms</span>
+      <span className="text-xs opacity-70">
+        Risk: {result.riskScore.toFixed(0)}%
+      </span>
+      <span className="text-xs opacity-50">
+        {result.analysisTimeMs.toFixed(1)}ms
+      </span>
     </motion.div>
   )
 }
@@ -416,7 +444,9 @@ export function ThreatDetails({ threats }: ThreatDetailsProps) {
         <p className="mt-2 text-sm font-medium text-emerald-600 dark:text-emerald-400">
           No threats detected
         </p>
-        <p className="text-xs text-muted-foreground">This prompt appears safe</p>
+        <p className="text-xs text-muted-foreground">
+          This prompt appears safe
+        </p>
       </div>
     )
   }
@@ -455,7 +485,9 @@ export function ThreatDetails({ threats }: ThreatDetailsProps) {
                     >
                       {threat.pattern.severity}
                     </span>
-                    <span className="text-sm font-medium">{threat.pattern.name}</span>
+                    <span className="text-sm font-medium">
+                      {threat.pattern.name}
+                    </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {threat.pattern.description}
@@ -513,7 +545,13 @@ export function GuardStatsPanel({ stats }: GuardStatsPanelProps) {
           label="Block Rate"
           value={`${stats.blockedRate.toFixed(1)}%`}
           icon={<PercentIcon className="size-4" />}
-          color={stats.blockedRate > 50 ? "red" : stats.blockedRate > 20 ? "amber" : "emerald"}
+          color={
+            stats.blockedRate > 50
+              ? "red"
+              : stats.blockedRate > 20
+                ? "amber"
+                : "emerald"
+          }
         />
       </div>
 
@@ -572,7 +610,9 @@ function StatCard({
 
   return (
     <div className="rounded-lg border border-border/50 bg-background p-3">
-      <div className={`inline-flex rounded-md p-1.5 ${colorClasses[color]}`}>{icon}</div>
+      <div className={`inline-flex rounded-md p-1.5 ${colorClasses[color]}`}>
+        {icon}
+      </div>
       <p className="mt-2 text-lg font-bold">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
@@ -584,11 +624,21 @@ function StatCard({
 // ============================================================================
 
 interface PatternCategoriesProps {
-  enabledCategories: ("jailbreak" | "extraction" | "manipulation" | "encoding")[]
-  onToggle: (category: "jailbreak" | "extraction" | "manipulation" | "encoding") => void
+  enabledCategories: (
+    | "jailbreak"
+    | "extraction"
+    | "manipulation"
+    | "encoding"
+  )[]
+  onToggle: (
+    category: "jailbreak" | "extraction" | "manipulation" | "encoding"
+  ) => void
 }
 
-export function PatternCategories({ enabledCategories, onToggle }: PatternCategoriesProps) {
+export function PatternCategories({
+  enabledCategories,
+  onToggle,
+}: PatternCategoriesProps) {
   const categories = [
     {
       id: "jailbreak" as const,
@@ -609,7 +659,8 @@ export function PatternCategories({ enabledCategories, onToggle }: PatternCatego
       name: "Manipulation",
       description: "SQL injection, indirect injection",
       icon: <CodeIcon className="size-4" />,
-      count: THREAT_PATTERNS.filter((p) => p.category === "manipulation").length,
+      count: THREAT_PATTERNS.filter((p) => p.category === "manipulation")
+        .length,
     },
     {
       id: "encoding" as const,
@@ -649,7 +700,9 @@ export function PatternCategories({ enabledCategories, onToggle }: PatternCatego
               </span>
             </div>
             <p className="mt-2 text-sm font-medium">{category.name}</p>
-            <p className="text-xs text-muted-foreground">{category.description}</p>
+            <p className="text-xs text-muted-foreground">
+              {category.description}
+            </p>
           </button>
         )
       })}
@@ -663,65 +716,149 @@ export function PatternCategories({ enabledCategories, onToggle }: PatternCatego
 
 function ShieldAlertIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+      />
     </svg>
   )
 }
 
 function ShieldCheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+      />
     </svg>
   )
 }
 
 function ScanIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+      />
     </svg>
   )
 }
 
 function PercentIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"
+      />
     </svg>
   )
 }
 
 function UnlockIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+      />
     </svg>
   )
 }
 
 function DatabaseIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"
+      />
     </svg>
   )
 }
 
 function CodeIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"
+      />
     </svg>
   )
 }
 
 function BinaryIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
+      />
     </svg>
   )
 }

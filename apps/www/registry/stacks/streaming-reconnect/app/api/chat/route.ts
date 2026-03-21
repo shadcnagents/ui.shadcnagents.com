@@ -4,8 +4,13 @@ import { streamText } from "ai"
 export const maxDuration = 30
 
 export async function POST(req: Request) {
-  const { messages, simulateDisconnect, disconnectAfter, lastEventId, resumeFrom } =
-    await req.json()
+  const {
+    messages,
+    simulateDisconnect,
+    disconnectAfter,
+    lastEventId,
+    resumeFrom,
+  } = await req.json()
 
   // For demo: simulate a disconnection after certain bytes
   if (simulateDisconnect && disconnectAfter) {

@@ -1,5 +1,5 @@
-import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateText } from "ai"
 
 const agents = {
   writer: openai("gpt-4o"),

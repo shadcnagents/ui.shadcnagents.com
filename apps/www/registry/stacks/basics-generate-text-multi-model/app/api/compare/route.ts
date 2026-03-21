@@ -1,11 +1,14 @@
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 import { anthropic } from "@ai-sdk/anthropic"
 import { google } from "@ai-sdk/google"
+import { openai } from "@ai-sdk/openai"
+import { generateText } from "ai"
 
 const models = [
   { name: "GPT-4o", provider: () => openai("gpt-4o") },
-  { name: "Claude Sonnet 4", provider: () => anthropic("claude-sonnet-4-20250514") },
+  {
+    name: "Claude Sonnet 4",
+    provider: () => anthropic("claude-sonnet-4-20250514"),
+  },
   { name: "Gemini 2.0 Flash", provider: () => google("gemini-2.0-flash") },
 ]
 
@@ -48,9 +51,6 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error("[compare]", error)
-    return Response.json(
-      { error: "Failed to compare models" },
-      { status: 500 }
-    )
+    return Response.json({ error: "Failed to compare models" }, { status: 500 })
   }
 }

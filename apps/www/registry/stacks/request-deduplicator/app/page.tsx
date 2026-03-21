@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useCallback, useState } from "react"
+import { motion } from "motion/react"
+
 import {
-  useRequestDeduplicator,
-  StatusBadge,
-  StatsPanel,
   RequestList,
   RequestTimeline,
+  StatsPanel,
+  StatusBadge,
+  useRequestDeduplicator,
 } from "../components/request-deduplicator"
-import { motion } from "motion/react"
 
 export default function RequestDeduplicatorDemo() {
   const [burstCount, setBurstCount] = useState(5)
@@ -43,7 +44,9 @@ export default function RequestDeduplicatorDemo() {
             { method: "POST" },
             async () => {
               // Simulate API delay
-              await new Promise((resolve) => setTimeout(resolve, 500 + Math.random() * 500))
+              await new Promise((resolve) =>
+                setTimeout(resolve, 500 + Math.random() * 500)
+              )
               return { success: true, timestamp: Date.now() }
             }
           )
@@ -60,7 +63,13 @@ export default function RequestDeduplicatorDemo() {
   const simulateVaried = useCallback(async () => {
     setTestingBurst(true)
 
-    const endpoints = ["/api/users", "/api/products", "/api/orders", "/api/users", "/api/products"]
+    const endpoints = [
+      "/api/users",
+      "/api/products",
+      "/api/orders",
+      "/api/users",
+      "/api/products",
+    ]
 
     await Promise.allSettled(
       endpoints.map(async (endpoint) => {
@@ -69,7 +78,9 @@ export default function RequestDeduplicatorDemo() {
             endpoint,
             { method: "GET" },
             async () => {
-              await new Promise((resolve) => setTimeout(resolve, 300 + Math.random() * 300))
+              await new Promise((resolve) =>
+                setTimeout(resolve, 300 + Math.random() * 300)
+              )
               return { endpoint, data: [] }
             }
           )
@@ -92,7 +103,9 @@ export default function RequestDeduplicatorDemo() {
         <div className="mx-auto max-w-5xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-semibold tracking-tight">Request Deduplicator</h1>
+              <h1 className="text-lg font-semibold tracking-tight">
+                Request Deduplicator
+              </h1>
               <p className="text-sm text-muted-foreground">
                 Prevent duplicate API requests with intelligent caching
               </p>
@@ -187,7 +200,11 @@ export default function RequestDeduplicatorDemo() {
                         <motion.div
                           className="size-3 rounded-full border-2 border-primary-foreground border-t-transparent"
                           animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
                         />
                         Processing...
                       </span>
@@ -274,7 +291,9 @@ export default function RequestDeduplicatorDemo() {
                   <span className="size-5 flex items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-bold">
                     1
                   </span>
-                  <p>Request comes in, key is generated from method + URL + body</p>
+                  <p>
+                    Request comes in, key is generated from method + URL + body
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <span className="size-5 flex items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-bold">

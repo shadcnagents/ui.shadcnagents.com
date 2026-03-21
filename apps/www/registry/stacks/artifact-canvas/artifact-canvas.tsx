@@ -1,21 +1,26 @@
 "use client"
 
-import { useChat } from "@ai-sdk/react"
 import { useState } from "react"
+import { useChat } from "@ai-sdk/react"
+
 import { cn } from "@/lib/utils"
 
 export function ArtifactCanvas() {
   const [tab, setTab] = useState<"code" | "preview">("code")
-  const [artifact, setArtifact] = useState<{ code: string; lang: string } | null>(null)
+  const [artifact, setArtifact] = useState<{
+    code: string
+    lang: string
+  } | null>(null)
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/artifact",
-    onFinish(message) {
-      // Parse code block from assistant response
-      const match = message.content.match(/```(\w+)?\n([\s\S]*?)```/)
-      if (match) setArtifact({ lang: match[1] ?? "tsx", code: match[2] })
-    },
-  })
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      api: "/api/artifact",
+      onFinish(message) {
+        // Parse code block from assistant response
+        const match = message.content.match(/```(\w+)?\n([\s\S]*?)```/)
+        if (match) setArtifact({ lang: match[1] ?? "tsx", code: match[2] })
+      },
+    })
 
   return (
     <div className="flex h-screen">
@@ -23,16 +28,27 @@ export function ArtifactCanvas() {
       <div className="flex w-80 shrink-0 flex-col border-r border-border/40">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((m) => (
-            <div key={m.id} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+            <div
+              key={m.id}
+              className={cn(
+                "flex",
+                m.role === "user" ? "justify-end" : "justify-start"
+              )}
+            >
               <div
                 className={cn(
                   "max-w-[85%] rounded-xl px-3 py-2 text-sm",
                   m.role === "user"
                     ? "bg-foreground text-background rounded-br-sm"
-                    : "bg-muted/50 rounded-bl-sm",
+                    : "bg-muted/50 rounded-bl-sm"
                 )}
               >
-                {m.role === "user" ? m.content : m.content.replace(/```[\s\S]*?```/g, "✦ Generated artifact")}
+                {m.role === "user"
+                  ? m.content
+                  : m.content.replace(
+                      /```[\s\S]*?```/g,
+                      "✦ Generated artifact"
+                    )}
               </div>
             </div>
           ))}
@@ -45,7 +61,11 @@ export function ArtifactCanvas() {
               placeholder="Ask Claude to build…"
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/40"
             />
-            <button type="submit" disabled={isLoading} className="text-xs font-medium text-foreground/60 hover:text-foreground disabled:opacity-40">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="text-xs font-medium text-foreground/60 hover:text-foreground disabled:opacity-40"
+            >
               Send
             </button>
           </div>
@@ -61,7 +81,9 @@ export function ArtifactCanvas() {
               onClick={() => setTab(t)}
               className={cn(
                 "px-4 py-2.5 text-sm font-medium capitalize transition-colors",
-                tab === t ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground",
+                tab === t
+                  ? "border-b-2 border-foreground text-foreground"
+                  : "text-muted-foreground"
               )}
             >
               {t}

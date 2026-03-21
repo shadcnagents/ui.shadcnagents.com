@@ -1,5 +1,5 @@
-import { experimental_generateImage as generateImage } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { experimental_generateImage as generateImage } from "ai"
 
 export async function POST(req: Request) {
   try {

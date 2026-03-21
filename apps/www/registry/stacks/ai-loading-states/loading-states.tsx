@@ -64,7 +64,9 @@ export function TypingIndicator() {
         <div
           key={i}
           className="size-2 rounded-full bg-foreground/60"
-          style={{ animation: `wave 1s ease-in-out ${i * 0.15}s infinite alternate` }}
+          style={{
+            animation: `wave 1s ease-in-out ${i * 0.15}s infinite alternate`,
+          }}
         />
       ))}
     </div>

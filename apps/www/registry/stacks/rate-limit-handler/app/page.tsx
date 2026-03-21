@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useCallback, useState } from "react"
 import { useChat } from "@ai-sdk/react"
+import { motion } from "motion/react"
+
 import {
-  useRateLimiter,
+  RateLimitMetricsPanel,
   RateLimitStatus,
   RetryQueue,
-  RateLimitMetricsPanel,
+  useRateLimiter,
 } from "../components/rate-limiter"
-import { motion } from "motion/react"
 
 export default function RateLimitDemo() {
   const rateLimiter = useRateLimiter({
@@ -22,7 +23,14 @@ export default function RateLimitDemo() {
 
   const [testingBurst, setTestingBurst] = useState(false)
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages } = useChat({
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    setMessages,
+  } = useChat({
     onResponse: (response) => {
       rateLimiter.updateFromHeaders(response.headers)
     },
@@ -77,7 +85,9 @@ export default function RateLimitDemo() {
         <div className="mx-auto max-w-5xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-semibold tracking-tight">Rate Limit Handler</h1>
+              <h1 className="text-lg font-semibold tracking-tight">
+                Rate Limit Handler
+              </h1>
               <p className="text-sm text-muted-foreground">
                 Production-ready rate limiting with exponential backoff
               </p>
@@ -154,7 +164,11 @@ export default function RateLimitDemo() {
                   />
                   <button
                     type="submit"
-                    disabled={isLoading || !input.trim() || rateLimiter.state === "circuit-open"}
+                    disabled={
+                      isLoading ||
+                      !input.trim() ||
+                      rateLimiter.state === "circuit-open"
+                    }
                     className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                   >
                     Send
@@ -175,7 +189,9 @@ export default function RateLimitDemo() {
               <div className="space-y-2">
                 <button
                   onClick={simulateBurst}
-                  disabled={testingBurst || rateLimiter.state === "circuit-open"}
+                  disabled={
+                    testingBurst || rateLimiter.state === "circuit-open"
+                  }
                   className="w-full rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-amber-600 disabled:opacity-50"
                 >
                   {testingBurst ? (
@@ -183,7 +199,11 @@ export default function RateLimitDemo() {
                       <motion.div
                         className="size-3 rounded-full border-2 border-white border-t-transparent"
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
                       />
                       Sending 8 requests...
                     </span>
@@ -235,7 +255,9 @@ export default function RateLimitDemo() {
                   <span className="font-mono">0.3</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Circuit Threshold</span>
+                  <span className="text-muted-foreground">
+                    Circuit Threshold
+                  </span>
                   <span className="font-mono">5 errors</span>
                 </div>
                 <div className="flex justify-between">

@@ -1,6 +1,6 @@
-import { openai } from "@ai-sdk/openai"
 import { anthropic } from "@ai-sdk/anthropic"
 import { google } from "@ai-sdk/google"
+import { openai } from "@ai-sdk/openai"
 import { streamText } from "ai"
 
 export const maxDuration = 30
@@ -68,7 +68,8 @@ export async function POST(req: Request) {
     console.error(`[${provider}] Error:`, error)
 
     // Return appropriate error response
-    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error"
 
     if (errorMessage.includes("rate") || errorMessage.includes("429")) {
       return new Response(
@@ -77,10 +78,9 @@ export async function POST(req: Request) {
       )
     }
 
-    return new Response(
-      JSON.stringify({ error: { message: errorMessage } }),
-      { status: 500 }
-    )
+    return new Response(JSON.stringify({ error: { message: errorMessage } }), {
+      status: 500,
+    })
   }
 }
 

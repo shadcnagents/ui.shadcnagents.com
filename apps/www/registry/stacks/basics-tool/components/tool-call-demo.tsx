@@ -14,7 +14,9 @@ interface ToolResult {
 }
 
 export function ToolCallDemo() {
-  const [prompt, setPrompt] = useState("What's the weather like in Tokyo and Paris?")
+  const [prompt, setPrompt] = useState(
+    "What's the weather like in Tokyo and Paris?"
+  )
   const [result, setResult] = useState<ToolResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -64,9 +66,24 @@ export function ToolCallDemo() {
           className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? (
-            <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            <svg
+              className="size-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
             </svg>
           ) : (
             "Run"
@@ -104,8 +121,12 @@ export function ToolCallDemo() {
 
           {result.text && (
             <div className="rounded-lg border bg-muted/40 px-4 py-3">
-              <p className="mb-2 text-[13px] font-medium text-muted-foreground/60">Response</p>
-              <p className="text-sm leading-relaxed text-foreground/85">{result.text}</p>
+              <p className="mb-2 text-[13px] font-medium text-muted-foreground/60">
+                Response
+              </p>
+              <p className="text-sm leading-relaxed text-foreground/85">
+                {result.text}
+              </p>
             </div>
           )}
         </div>

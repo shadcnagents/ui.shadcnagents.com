@@ -1,5 +1,5 @@
-import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateText } from "ai"
 
 export async function POST(req: Request) {
   try {
@@ -28,9 +28,6 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error("[generate-text]", error)
-    return Response.json(
-      { error: "Failed to generate text" },
-      { status: 500 }
-    )
+    return Response.json({ error: "Failed to generate text" }, { status: 500 })
   }
 }

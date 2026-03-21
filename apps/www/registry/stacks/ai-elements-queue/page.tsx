@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 
 interface Task {
   id: string
@@ -37,7 +37,10 @@ export default function QueueDisplay() {
       <h2 className="text-sm font-medium">Task Queue</h2>
       <div className="mt-4 space-y-2">
         {tasks.map((task) => (
-          <div key={task.id} className="flex items-center gap-3 rounded border p-3">
+          <div
+            key={task.id}
+            className="flex items-center gap-3 rounded border p-3"
+          >
             <StatusDot status={task.status} />
             <span className="text-sm">{task.name}</span>
             <span className="ml-auto text-xs text-muted-foreground">

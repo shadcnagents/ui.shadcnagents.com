@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useCallback } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+
 import {
-  usePromptGuard,
-  ThreatIndicator,
-  RiskMeter,
-  ThreatDetails,
   GuardStatsPanel,
   PatternCategories,
+  RiskMeter,
+  ThreatDetails,
+  ThreatIndicator,
+  usePromptGuard,
 } from "@/components/prompt-guard"
 
 // Example attack prompts for demonstration
@@ -100,8 +101,9 @@ export default function PromptInjectionGuardPage() {
             OWASP LLM01 Protection
           </h1>
           <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
-            Real-time detection of jailbreaks, data extraction attempts, and prompt
-            manipulation. Pattern-based analysis with configurable sensitivity.
+            Real-time detection of jailbreaks, data extraction attempts, and
+            prompt manipulation. Pattern-based analysis with configurable
+            sensitivity.
           </p>
         </div>
 
@@ -135,11 +137,16 @@ export default function PromptInjectionGuardPage() {
               className="flex-1"
             />
             <span className="text-sm text-muted-foreground w-20">
-              {threshold < 30 ? "Strict" : threshold > 60 ? "Lenient" : "Balanced"}
+              {threshold < 30
+                ? "Strict"
+                : threshold > 60
+                  ? "Lenient"
+                  : "Balanced"}
             </span>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Higher threshold = more permissive. Lower threshold = stricter blocking.
+            Higher threshold = more permissive. Lower threshold = stricter
+            blocking.
           </p>
         </div>
 
@@ -228,7 +235,10 @@ export default function PromptInjectionGuardPage() {
               </div>
 
               {/* Risk Meter */}
-              <RiskMeter riskScore={lastResult.riskScore} threshold={threshold} />
+              <RiskMeter
+                riskScore={lastResult.riskScore}
+                threshold={threshold}
+              />
 
               {/* Threat Details */}
               <div className="rounded-xl border border-border/50 bg-card p-4">
@@ -338,7 +348,11 @@ function ShieldIcon({ className }: { className?: string }) {
 
 function LoadingSpinner({ className }: { className?: string }) {
   return (
-    <svg className={`animate-spin ${className}`} fill="none" viewBox="0 0 24 24">
+    <svg
+      className={`animate-spin ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
       <circle
         className="opacity-25"
         cx="12"

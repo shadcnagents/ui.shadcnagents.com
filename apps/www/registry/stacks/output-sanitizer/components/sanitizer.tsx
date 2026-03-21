@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useMemo, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 // ============================================================================
 // TYPES
@@ -18,7 +18,14 @@ export interface SanitizeConfig {
 }
 
 export interface ThreatDetection {
-  type: "script" | "event_handler" | "data_uri" | "javascript_uri" | "svg_injection" | "style_injection" | "comment_injection"
+  type:
+    | "script"
+    | "event_handler"
+    | "data_uri"
+    | "javascript_uri"
+    | "svg_injection"
+    | "style_injection"
+    | "comment_injection"
   severity: "critical" | "high" | "medium" | "low"
   match: string
   position: number
@@ -41,13 +48,39 @@ export interface SanitizeResult {
 // ============================================================================
 
 export const DEFAULT_ALLOWED_TAGS = [
-  "p", "br", "hr", "div", "span",
-  "h1", "h2", "h3", "h4", "h5", "h6",
-  "strong", "em", "b", "i", "u", "s", "mark", "small",
-  "ul", "ol", "li",
-  "blockquote", "pre", "code",
-  "a", "img",
-  "table", "thead", "tbody", "tr", "th", "td",
+  "p",
+  "br",
+  "hr",
+  "div",
+  "span",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "strong",
+  "em",
+  "b",
+  "i",
+  "u",
+  "s",
+  "mark",
+  "small",
+  "ul",
+  "ol",
+  "li",
+  "blockquote",
+  "pre",
+  "code",
+  "a",
+  "img",
+  "table",
+  "thead",
+  "tbody",
+  "tr",
+  "th",
+  "td",
 ]
 
 export const DEFAULT_ALLOWED_ATTRIBUTES: Record<string, string[]> = {
@@ -346,7 +379,9 @@ export function SanitizationReport({
 }: SanitizationReportProps) {
   const [isExpanded, setIsExpanded] = useState(expanded)
 
-  const criticalCount = result.threats.filter((t) => t.severity === "critical").length
+  const criticalCount = result.threats.filter(
+    (t) => t.severity === "critical"
+  ).length
   const highCount = result.threats.filter((t) => t.severity === "high").length
 
   if (result.threats.length === 0) {
@@ -370,7 +405,8 @@ export function SanitizationReport({
         <div className="flex items-center gap-2">
           <ShieldAlertIcon className="size-4 text-amber-500" />
           <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-            {result.threats.length} threat{result.threats.length > 1 ? "s" : ""} sanitized
+            {result.threats.length} threat{result.threats.length > 1 ? "s" : ""}{" "}
+            sanitized
           </span>
 
           {criticalCount > 0 && (
@@ -409,7 +445,10 @@ export function SanitizationReport({
               {/* Stats */}
               <div className="mt-3 flex gap-4 border-t border-amber-500/20 pt-2">
                 <Stat label="Tags removed" value={result.stats.tagsRemoved} />
-                <Stat label="Attributes removed" value={result.stats.attributesRemoved} />
+                <Stat
+                  label="Attributes removed"
+                  value={result.stats.attributesRemoved}
+                />
               </div>
             </div>
           </motion.div>
@@ -464,7 +503,10 @@ interface LiveSanitizePreviewProps {
   config?: SanitizeConfig
 }
 
-export function LiveSanitizePreview({ input, config }: LiveSanitizePreviewProps) {
+export function LiveSanitizePreview({
+  input,
+  config,
+}: LiveSanitizePreviewProps) {
   const result = useMemo(() => sanitizeHTML(input, config), [input, config])
   const [showOriginal, setShowOriginal] = useState(false)
 
@@ -516,7 +558,9 @@ export function LiveSanitizePreview({ input, config }: LiveSanitizePreviewProps)
               exit={{ opacity: 0 }}
             >
               <div
-                dangerouslySetInnerHTML={{ __html: result.clean || "<em>No output</em>" }}
+                dangerouslySetInnerHTML={{
+                  __html: result.clean || "<em>No output</em>",
+                }}
                 className="prose prose-sm dark:prose-invert max-w-none min-h-[100px] rounded-lg bg-card p-4 border border-border/50"
               />
             </motion.div>
@@ -547,7 +591,10 @@ export function ThreatMeter({ threats }: ThreatMeterProps) {
   const low = threats.filter((t) => t.severity === "low").length
 
   const total = threats.length
-  const score = total === 0 ? 100 : Math.max(0, 100 - critical * 30 - high * 15 - medium * 5 - low * 2)
+  const score =
+    total === 0
+      ? 100
+      : Math.max(0, 100 - critical * 30 - high * 15 - medium * 5 - low * 2)
 
   const getColor = () => {
     if (score >= 90) return "text-emerald-500"
@@ -592,18 +639,12 @@ export function ThreatMeter({ threats }: ThreatMeterProps) {
           {critical > 0 && (
             <span className="text-red-500">{critical} critical</span>
           )}
-          {high > 0 && (
-            <span className="text-orange-500">{high} high</span>
-          )}
+          {high > 0 && <span className="text-orange-500">{high} high</span>}
           {medium > 0 && (
             <span className="text-yellow-500">{medium} medium</span>
           )}
-          {low > 0 && (
-            <span className="text-zinc-500">{low} low</span>
-          )}
-          {total === 0 && (
-            <span className="text-emerald-500">No threats</span>
-          )}
+          {low > 0 && <span className="text-zinc-500">{low} low</span>}
+          {total === 0 && <span className="text-emerald-500">No threats</span>}
         </div>
       </div>
     </div>
@@ -616,24 +657,54 @@ export function ThreatMeter({ threats }: ThreatMeterProps) {
 
 function ShieldCheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+      />
     </svg>
   )
 }
 
 function ShieldAlertIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z"
+      />
     </svg>
   )
 }
 
 function ChevronIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m19.5 8.25-7.5 7.5-7.5-7.5"
+      />
     </svg>
   )
 }

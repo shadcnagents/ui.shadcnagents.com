@@ -1,10 +1,11 @@
 "use client"
 
-import { useChat } from "@ai-sdk/react"
 import { useEffect, useRef } from "react"
+import { useChat } from "@ai-sdk/react"
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat()
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
+    useChat()
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -23,7 +24,9 @@ export default function Chat() {
       <div className="flex-1 overflow-y-auto px-6 py-4">
         {messages.length === 0 && (
           <div className="flex h-full items-center justify-center">
-            <p className="text-sm text-muted-foreground/50">Start a conversation…</p>
+            <p className="text-sm text-muted-foreground/50">
+              Start a conversation…
+            </p>
           </div>
         )}
         <div className="space-y-4">

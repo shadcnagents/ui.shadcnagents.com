@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { GenerateTextDemo } from "@/components/generate-text-demo"
 
 export const metadata: Metadata = {

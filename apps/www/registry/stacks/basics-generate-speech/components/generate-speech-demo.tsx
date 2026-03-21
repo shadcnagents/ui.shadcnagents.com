@@ -1,8 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { type AgentState, AudioOrb } from "@/components/ui/orb"
+
 import { LiveWaveform } from "@/components/ui/live-waveform"
+import { AudioOrb, type AgentState } from "@/components/ui/orb"
 
 const VOICES = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const
 type Voice = (typeof VOICES)[number]
@@ -106,7 +107,9 @@ export function GenerateSpeechDemo() {
       source.connect(analyser)
       analyser.connect(ctx.destination)
 
-      audio.addEventListener("loadedmetadata", () => setDuration(audio.duration))
+      audio.addEventListener("loadedmetadata", () =>
+        setDuration(audio.duration)
+      )
       audio.addEventListener("timeupdate", () =>
         setCurrentTime(audio.currentTime)
       )

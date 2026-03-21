@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
 
 // ============================================================================
 // TYPES
@@ -52,7 +52,9 @@ interface UseStreamingReconnectOptions extends ReconnectConfig {
   url?: string
 }
 
-export function useStreamingReconnect(options: UseStreamingReconnectOptions = {}) {
+export function useStreamingReconnect(
+  options: UseStreamingReconnectOptions = {}
+) {
   const {
     url = "/api/chat",
     maxRetries = 5,
@@ -91,17 +93,20 @@ export function useStreamingReconnect(options: UseStreamingReconnectOptions = {}
   )
 
   // Add event to log
-  const addEvent = useCallback((event: Omit<StreamEvent, "id" | "timestamp">) => {
-    const newEvent: StreamEvent = {
-      ...event,
-      id: crypto.randomUUID(),
-      timestamp: new Date(),
-    }
-    setState((prev) => ({
-      ...prev,
-      events: [newEvent, ...prev.events].slice(0, 100),
-    }))
-  }, [])
+  const addEvent = useCallback(
+    (event: Omit<StreamEvent, "id" | "timestamp">) => {
+      const newEvent: StreamEvent = {
+        ...event,
+        id: crypto.randomUUID(),
+        timestamp: new Date(),
+      }
+      setState((prev) => ({
+        ...prev,
+        events: [newEvent, ...prev.events].slice(0, 100),
+      }))
+    },
+    []
+  )
 
   // Calculate backoff delay with jitter
   const getBackoffDelay = useCallback(
@@ -175,7 +180,10 @@ export function useStreamingReconnect(options: UseStreamingReconnectOptions = {}
         if (attempt >= maxRetries) {
           setConnectionState("failed")
           onMaxRetriesReached?.()
-          addEvent({ type: "error", error: "Max reconnection attempts reached" })
+          addEvent({
+            type: "error",
+            error: "Max reconnection attempts reached",
+          })
           return false
         }
 
@@ -208,7 +216,10 @@ export function useStreamingReconnect(options: UseStreamingReconnectOptions = {}
           setState((prev) => ({ ...prev, reconnectAttempts: 0 }))
 
           if (attempt > 0) {
-            addEvent({ type: "reconnect", data: `Reconnected on attempt ${attempt + 1}` })
+            addEvent({
+              type: "reconnect",
+              data: `Reconnected on attempt ${attempt + 1}`,
+            })
             onReconnect?.(attempt)
           }
 
@@ -245,7 +256,10 @@ export function useStreamingReconnect(options: UseStreamingReconnectOptions = {}
 
                   try {
                     const parsed = JSON.parse(data)
-                    const content = parsed.choices?.[0]?.delta?.content || parsed.content || ""
+                    const content =
+                      parsed.choices?.[0]?.delta?.content ||
+                      parsed.content ||
+                      ""
 
                     if (content) {
                       fullContent += content
@@ -419,10 +433,14 @@ export function ConnectionStatusBar({
   const config = statusConfig[state]
 
   return (
-    <div className={`flex items-center justify-between rounded-lg px-3 py-2 ${config.bgColor}`}>
+    <div
+      className={`flex items-center justify-between rounded-lg px-3 py-2 ${config.bgColor}`}
+    >
       <div className="flex items-center gap-2">
         <div className={config.color}>{config.icon}</div>
-        <span className={`text-sm font-medium ${config.color}`}>{config.label}</span>
+        <span className={`text-sm font-medium ${config.color}`}>
+          {config.label}
+        </span>
 
         {state === "connected" && (
           <motion.div
@@ -503,22 +521,30 @@ export function EventLog({ events, maxHeight = 300 }: EventLogProps) {
             exit={{ opacity: 0 }}
             className="flex items-start gap-2 rounded-md bg-muted/50 px-2 py-1.5"
           >
-            <span className={eventColors[event.type]}>{eventIcons[event.type]}</span>
+            <span className={eventColors[event.type]}>
+              {eventIcons[event.type]}
+            </span>
 
             <span className="text-muted-foreground">
               {formatTime(event.timestamp)}
             </span>
 
-            <span className={`font-semibold uppercase ${eventColors[event.type]}`}>
+            <span
+              className={`font-semibold uppercase ${eventColors[event.type]}`}
+            >
               {event.type}
             </span>
 
             {event.data && (
-              <span className="flex-1 truncate text-foreground">{event.data}</span>
+              <span className="flex-1 truncate text-foreground">
+                {event.data}
+              </span>
             )}
 
             {event.error && (
-              <span className="flex-1 truncate text-red-500">{event.error}</span>
+              <span className="flex-1 truncate text-red-500">
+                {event.error}
+              </span>
             )}
           </motion.div>
         ))}
@@ -585,10 +611,14 @@ function MetricCard({
   return (
     <div
       className={`rounded-lg border p-3 ${
-        highlight ? "border-amber-500/50 bg-amber-500/5" : "border-border/50 bg-card"
+        highlight
+          ? "border-amber-500/50 bg-amber-500/5"
+          : "border-border/50 bg-card"
       }`}
     >
-      <div className="flex items-center gap-2 text-muted-foreground">{icon}</div>
+      <div className="flex items-center gap-2 text-muted-foreground">
+        {icon}
+      </div>
       <p className="mt-2 text-lg font-semibold">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
@@ -622,80 +652,180 @@ function formatTime(date: Date): string {
 
 function ConnectedIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
     </svg>
   )
 }
 
 function DisconnectedIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+      />
     </svg>
   )
 }
 
 function SpinnerIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+      />
     </svg>
   )
 }
 
 function FailedIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+      />
     </svg>
   )
 }
 
 function DataIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+      />
     </svg>
   )
 }
 
 function ReconnectIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3"
+      />
     </svg>
   )
 }
 
 function ErrorIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+      />
     </svg>
   )
 }
 
 function HeartbeatIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+      />
     </svg>
   )
 }
 
 function BytesIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"
+      />
     </svg>
   )
 }
 
 function MessagesIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"
+      />
     </svg>
   )
 }

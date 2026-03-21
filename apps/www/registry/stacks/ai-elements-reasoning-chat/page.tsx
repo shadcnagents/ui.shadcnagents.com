@@ -1,7 +1,7 @@
 "use client"
 
-import { useChat } from "@ai-sdk/react"
 import { useState } from "react"
+import { useChat } from "@ai-sdk/react"
 
 export default function ReasoningChat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat()
@@ -17,7 +17,10 @@ export default function ReasoningChat() {
               }
               if (part.type === "text") {
                 return (
-                  <div key={i} className="rounded-lg bg-muted px-3 py-2 text-sm">
+                  <div
+                    key={i}
+                    className="rounded-lg bg-muted px-3 py-2 text-sm"
+                  >
                     {part.text}
                   </div>
                 )
@@ -43,7 +46,10 @@ function ReasoningBlock({ content }: { content: string }) {
   const [open, setOpen] = useState(false)
   return (
     <div className="mb-2">
-      <button onClick={() => setOpen(!open)} className="text-xs text-muted-foreground">
+      <button
+        onClick={() => setOpen(!open)}
+        className="text-xs text-muted-foreground"
+      >
         {open ? "Hide" : "Show"} reasoning
       </button>
       {open && (

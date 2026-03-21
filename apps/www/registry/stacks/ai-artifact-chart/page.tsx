@@ -28,7 +28,10 @@ export default function ChartGeneration() {
                     <p className="mb-4 text-sm font-medium">{data.title}</p>
                     <div className="flex h-40 items-end gap-2">
                       {data.values.map((v, j) => (
-                        <div key={j} className="flex flex-1 flex-col items-center gap-1">
+                        <div
+                          key={j}
+                          className="flex flex-1 flex-col items-center gap-1"
+                        >
                           <span className="text-xs">{v}</span>
                           <div
                             className="w-full rounded-t bg-foreground/70"
@@ -44,7 +47,11 @@ export default function ChartGeneration() {
                 )
               }
               if (part.type === "text") {
-                return <p key={i} className="text-sm">{part.text}</p>
+                return (
+                  <p key={i} className="text-sm">
+                    {part.text}
+                  </p>
+                )
               }
               return null
             })}

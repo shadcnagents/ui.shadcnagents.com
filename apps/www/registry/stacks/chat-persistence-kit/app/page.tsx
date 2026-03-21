@@ -1,20 +1,23 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useChat } from "@ai-sdk/react"
-import { motion, AnimatePresence } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
+
 import { ConversationSidebar } from "../components/conversation-sidebar"
 import {
   createLocalStorageAdapter,
   generateTitle,
-  PRISMA_SCHEMA,
   PRISMA_ADAPTER_CODE,
+  PRISMA_SCHEMA,
 } from "../lib/persistence"
 
 const adapter = createLocalStorageAdapter()
 
 export default function ChatPersistenceDemo() {
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null)
+  const [currentConversationId, setCurrentConversationId] = useState<
+    string | null
+  >(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [showCode, setShowCode] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -48,11 +51,14 @@ export default function ChatPersistenceDemo() {
   }, [messages])
 
   // Load conversation when selected
-  const loadConversation = useCallback(async (id: string) => {
-    const savedMessages = await adapter.getMessages(id)
-    setMessages(savedMessages)
-    setCurrentConversationId(id)
-  }, [setMessages])
+  const loadConversation = useCallback(
+    async (id: string) => {
+      const savedMessages = await adapter.getMessages(id)
+      setMessages(savedMessages)
+      setCurrentConversationId(id)
+    },
+    [setMessages]
+  )
 
   // Create new conversation
   const createNewConversation = useCallback(async () => {
@@ -62,13 +68,16 @@ export default function ChatPersistenceDemo() {
   }, [setMessages])
 
   // Delete conversation
-  const deleteConversation = useCallback(async (id: string) => {
-    await adapter.deleteConversation(id)
-    if (id === currentConversationId) {
-      setMessages([])
-      setCurrentConversationId(null)
-    }
-  }, [currentConversationId, setMessages])
+  const deleteConversation = useCallback(
+    async (id: string) => {
+      await adapter.deleteConversation(id)
+      if (id === currentConversationId) {
+        setMessages([])
+        setCurrentConversationId(null)
+      }
+    },
+    [currentConversationId, setMessages]
+  )
 
   // Initialize with a conversation
   useEffect(() => {
@@ -170,7 +179,9 @@ export default function ChatPersistenceDemo() {
                       <ChatIcon className="size-8 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">No conversation selected</p>
+                      <p className="text-sm font-medium">
+                        No conversation selected
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         Create a new chat or select one from the sidebar
                       </p>
@@ -307,7 +318,9 @@ function CodeView() {
           {/* Code */}
           <div className="p-4">
             <pre className="overflow-x-auto rounded-lg bg-zinc-950 p-4 text-xs text-zinc-100">
-              <code>{activeTab === "schema" ? PRISMA_SCHEMA : PRISMA_ADAPTER_CODE}</code>
+              <code>
+                {activeTab === "schema" ? PRISMA_SCHEMA : PRISMA_ADAPTER_CODE}
+              </code>
             </pre>
           </div>
 
@@ -315,10 +328,27 @@ function CodeView() {
           <div className="border-t border-border/50 bg-muted/20 p-4">
             <h3 className="text-sm font-semibold mb-2">Quick Start</h3>
             <ol className="space-y-1.5 text-xs text-muted-foreground list-decimal list-inside">
-              <li>Add the schema to your <code className="bg-muted px-1 rounded">schema.prisma</code></li>
-              <li>Run <code className="bg-muted px-1 rounded">npx prisma db push</code></li>
+              <li>
+                Add the schema to your{" "}
+                <code className="bg-muted px-1 rounded">schema.prisma</code>
+              </li>
+              <li>
+                Run{" "}
+                <code className="bg-muted px-1 rounded">
+                  npx prisma db push
+                </code>
+              </li>
               <li>Copy the adapter code to your project</li>
-              <li>Replace <code className="bg-muted px-1 rounded">createLocalStorageAdapter()</code> with <code className="bg-muted px-1 rounded">createPrismaAdapter(prisma)</code></li>
+              <li>
+                Replace{" "}
+                <code className="bg-muted px-1 rounded">
+                  createLocalStorageAdapter()
+                </code>{" "}
+                with{" "}
+                <code className="bg-muted px-1 rounded">
+                  createPrismaAdapter(prisma)
+                </code>
+              </li>
             </ol>
           </div>
         </div>
@@ -355,7 +385,13 @@ function CodeView() {
   )
 }
 
-function FeatureCard({ title, description }: { title: string; description: string }) {
+function FeatureCard({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) {
   return (
     <div className="rounded-lg border border-border/50 bg-card p-4">
       <h4 className="text-sm font-medium">{title}</h4>
@@ -370,16 +406,36 @@ function FeatureCard({ title, description }: { title: string; description: strin
 
 function SidebarIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"
+      />
     </svg>
   )
 }
 
 function ChatIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"
+      />
     </svg>
   )
 }

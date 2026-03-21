@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { MultiModelDemo } from "@/components/multi-model-demo"
 
 export const metadata: Metadata = {

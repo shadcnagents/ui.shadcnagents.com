@@ -1,24 +1,29 @@
-import { generateText } from "ai"
 import { openai } from "@ai-sdk/openai"
+import { generateText } from "ai"
 
 async function analyzeUrl(url: string) {
   // Step 1: Fetch content
   const html = await fetch(url).then((r) => r.text())
 
   // Step 2: Extract text
-  const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+  const text = html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
 
   // Step 3: Analyze with AI
   const { text: analysis } = await generateText({
     model: openai("gpt-4o"),
-    system: "Analyze the following webpage content. Provide a structured summary.",
+    system:
+      "Analyze the following webpage content. Provide a structured summary.",
     prompt: text.slice(0, 4000),
   })
 
   // Step 4: Generate structured output
   const { text: structured } = await generateText({
     model: openai("gpt-4o"),
-    system: "Convert this analysis to JSON with keys: title, summary, topics, sentiment.",
+    system:
+      "Convert this analysis to JSON with keys: title, summary, topics, sentiment.",
     prompt: analysis,
   })
 

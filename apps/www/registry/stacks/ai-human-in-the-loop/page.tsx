@@ -13,7 +13,11 @@ export default function HumanInTheLoop() {
           <div key={m.id}>
             {m.parts?.map((part, i) => {
               if (part.type === "text") {
-                return <p key={i} className="text-sm">{part.text}</p>
+                return (
+                  <p key={i} className="text-sm">
+                    {part.text}
+                  </p>
+                )
               }
               if (
                 part.type === "tool-invocation" &&

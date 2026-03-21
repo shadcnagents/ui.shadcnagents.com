@@ -1,6 +1,6 @@
-import { openai } from "@ai-sdk/openai"
-import { embedMany, embed } from "ai"
 import { NextResponse } from "next/server"
+import { openai } from "@ai-sdk/openai"
+import { embed, embedMany } from "ai"
 
 export async function POST(request: Request) {
   try {

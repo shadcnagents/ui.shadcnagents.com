@@ -71,9 +71,24 @@ export function AgentDemo() {
         >
           {loading ? (
             <span className="flex items-center gap-2">
-              <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg
+                className="size-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
               Running agent…
             </span>
@@ -107,7 +122,10 @@ export function AgentDemo() {
                   Step {i + 1}
                 </p>
                 {step.toolCalls?.map((tc, j) => (
-                  <div key={j} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div
+                    key={j}
+                    className="flex items-center gap-2 text-xs text-muted-foreground"
+                  >
                     <span className="rounded bg-foreground/10 px-1.5 py-0.5 font-mono font-medium text-foreground/70">
                       {tc.toolName}
                     </span>
@@ -121,8 +139,12 @@ export function AgentDemo() {
           </div>
 
           <div className="rounded-lg border bg-muted/40 px-4 py-3">
-            <p className="mb-2 text-[13px] font-medium text-muted-foreground/60">Final Response</p>
-            <p className="text-sm leading-relaxed text-foreground/85">{result.text}</p>
+            <p className="mb-2 text-[13px] font-medium text-muted-foreground/60">
+              Final Response
+            </p>
+            <p className="text-sm leading-relaxed text-foreground/85">
+              {result.text}
+            </p>
           </div>
         </div>
       )}

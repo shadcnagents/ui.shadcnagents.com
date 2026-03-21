@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+
 import { cn } from "@/lib/utils"
 
 const MODEL_LIMITS: Record<string, number> = {
@@ -32,9 +33,11 @@ export function TokenCounter({
   const dash = (pct / 100) * circ
 
   const color =
-    pct < 50 ? "text-emerald-500 stroke-emerald-500"
-    : pct < 80 ? "text-amber-500 stroke-amber-500"
-    : "text-red-500 stroke-red-500"
+    pct < 50
+      ? "text-emerald-500 stroke-emerald-500"
+      : pct < 80
+        ? "text-amber-500 stroke-amber-500"
+        : "text-red-500 stroke-red-500"
 
   return (
     <div className="space-y-2">
@@ -42,11 +45,21 @@ export function TokenCounter({
         <span className="text-xs text-muted-foreground">Context window</span>
         <div className="flex items-center gap-2">
           <svg width="32" height="32" className="-rotate-90">
-            <circle cx="16" cy="16" r={R} className="stroke-border/40" strokeWidth="3" fill="none" />
             <circle
-              cx="16" cy="16" r={R}
+              cx="16"
+              cy="16"
+              r={R}
+              className="stroke-border/40"
+              strokeWidth="3"
+              fill="none"
+            />
+            <circle
+              cx="16"
+              cy="16"
+              r={R}
               className={color.split(" ")[1]}
-              strokeWidth="3" fill="none"
+              strokeWidth="3"
+              fill="none"
               strokeDasharray={`${dash} ${circ}`}
               strokeLinecap="round"
               style={{ transition: "stroke-dasharray 0.2s ease" }}

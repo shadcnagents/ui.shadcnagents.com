@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useCallback } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { useCallback, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+
 import {
-  useStructuredOutput,
-  ValidationStatusBadge,
-  RepairLog,
-  ValidationErrorsList,
-  ValidatorStatsPanel,
   JSONDiffViewer,
+  RepairLog,
   SchemaEditor,
+  useStructuredOutput,
+  ValidationErrorsList,
+  ValidationStatusBadge,
+  ValidatorStatsPanel,
   type SchemaField,
   type ValidationResult,
 } from "@/components/structured-validator"
@@ -98,20 +99,18 @@ export default function StructuredOutputValidatorPage() {
   const [schema, setSchema] = useState<SchemaField[]>(DEFAULT_SCHEMA)
   const [enableRepair, setEnableRepair] = useState(true)
   const [strictMode, setStrictMode] = useState(false)
-  const [activeTab, setActiveTab] = useState<"repairs" | "errors" | "diff">("repairs")
+  const [activeTab, setActiveTab] = useState<"repairs" | "errors" | "diff">(
+    "repairs"
+  )
 
-  const {
-    validateOutput,
-    lastResult,
-    isValidating,
-    stats,
-  } = useStructuredOutput({
-    maxRetries: 3,
-    enableAutoRepair: enableRepair,
-    enableCorrectivePrompting: false,
-    strictMode,
-    schema,
-  })
+  const { validateOutput, lastResult, isValidating, stats } =
+    useStructuredOutput({
+      maxRetries: 3,
+      enableAutoRepair: enableRepair,
+      enableCorrectivePrompting: false,
+      strictMode,
+      schema,
+    })
 
   const handleValidate = useCallback(async () => {
     if (!input.trim()) return
@@ -151,7 +150,10 @@ export default function StructuredOutputValidatorPage() {
             <div className="space-y-3">
               <label className="flex items-center justify-between">
                 <span className="text-sm">Auto-repair enabled</span>
-                <Switch checked={enableRepair} onCheckedChange={setEnableRepair} />
+                <Switch
+                  checked={enableRepair}
+                  onCheckedChange={setEnableRepair}
+                />
               </label>
               <label className="flex items-center justify-between">
                 <span className="text-sm">Strict schema mode</span>
@@ -311,7 +313,9 @@ export default function StructuredOutputValidatorPage() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                     >
-                      <ValidationErrorsList errors={lastResult.validationErrors} />
+                      <ValidationErrorsList
+                        errors={lastResult.validationErrors}
+                      />
                     </motion.div>
                   )}
                   {activeTab === "diff" && lastResult.wasRepaired && (
@@ -323,7 +327,9 @@ export default function StructuredOutputValidatorPage() {
                     >
                       <JSONDiffViewer
                         original={lastResult.originalOutput}
-                        repaired={lastResult.repairedOutput || lastResult.originalOutput}
+                        repaired={
+                          lastResult.repairedOutput || lastResult.originalOutput
+                        }
                       />
                     </motion.div>
                   )}
@@ -394,11 +400,32 @@ export default function StructuredOutputValidatorPage() {
             </span>
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            <a href="https://github.com/mastra-ai/mastra/issues/12519" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">Mastra #12519</a>
+            <a
+              href="https://github.com/mastra-ai/mastra/issues/12519"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              Mastra #12519
+            </a>
             {" · "}
-            <a href="https://github.com/ray-project/ray/issues/54670" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">Ray #54670</a>
+            <a
+              href="https://github.com/ray-project/ray/issues/54670"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              Ray #54670
+            </a>
             {" · "}
-            <a href="https://github.com/mangiucugna/json_repair" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">json_repair library</a>
+            <a
+              href="https://github.com/mangiucugna/json_repair"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              json_repair library
+            </a>
           </p>
         </div>
       </div>
@@ -455,49 +482,114 @@ function Switch({
 
 function ValidatorIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
+      />
     </svg>
   )
 }
 
 function WrenchIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z"
+      />
     </svg>
   )
 }
 
 function AlertIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+      />
     </svg>
   )
 }
 
 function DiffIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+      />
     </svg>
   )
 }
 
 function CheckIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m4.5 12.75 6 6 9-13.5"
+      />
     </svg>
   )
 }
 
 function LoadingSpinner({ className }: { className?: string }) {
   return (
-    <svg className={`animate-spin ${className}`} fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    <svg
+      className={`animate-spin ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
     </svg>
   )
 }
