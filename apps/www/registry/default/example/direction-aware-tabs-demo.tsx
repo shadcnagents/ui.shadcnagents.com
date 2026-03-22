@@ -1,75 +1,44 @@
 "use client"
 
-import { BgAnimateButton } from "../ui/bg-animate-button"
 import { DirectionAwareTabs } from "../ui/direction-aware-tabs"
 
 const DirectionAwareTabsDemo = ({}) => {
   const tabs = [
     {
       id: 0,
-      label: "ocean",
+      label: "Overview",
       content: (
-        <div className="border border-border/50 w-full flex flex-col items-center p-4 rounded-lg gap-3">
-          <BgAnimateButton animation="spin-fast" gradient="ocean">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin" gradient="ocean">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin-slow" gradient="ocean">
-            Button
-          </BgAnimateButton>
+        <div className="w-full rounded-lg border border-border/50 p-4">
+          <h3 className="mb-2 font-medium">Overview</h3>
+          <p className="text-sm text-muted-foreground">
+            Direction-aware tabs animate based on navigation direction.
+          </p>
         </div>
       ),
     },
     {
       id: 1,
-      label: "forest",
+      label: "Features",
       content: (
-        <div className="border border-border/50 w-full flex flex-col items-center p-4 rounded-lg gap-3">
-          <BgAnimateButton animation="spin-fast" gradient="forest">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin" gradient="forest">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin-slow" gradient="forest">
-            Button
-          </BgAnimateButton>
+        <div className="w-full rounded-lg border border-border/50 p-4">
+          <h3 className="mb-2 font-medium">Features</h3>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            <li>• Smooth directional animations</li>
+            <li>• Keyboard navigation support</li>
+            <li>• Customizable styling</li>
+          </ul>
         </div>
       ),
     },
     {
       id: 2,
-      label: "default",
+      label: "Usage",
       content: (
-        <div className="border border-border/50 w-full flex flex-col items-center gap-3 p-4">
-          <BgAnimateButton animation="spin-fast" gradient="default">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin" gradient="default">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin-slow" gradient="default">
-            Button
-          </BgAnimateButton>
-        </div>
-      ),
-    },
-    {
-      id: 3,
-      label: "sunset",
-      content: (
-        <div className="border border-border/50 w-full flex flex-col items-center p-4 rounded-lg gap-3">
-          <BgAnimateButton animation="spin-fast" gradient="sunset">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin" gradient="sunset">
-            Button
-          </BgAnimateButton>
-          <BgAnimateButton animation="spin-slow" gradient="sunset">
-            Button
-          </BgAnimateButton>
+        <div className="w-full rounded-lg border border-border/50 p-4">
+          <h3 className="mb-2 font-medium">Usage</h3>
+          <p className="text-sm text-muted-foreground">
+            Pass an array of tabs with id, label, and content properties.
+          </p>
         </div>
       ),
     },
