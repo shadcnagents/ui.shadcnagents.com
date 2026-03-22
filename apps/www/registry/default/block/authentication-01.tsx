@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  TextureCard,
-  TextureCardContent,
-  TextureCardDescription,
-  TextureCardFooter,
-  TextureCardHeader,
-  TextureCardTitle,
-} from "@/registry/default/ui/texture-card"
 
 export const description =
   "A simple login form with email and password. The submit button says 'Sign in'."
@@ -20,14 +20,14 @@ export const containerClassName =
 
 export default function LoginForm() {
   return (
-    <TextureCard className="w-full max-w-sm">
-      <TextureCardHeader>
-        <TextureCardTitle className="text-2xl">Login</TextureCardTitle>
-        <TextureCardDescription>
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardDescription>
           Enter your email below to login to your account.
-        </TextureCardDescription>
-      </TextureCardHeader>
-      <TextureCardContent className="grid gap-4">
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" placeholder="m@example.com" required />
@@ -36,10 +36,10 @@ export default function LoginForm() {
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" required />
         </div>
-      </TextureCardContent>
-      <TextureCardFooter>
+      </CardContent>
+      <CardFooter>
         <Button className="w-full">Sign in</Button>
-      </TextureCardFooter>
-    </TextureCard>
+      </CardFooter>
+    </Card>
   )
 }
