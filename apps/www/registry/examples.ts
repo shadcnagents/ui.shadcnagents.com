@@ -13,45 +13,12 @@ export const examples: Registry["items"] = [
     ],
   },
   {
-    name: "texture-button-demo",
-    type: "registry:component",
-    registryDependencies: ["texture-button"],
-    files: [
-      {
-        path: "registry/default/example/texture-button-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "texture-card-demo",
-    type: "registry:component",
-    registryDependencies: ["texture-card", "texture-button"],
-    files: [
-      {
-        path: "registry/default/example/texture-card-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
     name: "timer-demo",
     type: "registry:component",
-    registryDependencies: ["timer", "texture-button"],
+    registryDependencies: ["timer"],
     files: [
       {
         path: "registry/default/example/timer-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "shift-card-demo",
-    type: "registry:component",
-    registryDependencies: ["shift-card", "texture-button"],
-    files: [
-      {
-        path: "registry/default/example/shift-card-demo.tsx",
         type: "registry:component",
       },
     ],
@@ -68,34 +35,12 @@ export const examples: Registry["items"] = [
     ],
   },
   {
-    name: "dynamic-island-demo",
-    type: "registry:component",
-    registryDependencies: ["dynamic-island"],
-    files: [
-      {
-        path: "registry/default/example/dynamic-island-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
     name: "direction-aware-tabs-demo",
     type: "registry:component",
     registryDependencies: ["direction-aware-tabs"],
     files: [
       {
         path: "registry/default/example/direction-aware-tabs-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "bg-animate-button-demo",
-    type: "registry:component",
-    registryDependencies: ["bg-animate-button"],
-    files: [
-      {
-        path: "registry/default/example/bg-animate-button-demo.tsx",
         type: "registry:component",
       },
     ],
@@ -140,28 +85,6 @@ export const examples: Registry["items"] = [
     files: [
       {
         path: "registry/default/example/bg-image-texture-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "three-d-carousel-demo",
-    type: "registry:component",
-    registryDependencies: ["three-d-carousel"],
-    files: [
-      {
-        path: "registry/default/example/three-d-carousel-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "tweet-grid-demo",
-    type: "registry:component",
-    registryDependencies: ["tweet-grid", "gradient-heading"],
-    files: [
-      {
-        path: "registry/default/example/tweet-grid-demo.tsx",
         type: "registry:component",
       },
     ],
@@ -299,17 +222,6 @@ export const examples: Registry["items"] = [
     ],
   },
   {
-    name: "shader-lens-blur-demo",
-    type: "registry:component",
-    registryDependencies: ["shader-lens-blur", "color-picker"],
-    files: [
-      {
-        path: "registry/default/example/shader-lens-blur-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
     name: "popover-form-demo",
     type: "registry:component",
     registryDependencies: ["popover-form"],
@@ -332,100 +244,12 @@ export const examples: Registry["items"] = [
     ],
   },
   {
-    name: "logo-carousel-demo",
-    type: "registry:component",
-    registryDependencies: ["logo-carousel", "gradient-heading"],
-    files: [
-      {
-        path: "registry/default/example/logo-carousel-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "loading-carousel-demo",
-    type: "registry:component",
-    registryDependencies: ["loading-carousel"],
-    files: [
-      {
-        path: "registry/default/example/loading-carousel-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
     name: "hover-video-player-demo",
     type: "registry:component",
     registryDependencies: ["hover-video-player"],
     files: [
       {
         path: "registry/default/example/hover-video-player-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "neumorph-eyebrow-demo",
-    type: "registry:component",
-    registryDependencies: ["neumorph-eyebrow"],
-    files: [
-      {
-        path: "registry/default/example/neumorph-eyebrow-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "neumorph-button-demo",
-    type: "registry:component",
-    registryDependencies: ["neumorph-button"],
-    files: [
-      {
-        path: "registry/default/example/neumorph-button-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "feature-carousel-demo",
-    type: "registry:component",
-    registryDependencies: ["feature-carousel"],
-    files: [
-      {
-        path: "registry/default/example/feature-carousel-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "choice-poll-demo",
-    type: "registry:component",
-    registryDependencies: ["choice-poll"],
-    files: [
-      {
-        path: "registry/default/example/choice-poll-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "vote-tally-demo",
-    type: "registry:component",
-    registryDependencies: ["vote-tally"],
-    files: [
-      {
-        path: "registry/default/example/vote-tally-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "poll-widget-demo",
-    type: "registry:component",
-    registryDependencies: ["poll-widget"],
-    files: [
-      {
-        path: "registry/default/example/poll-widget-demo.tsx",
         type: "registry:component",
       },
     ],
@@ -565,28 +389,6 @@ export const examples: Registry["items"] = [
     ],
   },
   {
-    name: "morph-surface-demo",
-    type: "registry:component",
-    registryDependencies: ["morph-surface"],
-    files: [
-      {
-        path: "registry/default/example/morph-surface-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "distorted-glass-demo",
-    type: "registry:component",
-    registryDependencies: ["distorted-glass"],
-    files: [
-      {
-        path: "registry/default/example/distorted-glass-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
     name: "family-drawer-demo",
     type: "registry:component",
     registryDependencies: ["family-drawer"],
@@ -611,50 +413,6 @@ export const examples: Registry["items"] = [
     files: [
       {
         path: "registry/default/example/expandable-screen-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "pixel-heading-character-demo",
-    type: "registry:component",
-    registryDependencies: ["pixel-heading-character"],
-    files: [
-      {
-        path: "registry/default/example/pixel-heading-character-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "pixel-heading-word-demo",
-    type: "registry:component",
-    registryDependencies: ["pixel-heading-word"],
-    files: [
-      {
-        path: "registry/default/example/pixel-heading-word-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "pixel-paragraph-words-inverse-demo",
-    type: "registry:component",
-    registryDependencies: ["pixel-paragraph-words-inverse"],
-    files: [
-      {
-        path: "registry/default/example/pixel-paragraph-words-inverse-demo.tsx",
-        type: "registry:component",
-      },
-    ],
-  },
-  {
-    name: "pixel-paragraph-words-demo",
-    type: "registry:component",
-    registryDependencies: ["pixel-paragraph-words"],
-    files: [
-      {
-        path: "registry/default/example/pixel-paragraph-words-demo.tsx",
         type: "registry:component",
       },
     ],

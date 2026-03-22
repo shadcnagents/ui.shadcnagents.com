@@ -97,7 +97,13 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Stream text token-by-token using the Vercel AI SDK useCompletion hook.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/basics-stream-text/app/api/completion/route.ts",
@@ -147,7 +153,14 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Text-to-speech with audio-reactive orb and live waveform visualization. OpenAI TTS, 6 voices, Web Audio API volume tracking.",
-    dependencies: ["ai", "@ai-sdk/openai", "@react-three/fiber", "three", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@react-three/fiber",
+      "three",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/basics-generate-speech/app/api/speech/route.ts",
@@ -261,7 +274,13 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Full-screen streaming chat UI with GPT-4o using the Vercel AI SDK useChat hook.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/ai-elements-chat/app/api/chat/route.ts",
@@ -754,7 +773,14 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Production-ready rate limit handling with exponential backoff, jitter, circuit breaker, and visual retry queue.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "motion",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/rate-limit-handler/app/api/chat/route.ts",
@@ -779,7 +805,14 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Real-time token usage and cost monitoring with per-model pricing, budget alerts, and usage analytics.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "motion",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/cost-tracker/app/api/chat/route.ts",
@@ -804,7 +837,14 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Full-stack chat persistence with conversation history, database adapters (LocalStorage + Prisma), and message serialization.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "motion",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/chat-persistence-kit/app/api/chat/route.ts",
@@ -834,7 +874,14 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Graceful AI error recovery with retry logic, user feedback, and fallback strategies.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "motion",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/ai-error-boundary/app/api/chat/route.ts",
@@ -859,7 +906,14 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Token counting, context truncation, and window optimization for AI conversations.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "motion",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/context-window-manager/app/api/chat/route.ts",
@@ -938,7 +992,14 @@ export const stacks: Registry["items"] = [
     type: "registry:block",
     description:
       "Automatic SSE reconnection with exponential backoff, Last-Event-ID tracking, partial message recovery, and real-time connection monitoring.",
-    dependencies: ["ai", "@ai-sdk/openai", "@ai-sdk/react", "motion", "clsx", "tailwind-merge"],
+    dependencies: [
+      "ai",
+      "@ai-sdk/openai",
+      "@ai-sdk/react",
+      "motion",
+      "clsx",
+      "tailwind-merge",
+    ],
     files: [
       {
         path: "registry/stacks/streaming-reconnect/app/api/chat/route.ts",

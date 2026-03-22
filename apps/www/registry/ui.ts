@@ -15,32 +15,6 @@ export const ui: Registry["items"] = [
       "Animated text component with customizable reveal effects and timing",
   },
   {
-    name: "texture-button",
-    type: "registry:ui",
-    dependencies: ["@radix-ui/react-slot"],
-    files: [
-      {
-        path: "registry/default/ui/texture-button.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Button component with texture overlay effects and customizable variants",
-  },
-  {
-    name: "texture-card",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/texture-card.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Card component with texture background and customizable styling options",
-  },
-  {
     name: "timer",
     type: "registry:ui",
     dependencies: [""],
@@ -52,19 +26,6 @@ export const ui: Registry["items"] = [
     ],
     description:
       "Countdown timer component with customizable duration and visual styles",
-  },
-  {
-    name: "shift-card",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/shift-card.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Card component with shift animation effects and hover interactions",
   },
   {
     name: "minimal-card",
@@ -80,19 +41,6 @@ export const ui: Registry["items"] = [
       "Clean and minimal card component with subtle styling and hover effects",
   },
   {
-    name: "dynamic-island",
-    type: "registry:ui",
-    dependencies: ["motion"],
-    files: [
-      {
-        path: "registry/default/ui/dynamic-island.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "iOS-style dynamic island component with expandable content and smooth animations",
-  },
-  {
     name: "direction-aware-tabs",
     type: "registry:ui",
     dependencies: ["motion", "react-use-measure"],
@@ -104,19 +52,6 @@ export const ui: Registry["items"] = [
     ],
     description:
       "Tab component with direction-aware animations and smooth transitions",
-  },
-  {
-    name: "bg-animate-button",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/bg-animate-button.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Button component with animated background effects and gradient transitions",
   },
   {
     name: "family-button",
@@ -156,32 +91,6 @@ export const ui: Registry["items"] = [
     ],
     description:
       "Background media component with video/image support and overlay effects",
-  },
-  {
-    name: "three-d-carousel",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/three-d-carousel.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "3D carousel component with perspective effects and smooth item transitions",
-  },
-  {
-    name: "tweet-grid",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/tweet-grid.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Grid layout component for displaying tweet-like content cards",
   },
   {
     name: "gradient-heading",
@@ -353,19 +262,6 @@ export const ui: Registry["items"] = [
       "Interactive color picker component with HSL support and preset colors",
   },
   {
-    name: "shader-lens-blur",
-    type: "registry:ui",
-    dependencies: ["motion", "three", "jotai"],
-    files: [
-      {
-        path: "registry/default/ui/shader-lens-blur.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "WebGL shader component with lens blur effects and mouse interaction",
-  },
-  {
     name: "popover-form",
     type: "registry:ui",
     dependencies: ["motion"],
@@ -392,32 +288,6 @@ export const ui: Registry["items"] = [
       "Expandable component system with smooth animations and customizable presets",
   },
   {
-    name: "logo-carousel",
-    type: "registry:ui",
-    dependencies: ["motion"],
-    files: [
-      {
-        path: "registry/default/ui/logo-carousel.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Animated logo carousel with staggered animations and customizable columns",
-  },
-  {
-    name: "loading-carousel",
-    type: "registry:ui",
-    dependencies: ["motion"],
-    files: [
-      {
-        path: "registry/default/ui/loading-carousel.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Loading carousel component with smooth transitions and customizable content",
-  },
-  {
     name: "hover-video-player",
     type: "registry:ui",
     dependencies: ["motion"],
@@ -429,89 +299,6 @@ export const ui: Registry["items"] = [
     ],
     description:
       "Video player component that plays on hover with smooth animations",
-  },
-  {
-    name: "neumorph-eyebrow",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/neumorph-eyebrow.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Neumorphic eyebrow component with soft shadow effects and modern styling",
-  },
-  {
-    name: "neumorph-button",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/neumorph-button.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Neumorphic button component with soft shadows and tactile interaction effects",
-  },
-  {
-    name: "feature-carousel",
-    type: "registry:ui",
-    dependencies: ["motion"],
-    files: [
-      {
-        path: "registry/default/ui/feature-carousel.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Feature carousel component with smooth transitions and customizable layouts",
-  },
-  {
-    name: "choice-poll",
-    type: "registry:ui",
-    dependencies: ["@radix-ui/react-use-controllable-state", "lucide-react"],
-    files: [
-      {
-        path: "registry/default/ui/choice-poll.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Poll component with single or multiple selection, optional results, and keyboard navigation",
-  },
-  {
-    name: "vote-tally",
-    type: "registry:ui",
-    dependencies: ["@radix-ui/react-use-controllable-state"],
-    files: [
-      {
-        path: "registry/default/ui/vote-tally.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "List of items with up-vote support, optional sorting by vote count, and controlled or uncontrolled state",
-  },
-  {
-    name: "poll-widget",
-    type: "registry:ui",
-    dependencies: [
-      "@radix-ui/react-use-controllable-state",
-      "class-variance-authority",
-      "lucide-react",
-      "motion",
-    ],
-    files: [
-      {
-        path: "registry/default/ui/poll-widget.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Poll widget with inline, popover, and dialog modes, optional results, and animations",
   },
   {
     name: "prompt-library",
@@ -661,32 +448,6 @@ export const ui: Registry["items"] = [
       "A customizable browser window mockup component with support for Chrome, Safari, and generic styles, customizable sidebars, and themes",
   },
   {
-    name: "morph-surface",
-    type: "registry:ui",
-    dependencies: ["motion"],
-    files: [
-      {
-        path: "registry/default/ui/morph-surface.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "A morphing surface component with smooth animations, customizable dimensions, and configurable content",
-  },
-  {
-    name: "distorted-glass",
-    type: "registry:ui",
-    dependencies: [""],
-    files: [
-      {
-        path: "registry/default/ui/distorted-glass.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "A glass morphism effect component using SVG filters with fractal noise to create visual transitions between sections",
-  },
-  {
     name: "family-drawer",
     type: "registry:ui",
     dependencies: [
@@ -718,55 +479,16 @@ export const ui: Registry["items"] = [
       "A full-screen expandable component with morphing animations using shared layout IDs for smooth transitions",
   },
   {
-    name: "pixel-heading-character",
+    name: "type-animate",
     type: "registry:ui",
-    dependencies: ["geist"],
+    dependencies: ["motion"],
     files: [
       {
-        path: "registry/default/ui/pixel-heading-character.tsx",
+        path: "registry/default/ui/type-animate.tsx",
         type: "registry:ui",
       },
     ],
     description:
-      "Per-character pixel-font heading with four animation modes using Geist pixel fonts",
-  },
-  {
-    name: "pixel-heading-word",
-    type: "registry:ui",
-    dependencies: ["geist"],
-    files: [
-      {
-        path: "registry/default/ui/pixel-heading-word.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Whole-word pixel-font heading that swaps or cycles fonts on hover using Geist pixel fonts",
-  },
-  {
-    name: "pixel-paragraph-words-inverse",
-    type: "registry:ui",
-    dependencies: ["geist"],
-    files: [
-      {
-        path: "registry/default/ui/pixel-paragraph-words-inverse.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Paragraph in pixel font where specific words escape into interactive sans/mono with hover swap or cycle",
-  },
-  {
-    name: "pixel-paragraph-words",
-    type: "registry:ui",
-    dependencies: ["geist"],
-    files: [
-      {
-        path: "registry/default/ui/pixel-paragraph-words.tsx",
-        type: "registry:ui",
-      },
-    ],
-    description:
-      "Paragraph where specific words render in an interactive pixel font that swaps or cycles on hover",
+      "Type animation component with customizable effects and smooth character reveal",
   },
 ]
