@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { Suspense, useEffect } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import posthog from "posthog-js"
@@ -14,7 +14,7 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
   })
 }
 
-function PostHogPageView() {
+function PostHogPageViewInner() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const { data: session } = useSession()
@@ -40,6 +40,14 @@ function PostHogPageView() {
   }, [pathname, searchParams])
 
   return null
+}
+
+function PostHogPageView() {
+  return (
+    <Suspense fallback={null}>
+      <PostHogPageViewInner />
+    </Suspense>
+  )
 }
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
