@@ -27,13 +27,18 @@ export function BasicChatPreview() {
   const [displayed, setDisplayed] = useState("")
   const bottomRef = useRef<HTMLDivElement>(null)
   const idxRef = useRef(0)
+  const hasInteracted = useRef(false)
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    // Only scroll after user has interacted (sent a message), not on initial mount
+    if (hasInteracted.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
   }, [messages, displayed])
 
   function handleSend() {
     if (!input.trim() || state !== "idle") return
+    hasInteracted.current = true
     const userMsg = input
     setMessages((prev) => [...prev, { role: "user", content: userMsg }])
     setInput("")

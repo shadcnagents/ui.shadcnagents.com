@@ -2,82 +2,278 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
-import { WaveDotsLoader, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
+import { WaveDotsLoader, CircleSpinner, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ─── Orchestrator Pattern ─── */
 export function OrchestratorPatternPreview() {
-  const [active, setActive] = useState(0)
+  const [input, setInput] = useState("")
+  const [messages, setMessages] = useState<Array<{
+    role: "user" | "thinking" | "tool" | "assistant"
+    content: string
+    toolName?: string
+    toolStatus?: "running" | "done"
+    toolResult?: string
+  }>>([])
+  const [isProcessing, setIsProcessing] = useState(false)
+
   const workers = [
-    { name: "LangChain Research Agent", task: "Gathering sources via retriever", status: "done" },
-    { name: "LangChain Writer Agent", task: "Drafting with LLMChain", status: "running" },
-    { name: "LangChain Editor Agent", task: "Reviewing with output parser", status: "pending" },
+    { id: "research", name: "research_agent", displayName: "Research Agent" },
+    { id: "writer", name: "writer_agent", displayName: "Writer Agent" },
+    { id: "editor", name: "editor_agent", displayName: "Editor Agent" },
   ]
 
-  useEffect(() => {
-    const timer = setInterval(() => setActive((p) => (p + 1) % 4), 1800)
-    return () => clearInterval(timer)
-  }, [])
+  const exampleTasks = [
+    "Write a blog post about AI agents",
+    "Create a product launch email",
+    "Analyze competitor pricing strategy",
+  ]
+
+  function handleSubmit() {
+    if (!input.trim() || isProcessing) return
+    const userMessage = input.trim()
+    setInput("")
+    setMessages([{ role: "user", content: userMessage }])
+    setIsProcessing(true)
+
+    // Step 1: Thinking
+    setTimeout(() => {
+      setMessages(prev => [...prev, {
+        role: "thinking",
+        content: "I'll break this into subtasks and delegate to specialized agents:\n1. Research Agent → gather sources\n2. Writer Agent → draft content\n3. Editor Agent → polish output"
+      }])
+
+      // Step 2: Research tool
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          role: "tool",
+          toolName: "research_agent",
+          content: "query: \"" + userMessage + "\"",
+          toolStatus: "running"
+        }])
+
+        setTimeout(() => {
+          setMessages(prev => prev.map((m, i) =>
+            i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Found 3 sources: MIT Tech Review, Anthropic Blog, arXiv paper. Key themes: autonomous agents, tool use, multi-agent systems." } : m
+          ))
+
+          // Step 3: Writer tool
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              role: "tool",
+              toolName: "writer_agent",
+              content: "sources: [3 articles], target: 800 words",
+              toolStatus: "running"
+            }])
+
+            setTimeout(() => {
+              setMessages(prev => prev.map((m, i) =>
+                i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Drafted 847 words covering introduction, key trends, challenges, and future outlook." } : m
+              ))
+
+              // Step 4: Editor tool
+              setTimeout(() => {
+                setMessages(prev => [...prev, {
+                  role: "tool",
+                  toolName: "editor_agent",
+                  content: "draft: [847 words], check: citations, clarity",
+                  toolStatus: "running"
+                }])
+
+                setTimeout(() => {
+                  setMessages(prev => prev.map((m, i) =>
+                    i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Fixed 2 citation formats, improved clarity in section 2, added conclusion paragraph." } : m
+                  ))
+
+                  // Step 5: Final response
+                  setTimeout(() => {
+                    setMessages(prev => [...prev, {
+                      role: "assistant",
+                      content: "I've completed your request by coordinating three specialized agents:\n\nResearch Agent found 3 authoritative sources on AI agents from MIT Tech Review, Anthropic's blog, and a recent arXiv paper.\n\nWriter Agent drafted an 847-word article covering the key themes: autonomous agents, tool use patterns, and multi-agent coordination.\n\nEditor Agent polished the final output, fixing 2 citation formats and improving clarity.\n\nThe final article is ready for review. It covers current trends, implementation challenges, and future directions in AI agent development."
+                    }])
+                    setIsProcessing(false)
+                  }, 600)
+                }, 1000)
+              }, 400)
+            }, 1200)
+          }, 400)
+        }, 1000)
+      }, 800)
+    }, 600)
+  }
+
+  function reset() {
+    setMessages([])
+    setInput("")
+    setIsProcessing(false)
+  }
+
+  const showOnboarding = messages.length === 0
 
   return (
-    <div className="mx-auto w-full max-w-lg p-6">
+    <div className="relative flex h-[540px] w-full max-w-3xl mx-auto flex-col">
       <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
 
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...SPRING }}
-        className="mb-6 rounded-xl border border-border bg-muted/50 px-4 py-3 text-center"
-      >
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          LangChain Orchestrator
-        </span>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Delegates and coordinates LangChain agents
-        </p>
-      </motion.div>
-      <div className="space-y-2">
-        {workers.map((w, i) => {
-          const isActive = i === Math.min(active, 2)
-          const isDone = i < active
-          return (
+      {/* Conversation area */}
+      <div className="relative flex flex-1 flex-col overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
+          {showOnboarding ? (
             <motion.div
-              key={w.name}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...SPRING, delay: i * 0.08 }}
-              className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-all ${
-                isActive
-                  ? "border-border bg-card"
-                  : isDone
-                    ? "border-border bg-muted/40"
-                    : "border-border"
-              }`}
+              key="onboarding"
+              className="absolute inset-0 flex flex-col items-center justify-center px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <div>
-                <p className={`text-sm font-medium ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
-                  {w.name}
-                </p>
-                <p className="text-xs text-muted-foreground">{w.task}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {isDone ? (
-                  <motion.svg
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ ...SPRING }}
-                    width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary"
+              <h1 className="mb-2 text-2xl font-medium text-foreground">Orchestrator Pattern</h1>
+              <p className="mb-6 text-sm text-muted-foreground text-center max-w-md">
+                Break complex tasks into subtasks and delegate to specialized worker agents
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {exampleTasks.map((task) => (
+                  <button
+                    key={task}
+                    onClick={() => setInput(task)}
+                    className="rounded-2xl border border-border bg-background px-4 py-2.5 text-sm text-muted-foreground hover:border-foreground/20 hover:text-foreground transition-all"
                   >
-                    <polyline points="20 6 9 17 4 12" />
-                  </motion.svg>
-                ) : isActive ? (
-                  <WaveDotsLoader />
-                ) : (
-                  <span className="font-mono text-[10px] text-muted-foreground/40">queued</span>
+                    {task}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="conversation"
+              className="flex h-full w-full flex-col overflow-y-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {/* Clear button */}
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-background via-background to-transparent px-6 pt-3 pb-2">
+                <button
+                  onClick={reset}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
+
+              {/* Messages */}
+              <div className="flex flex-col gap-4 px-6 pb-4">
+                {messages.map((msg, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {/* User message */}
+                    {msg.role === "user" && (
+                      <div className="flex justify-end">
+                        <div className="bg-accent max-w-[80%] rounded-3xl px-5 py-3">
+                          <p className="text-[15px] text-foreground">{msg.content}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Thinking */}
+                    {msg.role === "thinking" && (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="size-1.5 rounded-full bg-amber-500" />
+                          <span className="text-xs font-medium text-muted-foreground">Thinking</span>
+                        </div>
+                        <div className="ml-3.5 border-l-2 border-border/60 pl-4 py-1">
+                          <p className="text-sm text-muted-foreground whitespace-pre-line">{msg.content}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tool invocation */}
+                    {msg.role === "tool" && (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className={`size-1.5 rounded-full ${msg.toolStatus === "done" ? "bg-emerald-500" : "bg-blue-500 animate-pulse"}`} />
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {msg.toolStatus === "running" ? "Calling" : "Called"} {msg.toolName}
+                          </span>
+                          {msg.toolStatus === "running" && <CircleSpinner size={14} className="text-muted-foreground" />}
+                        </div>
+                        <div className="ml-3.5 rounded-xl border border-border bg-muted/30 p-3">
+                          <p className="font-mono text-xs text-muted-foreground">{msg.content}</p>
+                          {msg.toolResult && (
+                            <div className="mt-2 pt-2 border-t border-border/50">
+                              <p className="text-xs text-foreground/80">{msg.toolResult}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Assistant response */}
+                    {msg.role === "assistant" && (
+                      <div className="flex flex-col">
+                        <div className="text-[15px] leading-relaxed text-foreground whitespace-pre-line">
+                          {msg.content}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+
+                {/* Loading indicator */}
+                {isProcessing && messages.length > 0 && messages[messages.length - 1].role === "user" && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2 py-2"
+                  >
+                    <CircleSpinner size={16} className="text-muted-foreground" />
+                  </motion.div>
                 )}
               </div>
             </motion.div>
-          )
-        })}
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Input */}
+      <div className="shrink-0 px-4 pb-4">
+        <div
+          className="rounded-3xl border border-border bg-popover p-1 shadow-sm"
+          onClick={() => document.getElementById("orchestrator-input")?.focus()}
+        >
+          <textarea
+            id="orchestrator-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault()
+                handleSubmit()
+              }
+            }}
+            placeholder="Describe a complex task..."
+            disabled={isProcessing}
+            rows={1}
+            className="min-h-[44px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-foreground outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
+          />
+          <div className="flex items-center justify-between px-3 pb-2">
+            <div className="flex items-center gap-3 pl-1 text-xs text-muted-foreground">
+              <span>Research</span>
+              <span>Writer</span>
+              <span>Editor</span>
+            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={!input.trim() || isProcessing}
+              className="flex size-9 items-center justify-center rounded-full bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )

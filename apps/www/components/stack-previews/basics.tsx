@@ -1523,133 +1523,287 @@ export function ToolCallingPreview() {
   )
 }
 
-/* ─── Agent Setup ─── */
+/* ─── Agent Playground (OpenAI Style) ─── */
 
-const AGENT_STEPS = [
-  { label: "Received task", detail: "Research latest AI developments", ms: 600 },
-  { label: "Planning", detail: "Breaking down into subtasks", ms: 900 },
-  { label: "Tool: web_search", detail: '"AI research 2025 breakthroughs"', ms: 1200 },
-  { label: "Tool: extract_content", detail: "Processing 3 sources", ms: 1000 },
-  { label: "Synthesizing", detail: "Combining research findings", ms: 1300 },
-  { label: "Response", detail: "Generating final report", ms: 700 },
+const PLAYGROUND_MODELS = [
+  { id: "gpt-4o", name: "gpt-4o" },
+  { id: "gpt-4o-mini", name: "gpt-4o-mini" },
+  { id: "gpt-4-turbo", name: "gpt-4-turbo" },
+  { id: "gpt-3.5-turbo", name: "gpt-3.5-turbo" },
 ]
 
-export function AgentSetupPreview() {
-  const [step, setStep] = useState(0)
+const PLAYGROUND_MODES = [
+  { id: "chat", name: "Chat", icon: "chat" },
+  { id: "complete", name: "Complete", icon: "complete" },
+]
 
-  useEffect(() => {
-    if (step < AGENT_STEPS.length) {
-      const timer = setTimeout(
-        () => setStep((s) => s + 1),
-        AGENT_STEPS[step].ms
-      )
-      return () => clearTimeout(timer)
-    }
-  }, [step])
+interface Message {
+  role: "user" | "assistant"
+  content: string
+}
+
+const SAMPLE_RESPONSE = `Creativity is the ability to generate new and innovative ideas, original thoughts, and imaginative solutions. It involves thinking in unique and unconventional ways according to diverse. Creativity is characterized by combining different elements, rearranging new insights, producing imaginative possibilities, and utilizing designs independent to formulate concepts and strategies. It involves mentally exploration gain effective results appreciate knowledge and emphasize a novel perspective throughout enabling transformations inspiring limitless facets extensive disenable uniqueness ultimately entertain change constructive unexpected pursue connection hugh solve differing entails skills necessary could related engaging lacking generation easily various encountering able collaborative range degree imagining push thoughts rationale process experimenting influence experiments advance presence addition significantly-driven disciplines target address create problems improvements.`
+
+export function AgentSetupPreview() {
+  const [mode, setMode] = useState("chat")
+  const [model, setModel] = useState("gpt-3.5-turbo")
+  const [temperature, setTemperature] = useState(2)
+  const [maxLength, setMaxLength] = useState(256)
+  const [stopSequences, setStopSequences] = useState("")
+  const [topP, setTopP] = useState(1)
+  const [frequencyPenalty, setFrequencyPenalty] = useState(0)
+  const [presencePenalty, setPresencePenalty] = useState(0)
+  const [systemPrompt, setSystemPrompt] = useState("You are a helpful assistant.")
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "user", content: "What is creativity?" },
+    { role: "assistant", content: SAMPLE_RESPONSE }
+  ])
+  const [showModelDropdown, setShowModelDropdown] = useState(false)
+  const [showModeDropdown, setShowModeDropdown] = useState(false)
 
   return (
-    <div className="mx-auto w-full max-w-xl p-6">
-      <style>{GT_KEYFRAMES}</style>
-
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-sm text-muted-foreground">
-          Claude Agent
-        </span>
-        <button
-          onClick={() => setStep(0)}
-          className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-        >
-          replay
-        </button>
-      </div>
-
-      <div className="mt-4">
-        {AGENT_STEPS.map((s, i) => {
-          const visible = i < step
-          const isCurrent = i === step - 1 && step < AGENT_STEPS.length
-          return (
-            <motion.div
-              key={i}
-              initial={false}
-              animate={{ opacity: visible ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-start gap-3 py-2"
-            >
-              <div className="flex flex-col items-center pt-1">
-                <div
-                  className={cn(
-                    "size-[6px] rounded-full transition-all duration-300",
-                    isCurrent
-                      ? "scale-150 bg-foreground"
-                      : visible
-                        ? "bg-foreground/30"
-                        : "bg-foreground/10"
-                  )}
-                />
-                {i < AGENT_STEPS.length - 1 && (
-                  <div
-                    className={cn(
-                      "mt-1.5 h-6 w-px transition-colors duration-300",
-                      visible ? "bg-foreground/20" : "bg-foreground/10"
-                    )}
-                  />
-                )}
-              </div>
-              <div className="-mt-0.5">
-                {isCurrent ? (
-                  <ShimmeringText
-                    text={s.label}
-                    className="text-sm font-medium"
-                    duration={1.5}
-                    repeat
-                    repeatDelay={0.3}
-                    spread={2}
-                    startOnView={false}
-                  />
-                ) : (
-                  <p
-                    className={cn(
-                      "text-sm transition-colors duration-300",
-                      visible ? "font-medium text-foreground" : "text-foreground/80"
-                    )}
-                  >
-                    {s.label}
-                  </p>
-                )}
-                <p className="font-mono text-sm text-muted-foreground">
-                  {s.detail}
-                </p>
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
-
-      {step > 0 && step < AGENT_STEPS.length && (
-        <div className="mt-3">
-          <ShimmeringText
-            text="processing..."
-            className="font-mono text-sm"
-            duration={1.2}
-            repeat
-            repeatDelay={0.2}
-            spread={3}
-            startOnView={false}
+    <div className="flex h-[520px] w-full max-w-5xl mx-auto border border-border/40 rounded-lg overflow-hidden bg-background">
+      {/* Left Sidebar - System */}
+      <div className="w-48 border-r border-border/40 flex flex-col">
+        <div className="p-4 flex-1">
+          <label className="text-xs font-semibold text-foreground tracking-wide mb-3 block">
+            SYSTEM
+          </label>
+          <textarea
+            value={systemPrompt}
+            onChange={(e) => setSystemPrompt(e.target.value)}
+            className="w-full h-20 bg-transparent text-sm text-muted-foreground resize-none outline-none placeholder:text-muted-foreground/40 leading-relaxed"
+            placeholder="You are a helpful assistant."
           />
         </div>
-      )}
+      </div>
 
-      {step >= AGENT_STEPS.length && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-3"
-        >
-          <span className="font-mono text-sm text-muted-foreground">
-            6 steps · completed
-          </span>
-        </motion.div>
-      )}
+      {/* Main Content - Messages */}
+      <div className="flex-1 flex flex-col min-w-0 border-r border-border/40">
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {messages.map((msg, i) => (
+            <div key={i} className="flex gap-6">
+              <span className={cn(
+                "text-xs font-semibold tracking-wide shrink-0 w-20 pt-0.5",
+                msg.role === "user" ? "text-foreground" : "text-muted-foreground"
+              )}>
+                {msg.role === "user" ? "USER" : "ASSISTANT"}
+              </span>
+              <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                {msg.content}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Add Message */}
+        <div className="px-6 py-3 border-t border-border/40">
+          <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v8M8 12h8" />
+            </svg>
+            Add message
+          </button>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="px-6 py-4 border-t border-border/40 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button className="px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium transition-colors">
+              Submit
+            </button>
+            <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            </button>
+          </div>
+          <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Give us feedback
+          </button>
+        </div>
+      </div>
+
+      {/* Right Sidebar - Settings */}
+      <div className="w-52 overflow-y-auto">
+        <div className="p-4 space-y-5">
+          {/* Mode */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-2 block">
+              Mode
+            </label>
+            <div className="relative">
+              <button
+                onClick={() => setShowModeDropdown(!showModeDropdown)}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-md border border-border/60 bg-background text-sm text-foreground hover:border-foreground/20 transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  Chat
+                </span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              {showModeDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 py-1 rounded-md border border-border/60 bg-background shadow-lg z-10">
+                  {PLAYGROUND_MODES.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => { setMode(m.id); setShowModeDropdown(false) }}
+                      className={cn(
+                        "w-full px-3 py-2 text-left text-sm transition-colors",
+                        mode === m.id ? "bg-foreground/5 text-foreground" : "text-muted-foreground hover:bg-foreground/5"
+                      )}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Model */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-2 block">
+              Model
+            </label>
+            <div className="relative">
+              <button
+                onClick={() => setShowModelDropdown(!showModelDropdown)}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-md border border-border/60 bg-background text-sm text-foreground hover:border-foreground/20 transition-colors"
+              >
+                <span>{model}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              {showModelDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 py-1 rounded-md border border-border/60 bg-background shadow-lg z-10">
+                  {PLAYGROUND_MODELS.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => { setModel(m.id); setShowModelDropdown(false) }}
+                      className={cn(
+                        "w-full px-3 py-2 text-left text-sm transition-colors",
+                        model === m.id ? "bg-foreground/5 text-foreground" : "text-muted-foreground hover:bg-foreground/5"
+                      )}
+                    >
+                      {m.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Temperature */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-muted-foreground">Temperature</label>
+              <span className="text-xs text-foreground">{temperature}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="2"
+              step="0.1"
+              value={temperature}
+              onChange={(e) => setTemperature(parseFloat(e.target.value))}
+              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
+            />
+          </div>
+
+          {/* Maximum length */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-muted-foreground">Maximum length</label>
+              <span className="text-xs text-foreground">{maxLength}</span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="4096"
+              step="1"
+              value={maxLength}
+              onChange={(e) => setMaxLength(parseInt(e.target.value))}
+              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
+            />
+          </div>
+
+          {/* Stop sequences */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-2 block">Stop sequences</label>
+            <input
+              type="text"
+              value={stopSequences}
+              onChange={(e) => setStopSequences(e.target.value)}
+              placeholder="Enter sequence and press Tab"
+              className="w-full px-3 py-2 rounded-md border border-border/60 bg-background text-sm text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-foreground/30 transition-colors"
+            />
+          </div>
+
+          {/* Top P */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-muted-foreground">Top P</label>
+              <span className="text-xs text-foreground">{topP}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={topP}
+              onChange={(e) => setTopP(parseFloat(e.target.value))}
+              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
+            />
+          </div>
+
+          {/* Frequency penalty */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-muted-foreground">Frequency penalty</label>
+              <span className="text-xs text-foreground">{frequencyPenalty}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="2"
+              step="0.01"
+              value={frequencyPenalty}
+              onChange={(e) => setFrequencyPenalty(parseFloat(e.target.value))}
+              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
+            />
+          </div>
+
+          {/* Presence penalty */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-muted-foreground">Presence penalty</label>
+              <span className="text-xs text-foreground">{presencePenalty}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="2"
+              step="0.01"
+              value={presencePenalty}
+              onChange={(e) => setPresencePenalty(parseFloat(e.target.value))}
+              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

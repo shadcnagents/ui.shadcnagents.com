@@ -20,6 +20,7 @@ export const STAGGER = { staggerChildren: 0.06 }
 export const WAVE_KEYFRAMES = `
 @keyframes dot-pulse{0%,80%,100%{opacity:.15;transform:translateY(0)}40%{opacity:.6;transform:translateY(-4px)}}
 @keyframes gt-blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes spinner-rotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 `
 
 /* ─── PulseDotsLoader ─── */
@@ -38,6 +39,37 @@ export function WaveDotsLoader() {
         />
       ))}
     </div>
+  )
+}
+
+/* ─── CircleSpinner ─── */
+
+export function CircleSpinner({ size = 16, className }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      style={{ animation: "spinner-rotate 1s linear infinite" }}
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        className="opacity-20"
+      />
+      <path
+        d="M12 2a10 10 0 0 1 10 10"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+    </svg>
   )
 }
 

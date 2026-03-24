@@ -2,91 +2,232 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
-import { WaveDotsLoader, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
+import { WaveDotsLoader, CircleSpinner, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
+
+/* ─── Agent Configuration ─── */
+const ROUTING_AGENTS = [
+  { id: "code", name: "Code Expert", model: "gpt-4o" },
+  { id: "writer", name: "Writer", model: "claude-3.5-sonnet" },
+  { id: "analyst", name: "Analyst", model: "gpt-4o-mini" },
+]
 
 /* ─── Routing Pattern ─── */
 export function RoutingPatternPreview() {
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [input, setInput] = useState("")
+  const [messages, setMessages] = useState<Array<{
+    role: "user" | "routing" | "assistant"
+    content: string
+    agent?: string
+    confidence?: number
+  }>>([])
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const routes = [
-    { input: "Write a poem about rain", agent: "Claude Creative" },
-    { input: "Translate to Spanish", agent: "Claude Translator" },
-    { input: "Fix this bug in my code", agent: "Claude Code" },
-    { input: "Summarize this article", agent: "Claude Haiku" },
-  ]
+  function classifyQuery(text: string): { agent: string; confidence: number } {
+    const lower = text.toLowerCase()
+    if (lower.includes("code") || lower.includes("bug") || lower.includes("function") || lower.includes("debug") || lower.includes("react") || lower.includes("error")) {
+      return { agent: "code", confidence: 94 }
+    }
+    if (lower.includes("write") || lower.includes("blog") || lower.includes("draft") || lower.includes("email") || lower.includes("story")) {
+      return { agent: "writer", confidence: 91 }
+    }
+    return { agent: "analyst", confidence: 87 }
+  }
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveIdx((i) => (i + 1) % routes.length)
-    }, 2000)
-    return () => clearInterval(timer)
-  }, [routes.length])
+  function handleSubmit() {
+    if (!input.trim() || isProcessing) return
+
+    const userMessage = input.trim()
+    setInput("")
+    setMessages(prev => [...prev, { role: "user", content: userMessage }])
+    setIsProcessing(true)
+
+    // Simulate routing decision
+    setTimeout(() => {
+      const { agent, confidence } = classifyQuery(userMessage)
+      const agentInfo = ROUTING_AGENTS.find(a => a.id === agent)!
+
+      setMessages(prev => [
+        ...prev,
+        { role: "routing", content: `Routed to ${agentInfo.name}`, agent, confidence }
+      ])
+
+      // Simulate agent response
+      setTimeout(() => {
+        const responses: Record<string, string> = {
+          code: "Looking at your code, I found the issue. The type mismatch in your function parameters is causing the error.\n\nHere's the corrected version:\n\nfunction processData(items: string[]) {\n  return items.map(item => item.trim())\n}\n\nThe key change ensures the input type matches what you're passing.",
+          writer: "Here's a draft for your content:\n\nIntroduction\nIn today's rapidly evolving landscape, understanding these key trends is essential.\n\nKey Points\n• The market is shifting toward AI-first solutions\n• Customer expectations continue to rise\n• Personalization drives engagement\n\nWould you like me to expand on any section?",
+          analyst: "Based on my analysis:\n\nSummary\n• Total records: 2,847\n• Key improvement: +23.5%\n• Primary driver: Q3 initiatives\n\nRecommendation\nFocus resources on top-performing segments. The correlation between engagement and conversion is statistically significant (p < 0.01).",
+        }
+
+        setMessages(prev => [...prev, { role: "assistant", content: responses[agent], agent }])
+        setIsProcessing(false)
+      }, 1200)
+    }, 600)
+  }
+
+  const showOnboarding = messages.length === 0
+
+  function reset() {
+    setMessages([])
+    setInput("")
+    setIsProcessing(false)
+  }
 
   return (
-    <div className="mx-auto w-full max-w-xl p-6">
-      <div className="mb-5 text-center">
-        <span className="text-sm font-semibold text-foreground">Claude Router</span>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Intelligent routing to specialized Claude models
-        </p>
-      </div>
-
-      <div className="flex items-start justify-between gap-4">
-        {/* Incoming requests */}
-        <div className="w-[160px] space-y-1.5">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Incoming
-          </span>
-          {routes.map((route, i) => (
+    <div className="relative flex h-[540px] w-full max-w-3xl mx-auto flex-col">
+      {/* Main Content Area */}
+      <div className="relative flex flex-1 flex-col items-center justify-end overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
+          {showOnboarding ? (
             <motion.div
-              key={route.agent}
-              animate={{
-                backgroundColor: activeIdx === i ? "var(--color-primary)" : "transparent",
-                color: activeIdx === i ? "var(--color-primary-foreground)" : "var(--color-muted-foreground)",
-              }}
-              transition={{ duration: 0.15 }}
-              className="rounded-lg border border-border px-2.5 py-2 text-xs leading-snug"
+              key="onboarding"
+              className="absolute bottom-[50%] mx-auto max-w-[50rem] px-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              {route.input}
+              <h1 className="mb-6 text-3xl font-medium tracking-tight text-center text-foreground">
+                What can I route for you?
+              </h1>
+              <div className="flex flex-wrap justify-center gap-2">
+                {[
+                  "Fix the bug in my React code",
+                  "Write a product announcement",
+                  "Analyze this sales data",
+                ].map((example) => (
+                  <button
+                    key={example}
+                    onClick={() => setInput(example)}
+                    className="rounded-2xl border border-border bg-background px-4 py-2.5 text-sm text-muted-foreground hover:border-foreground/20 hover:text-foreground transition-all"
+                  >
+                    {example}
+                  </button>
+                ))}
+              </div>
             </motion.div>
-          ))}
-        </div>
+          ) : (
+            <motion.div
+              key="conversation"
+              className="relative flex h-full w-full flex-col items-center overflow-y-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {/* Clear button - top right corner */}
+              <div className="sticky top-0 z-10 flex w-full max-w-3xl justify-end px-6 pt-3">
+                <button
+                  onClick={reset}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
+              <div className="flex w-full flex-col items-center pb-4 px-6">
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="w-full max-w-3xl mb-3"
+                >
+                  {/* User Message - Right aligned pill */}
+                  {msg.role === "user" && (
+                    <div className="flex w-full flex-col items-end">
+                      <div className="bg-accent max-w-[70%] rounded-3xl px-5 py-2.5">
+                        <p className="text-[15px] text-foreground">{msg.content}</p>
+                      </div>
+                    </div>
+                  )}
 
-        {/* Router connector */}
-        <div className="flex flex-col items-center gap-1.5 pt-10">
-          <div className="h-px w-8 bg-border" />
-          <motion.div
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary"
-          >
-            Router
+                  {/* Routing indicator */}
+                  {msg.role === "routing" && (
+                    <div className="flex items-center gap-2 py-2">
+                      <div className={`size-2 rounded-full ${
+                        msg.agent === "code" ? "bg-emerald-500" :
+                        msg.agent === "writer" ? "bg-violet-500" : "bg-blue-500"
+                      }`} />
+                      <span className="text-sm text-muted-foreground">
+                        Routed to <span className="font-medium text-foreground">{ROUTING_AGENTS.find(a => a.id === msg.agent)?.name}</span>
+                      </span>
+                      <span className="text-sm text-muted-foreground">•</span>
+                      <span className="text-sm text-muted-foreground">{msg.confidence}% confidence</span>
+                      <span className="text-sm text-muted-foreground">•</span>
+                      <span className="text-sm text-muted-foreground/60">{ROUTING_AGENTS.find(a => a.id === msg.agent)?.model}</span>
+                    </div>
+                  )}
+
+                  {/* Assistant Message - Left aligned, full width */}
+                  {msg.role === "assistant" && (
+                    <div className="flex w-full flex-col items-start">
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <div className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap">
+                          {msg.content}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+
+              {/* Loading state */}
+              {isProcessing && messages[messages.length - 1]?.role !== "assistant" && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-full max-w-3xl flex items-center gap-2 py-2"
+                >
+                  <CircleSpinner size={16} className="text-muted-foreground" />
+                </motion.div>
+              )}
+            </div>
           </motion.div>
-          <div className="h-px w-8 bg-border" />
-        </div>
+        )}
+        </AnimatePresence>
 
-        {/* Agents */}
-        <div className="w-[140px] space-y-1.5">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Claude Models
-          </span>
-          {routes.map((route, i) => (
-            <motion.div
-              key={route.agent}
-              animate={{
-                borderColor: activeIdx === i ? "var(--color-primary)" : "var(--color-border)",
-                backgroundColor: activeIdx === i ? "oklch(from var(--primary) l c h / 0.1)" : "transparent",
+        {/* Input Area */}
+        <div className="relative w-full max-w-3xl px-2 pb-4">
+          <div
+            className="relative z-10 rounded-3xl border border-border bg-popover p-1 shadow-sm"
+            onClick={() => document.getElementById("routing-input")?.focus()}
+          >
+            <textarea
+              id="routing-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSubmit()
+                }
               }}
-              transition={{ duration: 0.15 }}
-              className={`rounded-lg border px-2.5 py-2 text-xs transition-all duration-150 ${
-                activeIdx === i
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {route.agent}
-            </motion.div>
-          ))}
+              placeholder="Ask anything..."
+              disabled={isProcessing}
+              rows={1}
+              className="min-h-[44px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] leading-[1.4] text-foreground outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
+            />
+            <div className="flex items-center justify-between px-2 pb-2">
+              <div className="flex items-center gap-2 pl-2">
+                {ROUTING_AGENTS.map(agent => (
+                  <div key={agent.id} className="flex items-center gap-1.5">
+                    <div className={`size-1.5 rounded-full ${
+                      agent.id === "code" ? "bg-emerald-500" :
+                      agent.id === "writer" ? "bg-violet-500" : "bg-blue-500"
+                    }`} />
+                    <span className="text-xs text-muted-foreground">{agent.name}</span>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || isProcessing}
+                className="flex size-9 items-center justify-center rounded-full bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M12 19V5M5 12l7-7 7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

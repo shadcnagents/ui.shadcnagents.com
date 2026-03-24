@@ -1,349 +1,279 @@
-import Image from "next/image"
 import Link from "next/link"
 
 import { siteConfig } from "@/config/site"
-import { Icons } from "@/components/icons"
-import {
-  BrandOpenAI,
-  BrandAnthropic,
-  BrandXAI,
-  BrandPerplexity,
-  BrandDeepSeek,
-  BrandMidjourney,
-  BrandNotion,
-  BrandLinear,
-  BrandV0,
-  BrandDevin,
-  BrandVercel,
-  BrandStripe,
-  BrandApple,
-  BrandCanva,
-  BrandLangChain,
-  BrandFirecrawl,
-  BrandGoogle,
-  BrandAdobe,
-  BrandExa,
-  BrandZapier,
-} from "@/components/brand-icons"
 
 /* ──────────────────────────────────────────────────────────
- *  FOOTER DATA — 6 dense columns, SEO-rich
+ *  FOOTER DATA — Only valid stacks from registry
  * ────────────────────────────────────────────────────────── */
 
-const stacks = [
-  { title: "Foundations", href: "/stacks/basics-generate-text" },
-  { title: "Agent Architecture", href: "/stacks/ai-agents-routing" },
-  { title: "Starter Apps", href: "/stacks/examples-chat-base-clone" },
-  { title: "Rich Output", href: "/stacks/ai-artifact-chart" },
-  { title: "Connectors", href: "/stacks/tool-websearch-claude" },
-  { title: "Pipelines", href: "/stacks/ai-workflow-basic" },
-  { title: "Chat Kit", href: "/stacks/ai-elements-chat" },
-  { title: "Landing Blocks", href: "/stacks/marketing-bento-1" },
-  { title: "Browse All Stacks", href: "/stacks" },
-]
-
-const popular: {
-  title: string
-  href: string
-  icon?: React.ComponentType<any>
-}[] = [
-  { title: "ChatGPT Clone", href: "/stacks/chat-gpt", icon: BrandOpenAI },
-  { title: "Claude Chat", href: "/stacks/chat-claude", icon: BrandAnthropic },
-  { title: "Grok Chat", href: "/stacks/chat-grok", icon: BrandXAI },
-  { title: "Perplexity Search", href: "/stacks/ai-elements-sources-chat", icon: BrandPerplexity },
-  { title: "DeepSeek Reasoning", href: "/stacks/ai-elements-reasoning-chat", icon: BrandDeepSeek },
-  { title: "Midjourney Output", href: "/stacks/ai-image-output", icon: BrandMidjourney },
-  { title: "Notion Tables", href: "/stacks/ai-artifact-table", icon: BrandNotion },
-  { title: "Linear Queue", href: "/stacks/ai-elements-queue", icon: BrandLinear },
-  { title: "v0 Code Gen", href: "/stacks/json-render-generate", icon: BrandV0 },
-  { title: "Devin Planner", href: "/stacks/ai-elements-plan", icon: BrandDevin },
-  { title: "Vercel Features", href: "/stacks/marketing-feature-code-block-1", icon: BrandVercel },
-  { title: "Stripe Checkout", href: "/stacks/marketing-feature-code-block-2", icon: BrandStripe },
-  { title: "Apple Bento", href: "/stacks/marketing-bento-1", icon: BrandApple },
-]
-
-const pro = [
-  { title: "Orchestrator-Worker", href: "/stacks/ai-chat-agent-orchestrator-pattern" },
-  { title: "Sub-Agent Tree", href: "/stacks/sub-agent-orchestrator" },
-  { title: "Context Builder", href: "/stacks/ai-human-in-the-loop-agentic-context-builder" },
-  { title: "Evaluator-Optimizer", href: "/stacks/ai-chat-agent-evaluator-optimizer-pattern" },
-  { title: "Multi-Step Tools", href: "/stacks/ai-chat-agent-multi-step-tool-pattern" },
-  { title: "Artifact Canvas", href: "/stacks/artifact-canvas" },
-  { title: "Chat-Base Clone", href: "/stacks/examples-chat-base-clone" },
-  { title: "Form Generator", href: "/stacks/examples-form-generator" },
-  { title: "Data Analysis Agent", href: "/stacks/example-agent-data-analysis" },
-  { title: "Branding Agent", href: "/stacks/example-agent-branding" },
-  { title: "SEO Audit Agent", href: "/stacks/example-agent-seo-audit" },
-  { title: "Pricing", href: "/pricing" },
-]
-
-const developer = [
-  { title: "Documentation", href: "/docs" },
-  { title: "Installation", href: "/docs/installation" },
-  { title: "CLI Reference", href: "/docs/installation/next" },
-  { title: "MCP Server", href: "/docs/mcp-server" },
-  { title: "Theming Guide", href: "/docs/theming" },
-  { title: "Components", href: "/directory" },
+const docs = [
+  { title: "Get Started", href: "/docs" },
+  { title: "About", href: "/docs/about" },
+  { title: "Theming", href: "/docs/theming" },
   { title: "Changelog", href: "/docs/changelog" },
-  { title: "llms.txt", href: "/llms.txt", external: true },
-  { title: "GitHub", href: siteConfig.links.github, external: true },
+  { title: "AI SDK Blocks", href: "/docs/blocks" },
+  { title: "AI Elements", href: "/docs/elements" },
+  { title: "Agent Patterns", href: "/docs/agent-patterns" },
+  { title: "Building Agents", href: "/docs/building-agents" },
+  { title: "Router Agents", href: "/docs/router-agents" },
+  { title: "Context Engineering", href: "/docs/context-engineering" },
+  { title: "Few-shot Prompting", href: "/docs/few-shot-prompting" },
 ]
 
-const resources = [
-  { title: "Why We Built This", href: "/docs/why-we" },
-  { title: "Our R&D Process", href: "/docs/why-we/research" },
-  { title: "Model Selection Guide", href: "/docs/why-we/models" },
-  { title: "Stack Stories", href: "/docs/why-we/stack-stories" },
+// Valid stacks from registry - Column 1: Basics & AI Elements
+const blocksColumn1 = [
+  { title: "Generate Text", href: "/stacks/basics-generate-text" },
+  { title: "Stream Text", href: "/stacks/basics-stream-text" },
+  { title: "Generate Image", href: "/stacks/basics-generate-image" },
+  { title: "Generate Speech", href: "/stacks/basics-generate-speech" },
+  { title: "Transcribe Audio", href: "/stacks/basics-transcribe" },
+  { title: "Tool Calling", href: "/stacks/basics-tool" },
+  { title: "Basic Agent", href: "/stacks/basics-agent" },
+  { title: "Multi-Model Text", href: "/stacks/basics-generate-text-multi-model" },
+  { title: "Text Prompt", href: "/stacks/basics-generate-text-prompt" },
+  { title: "Basic Chat", href: "/stacks/ai-elements-chat" },
+  { title: "Tool Confirmation", href: "/stacks/ai-elements-confirmation" },
+  { title: "Plan Display", href: "/stacks/ai-elements-plan" },
+  { title: "Task Queue", href: "/stacks/ai-elements-queue" },
+  { title: "Reasoning Chat", href: "/stacks/ai-elements-reasoning-chat" },
+  { title: "Sources Chat", href: "/stacks/ai-elements-sources-chat" },
+  { title: "Error Boundary", href: "/stacks/ai-error-boundary" },
+  { title: "Loading States", href: "/stacks/ai-loading-states" },
+  { title: "Image Output", href: "/stacks/ai-image-output" },
 ]
 
-const useCases = [
-  { title: "AI Chatbots", href: "/group/chat" },
-  { title: "Agent Orchestration", href: "/group/agents" },
-  { title: "Content Generation", href: "/group/generation" },
-  { title: "Data Analysis", href: "/group/analysis" },
-  { title: "Research & Audit", href: "/group/use-cases" },
+// Valid stacks from registry - Column 2: Agents, Artifacts, Tools
+const blocksColumn2 = [
+  { title: "Agent Routing", href: "/stacks/ai-agents-routing" },
+  { title: "Parallel Processing", href: "/stacks/ai-agents-parallel-processing" },
+  { title: "Human in the Loop", href: "/stacks/ai-human-in-the-loop" },
+  { title: "Basic Workflow", href: "/stacks/ai-workflow-basic" },
+  { title: "Chart Artifact", href: "/stacks/ai-artifact-chart" },
+  { title: "Table Artifact", href: "/stacks/ai-artifact-table" },
+  { title: "Artifact Canvas", href: "/stacks/artifact-canvas" },
+  { title: "PDF Ingest", href: "/stacks/ai-pdf-ingest" },
+  { title: "Web Search (Claude)", href: "/stacks/tool-websearch-claude" },
+  { title: "Web Search (Exa)", href: "/stacks/tool-websearch-exa" },
+  { title: "Cheerio Scraper", href: "/stacks/cheerio-scraper" },
+  { title: "Jina Scraper", href: "/stacks/jina-scraper" },
+  { title: "Markdown.new Scraper", href: "/stacks/markdown-new-scraper" },
+  { title: "Streaming Markdown", href: "/stacks/streaming-markdown-renderer" },
+  { title: "Structured Output Viewer", href: "/stacks/structured-output-viewer" },
+  { title: "Prompt Suggestions", href: "/stacks/prompt-suggestion-pills" },
+  { title: "Voice Input", href: "/stacks/voice-input-button" },
+]
+
+// Valid stacks from registry - Column 3: Production & Marketing
+const blocksColumn3 = [
+  { title: "Agent Memory Kit", href: "/stacks/agent-memory-kit" },
+  { title: "Chat Persistence", href: "/stacks/chat-persistence-kit" },
+  { title: "Context Window Manager", href: "/stacks/context-window-manager" },
+  { title: "Cost Tracker", href: "/stacks/cost-tracker" },
+  { title: "Model Fallback", href: "/stacks/model-fallback-handler" },
+  { title: "Model Selector", href: "/stacks/model-selector" },
+  { title: "Output Sanitizer", href: "/stacks/output-sanitizer" },
+  { title: "Prompt Injection Guard", href: "/stacks/prompt-injection-guard" },
+  { title: "Rate Limiter", href: "/stacks/rate-limit-handler" },
+  { title: "Request Deduplicator", href: "/stacks/request-deduplicator" },
+  { title: "Semantic Cache", href: "/stacks/semantic-cache" },
+  { title: "Streaming Reconnect", href: "/stacks/streaming-reconnect" },
+  { title: "Structured Validator", href: "/stacks/structured-output-validator" },
+  { title: "Token Counter", href: "/stacks/token-counter" },
+  { title: "Bento Layout", href: "/stacks/marketing-bento-1" },
+  { title: "Code Block 1", href: "/stacks/marketing-feature-code-block-1" },
+  { title: "Code Block 2", href: "/stacks/marketing-feature-code-block-2" },
+  { title: "Code Block 3", href: "/stacks/marketing-feature-code-block-3" },
+  { title: "Feature Grid", href: "/stacks/marketing-feature-grid-1" },
+]
+
+const categories = [
+  { title: "Agents", href: "/group/agents" },
+  { title: "Chat", href: "/group/chat" },
+  { title: "Generation", href: "/group/generation" },
+  { title: "Analysis", href: "/group/analysis" },
+  { title: "Tools", href: "/group/tools" },
+  { title: "Artifacts", href: "/group/artifacts" },
+  { title: "Data", href: "/group/data" },
+  { title: "Marketing", href: "/group/marketing" },
   { title: "Model Comparison", href: "/group/model-comparison" },
-  { title: "Voice & Media", href: "/stacks/voice-input-button" },
-  { title: "Web Search", href: "/stacks/tool-websearch-claude" },
-  { title: "Web Scraping", href: "/stacks/cheerio-scraper" },
-  { title: "PDF Processing", href: "/stacks/ai-pdf-ingest" },
-  { title: "Durable Workflows", href: "/stacks/wdk-workflows-sequential" },
-]
-
-const company = [
-  { title: "Sign In", href: "/auth/login" },
+  { title: "Demos", href: "/group/demos" },
+  { title: "Examples", href: "/group/examples" },
   { title: "Pricing", href: "/pricing" },
-  { title: "Templates", href: "/templates" },
-  { title: "Themes", href: "/themes" },
-  { title: "Twitter / X", href: siteConfig.links.twitter, external: true },
-  { title: "GitHub", href: siteConfig.links.github, external: true },
+  { title: "Integrations", href: "/group/integrations" },
+  { title: "Use Cases", href: "/group/use-cases" },
+  { title: "Free", href: "/group/free" },
 ]
 
-const legal = [
-  { title: "Terms of Service", href: "/terms" },
-  { title: "Privacy Policy", href: "/privacy" },
+const explore = [
+  { title: "AI Agent Builder", href: "https://www.google.com/search?q=AI+Agent+Builder", external: true },
+  { title: "AI Agent Frameworks", href: "https://www.google.com/search?q=AI+Agent+Frameworks", external: true },
+  { title: "AI Agent Development", href: "https://www.google.com/search?q=AI+Agent+Development", external: true },
+  { title: "AI Agent Skills", href: "https://www.google.com/search?q=AI+Agent+Skills", external: true },
+  { title: "AI Agent Orchestration", href: "https://www.google.com/search?q=AI+Agent+Orchestration", external: true },
+  { title: "AI Agent Platform", href: "https://www.google.com/search?q=AI+Agent+Platform", external: true },
+  { title: "AI Agent GitHub", href: "https://github.com/topics/ai-agents", external: true },
+  { title: "AI SDK Vercel", href: "https://sdk.vercel.ai", external: true },
+  { title: "AI SDK v6", href: "https://sdk.vercel.ai/docs", external: true },
+  { title: "AI SDK UI", href: "https://sdk.vercel.ai/docs/ai-sdk-ui", external: true },
+  { title: "AI SDK Google", href: "https://sdk.vercel.ai/providers/ai-sdk-providers/google-generative-ai", external: true },
+  { title: "AI SDK MCP", href: "https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling", external: true },
+  { title: "AI SDK Examples", href: "https://github.com/vercel/ai/tree/main/examples", external: true },
 ]
 
-const brandRow: {
-  icon: React.ComponentType<any>
-  label: string
-  href: string
-}[] = [
-  { icon: BrandOpenAI, label: "OpenAI", href: "https://openai.com" },
-  { icon: BrandAnthropic, label: "Anthropic", href: "https://anthropic.com" },
-  { icon: BrandGoogle, label: "Google", href: "https://ai.google" },
-  { icon: BrandVercel, label: "Vercel", href: "https://vercel.com" },
-  { icon: BrandPerplexity, label: "Perplexity", href: "https://perplexity.ai" },
-  { icon: BrandDeepSeek, label: "DeepSeek", href: "https://deepseek.com" },
-  { icon: BrandLangChain, label: "LangChain", href: "https://langchain.com" },
-  { icon: BrandLinear, label: "Linear", href: "https://linear.app" },
-  { icon: BrandNotion, label: "Notion", href: "https://notion.so" },
-  { icon: BrandStripe, label: "Stripe", href: "https://stripe.com" },
-  { icon: BrandCanva, label: "Canva", href: "https://canva.com" },
-  { icon: BrandFirecrawl, label: "Firecrawl", href: "https://firecrawl.dev" },
-  { icon: BrandMidjourney, label: "Midjourney", href: "https://midjourney.com" },
-  { icon: BrandAdobe, label: "Adobe", href: "https://adobe.com" },
-  { icon: BrandExa, label: "Exa", href: "https://exa.ai" },
-  { icon: BrandZapier, label: "Zapier", href: "https://zapier.com" },
-]
-
-const techBadges = [
-  { label: "Next.js 16", href: "https://nextjs.org" },
-  { label: "AI SDK v6", href: "https://sdk.vercel.ai" },
-  { label: "React 19", href: "https://react.dev" },
-  { label: "Tailwind v4", href: "https://tailwindcss.com" },
-  { label: "TypeScript", href: "https://typescriptlang.org" },
-  { label: "Turbopack", href: "https://turbo.build/pack" },
+const quickLinks = [
+  { title: "Patterns", href: "/stacks" },
+  { title: "Directory", href: "/directory" },
+  { title: "Pricing", href: "/pricing" },
+  { title: "Login", href: "/auth/login" },
+  { title: "Signup", href: "/auth/signup" },
 ]
 
 /* ──────────────────────────────────────────────────────────
- *  FOOTER — 4 zones: Brand → Brands → 6-col links → Bottom
+ *  FOOTER COMPONENT
  * ────────────────────────────────────────────────────────── */
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-muted/40">
-      {/* ── Zone 1: Brand + brand logos ── */}
-      <div className="border-b border-border px-6 py-12 md:px-10 md:py-16">
-        <div className="mx-auto max-w-7xl">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-1"
-          >
-            <Image
-              src="/logo/logo.png"
-              alt="shadcnagents"
-              width={40}
-              height={40}
-              className="size-16 transition-transform group-hover:scale-110"
-            />
-            <span className="font-mono text-xl font-semibold tracking-tight text-foreground">
-              shadcnagents
-            </span>
-          </Link>
-          <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-muted-foreground">
-            Production-ready AI stacks for Next.js. Browse, install with one
-            CLI command, and ship to production. {siteConfig.counts.stacks}+ stacks, {siteConfig.counts.uiComponents} UI
-            components. Built for the companies building the future.
-          </p>
-
-          {/* Brand icons row */}
-          <div className="mt-6 flex flex-wrap items-center gap-4">
-            {brandRow.map((b) => (
-              <Link
-                key={b.label}
-                href={b.href}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex text-muted-foreground/30 transition-colors hover:text-foreground"
-                title={b.label}
-              >
-                <b.icon className="size-4" />
-                <span className="sr-only">{b.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Zone 2: 6-column link grid ── */}
-      <div className="px-6 py-10 md:px-10 md:py-14">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
-          <FooterColumn heading="Stacks" links={stacks} />
-          <FooterBrandColumn heading="Popular" links={popular} />
-          <FooterColumn heading="Pro" links={pro} />
-          <FooterColumn heading="Developer" links={developer} />
-          <FooterColumn heading="Use Cases" links={useCases} />
+    <footer className="border-t border-border bg-background">
+      {/* Main footer grid */}
+      <div className="mx-auto max-w-7xl px-6 py-12 md:px-10 md:py-16">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-7">
+          {/* Docs */}
           <div>
-            <FooterColumn heading="Resources" links={resources} />
-            <div className="mt-8">
-              <FooterColumn heading="Company" links={company} />
-            </div>
-            <div className="mt-8">
-              <FooterColumn heading="Legal" links={legal} />
-            </div>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Docs</h3>
+            <nav className="flex flex-col gap-2">
+              {docs.map((link) => (
+                <Link
+                  key={link.href + link.title}
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Blocks - Column 1 */}
+          <div>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Blocks</h3>
+            <nav className="flex flex-col gap-2">
+              {blocksColumn1.map((link) => (
+                <Link
+                  key={link.href + link.title}
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Blocks - Column 2 */}
+          <div>
+            <h3 className="mb-4 text-sm font-semibold text-transparent select-none">&nbsp;</h3>
+            <nav className="flex flex-col gap-2">
+              {blocksColumn2.map((link) => (
+                <Link
+                  key={link.href + link.title}
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Blocks - Column 3 */}
+          <div>
+            <h3 className="mb-4 text-sm font-semibold text-transparent select-none">&nbsp;</h3>
+            <nav className="flex flex-col gap-2">
+              {blocksColumn3.map((link) => (
+                <Link
+                  key={link.href + link.title}
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Categories */}
+          <div>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Categories</h3>
+            <nav className="flex flex-col gap-2">
+              {categories.map((link) => (
+                <Link
+                  key={link.href + link.title}
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Explore */}
+          <div>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Explore</h3>
+            <nav className="flex flex-col gap-2">
+              {explore.map((link) => (
+                <Link
+                  key={link.href + link.title}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">Quick Links</h3>
+            <nav className="flex flex-col gap-2">
+              {quickLinks.map((link) => (
+                <Link
+                  key={link.href + link.title}
+                  href={link.href}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
       </div>
 
-      {/* ── Zone 3: Bottom bar ── */}
-      <div className="border-t border-border px-6 py-5 md:px-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          {/* Tech badges */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            {techBadges.map((t) => (
-              <Link
-                key={t.label}
-                href={t.href}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-              >
-                {t.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Copyright + socials */}
+      {/* Bottom bar with branding */}
+      <div className="border-t border-border">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
+          <Link href="/" className="text-sm font-medium text-foreground">
+            ai sdk agents
+          </Link>
           <div className="flex items-center gap-4">
-            <span className="font-mono text-[11px] tracking-wider text-muted-foreground/60">
-              &copy; {new Date().getFullYear()} shadcnagents &middot; All
-              product names, logos, and brands are property of their respective
-              owners.
-            </span>
-            <div className="flex items-center gap-1">
-              <Link
-                href={siteConfig.links.github}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Icons.gitHub className="size-3.5" />
-                <span className="sr-only">GitHub</span>
-              </Link>
-              <Link
-                href={siteConfig.links.twitter}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Icons.twitter className="size-3 fill-current" />
-                <span className="sr-only">Twitter</span>
-              </Link>
-            </div>
+            <Link
+              href={siteConfig.links.twitter}
+              target="_blank"
+              rel="noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <svg className="size-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>
     </footer>
-  )
-}
-
-/* ── Standard column ── */
-function FooterColumn({
-  heading,
-  links,
-}: {
-  heading: string
-  links: { title: string; href: string; external?: boolean }[]
-}) {
-  return (
-    <div>
-      <h3 className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/40">
-        {heading}
-      </h3>
-      <nav className="flex flex-col gap-2.5">
-        {links.map((link) => (
-          <Link
-            key={link.href + link.title}
-            href={link.href}
-            {...(link.external
-              ? { target: "_blank", rel: "noreferrer" }
-              : {})}
-            className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {link.title}
-          </Link>
-        ))}
-      </nav>
-    </div>
-  )
-}
-
-/* ── Column with brand icons ── */
-function FooterBrandColumn({
-  heading,
-  links,
-}: {
-  heading: string
-  links: {
-    title: string
-    href: string
-    icon?: React.ComponentType<any>
-    external?: boolean
-  }[]
-}) {
-  return (
-    <div>
-      <h3 className="mb-4 font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/40">
-        {heading}
-      </h3>
-      <nav className="flex flex-col gap-2.5">
-        {links.map((link) => (
-          <Link
-            key={link.href + link.title}
-            href={link.href}
-            {...(link.external
-              ? { target: "_blank", rel: "noreferrer" }
-              : {})}
-            className="group/link flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {link.icon && (
-              <link.icon className="size-3 shrink-0 text-muted-foreground/40 transition-colors group-hover/link:text-foreground/60" />
-            )}
-            <span>{link.title}</span>
-          </Link>
-        ))}
-      </nav>
-    </div>
   )
 }

@@ -18,35 +18,34 @@
   100% { transform: translateX(-50%); }
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* Disable global smooth scroll to prevent auto-scroll on page load */
+/* Smooth scrolling should be applied per-element where needed */
 
 /* --- Theme tokens (OKLCH) --- */
 :root {
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
+	--card: oklch(0.995 0.003 75);
+	--card-foreground: oklch(0.145 0.01 60);
 
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
+	--popover: oklch(0.995 0.003 75);
+	--popover-foreground: oklch(0.145 0.01 60);
 
 	--primary: oklch(0.621 0.201 257.3);
 	--primary-foreground: oklch(1 0 0);
 
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
+	--secondary: oklch(0.97 0.006 75);
+	--secondary-foreground: oklch(0.205 0.01 60);
 
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
+	--muted: oklch(0.97 0.006 75);
+	--muted-foreground: oklch(0.50 0.01 60);
 
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
+	--accent: oklch(0.97 0.006 75);
+	--accent-foreground: oklch(0.205 0.01 60);
 
 	--destructive: oklch(0.577 0.245 27.325);
 	--destructive-foreground: oklch(0.577 0.245 27.325);
 
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
+	--border: oklch(0.915 0.008 70);
+	--input: oklch(0.915 0.008 70);
 	--ring: oklch(0.621 0.201 257.3);
 
 	--chart-1: oklch(0.646 0.222 41.116);
@@ -58,16 +57,16 @@ html {
 	--radius: 0.625rem;
 
 	/* App shell chrome — header + sidebar background */
-	--chrome: oklch(0.97 0 0);
+	--chrome: oklch(0.98 0.005 75);
 
 	/* Sidebar */
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
+	--sidebar: oklch(0.99 0.004 75);
+	--sidebar-foreground: oklch(0.145 0.01 60);
 	--sidebar-primary: oklch(0.621 0.201 257.3);
 	--sidebar-primary-foreground: oklch(1 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
+	--sidebar-accent: oklch(0.97 0.006 75);
+	--sidebar-accent-foreground: oklch(0.205 0.01 60);
+	--sidebar-border: oklch(0.915 0.008 70);
 	--sidebar-ring: oklch(0.708 0 0);
 
 	/* Gradients used by utilities below (OKLCH) */
@@ -184,14 +183,14 @@ html {
 		oklch(0.7 0.15 200) 51.42%,
 		oklch(0.12 0.002 220) 64.69%
 	);
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
+	--background: oklch(0.995 0.004 75);
+	--foreground: oklch(0.145 0.01 60);
 
 	/* Code blocks */
-	--code: oklch(0.935 0.005 257);
-	--code-foreground: oklch(0.25 0 0);
-	--code-number: oklch(0.55 0 0);
-	--code-highlight: oklch(0.90 0.03 257);
+	--code: oklch(0.96 0.008 75);
+	--code-foreground: oklch(0.25 0.01 60);
+	--code-number: oklch(0.50 0.01 60);
+	--code-highlight: oklch(0.94 0.015 75);
 }
 
 .dark {
