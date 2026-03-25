@@ -263,52 +263,6 @@ export default function IndexPage() {
       {/* ═══════════════════ HERO ═══════════════════ */}
       <HeroSection />
 
-      {/* ═══════════════ SOCIAL PROOF ═══════════════ */}
-      <section className="border-y border-border">
-        <div className="mx-auto max-w-5xl px-4 py-10 md:py-12">
-          <p className="mb-8 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-            Developed and maintained by engineers from
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 md:gap-x-16 lg:gap-x-20">
-            {/* Brillio - Official logo mark */}
-            <div className="group flex items-center gap-2.5 text-muted-foreground/70 transition-colors hover:text-foreground">
-              <svg viewBox="0 0 40 40" className="size-7" fill="currentColor">
-                <path d="M20 0C8.954 0 0 8.954 0 20s8.954 20 20 20 20-8.954 20-20S31.046 0 20 0zm0 36c-8.837 0-16-7.163-16-16S11.163 4 20 4s16 7.163 16 16-7.163 16-16 16z"/>
-                <path d="M20 8c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12S26.627 8 20 8zm0 20c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z"/>
-                <circle cx="20" cy="20" r="4"/>
-              </svg>
-              <span className="text-lg font-semibold tracking-tight">Brillio</span>
-            </div>
-
-            {/* Adobe - Official A logo */}
-            <div className="group flex items-center gap-2.5 text-muted-foreground/70 transition-colors hover:text-foreground">
-              <svg viewBox="0 0 30 26" className="h-5 w-auto" fill="currentColor">
-                <path d="M0 0h11.4L0 26V0zm30 0H18.6L30 26V0zM15 9.6L22.1 26h-4.6l-2.1-5.2h-5.1L15 9.6z"/>
-              </svg>
-              <span className="text-lg font-semibold tracking-tight">Adobe</span>
-            </div>
-
-            {/* Goldman Sachs - Official square mark */}
-            <div className="group flex items-center gap-2.5 text-muted-foreground/70 transition-colors hover:text-foreground">
-              <div className="flex size-6 items-center justify-center bg-current">
-                <span className="font-serif text-[10px] font-bold text-background">GS</span>
-              </div>
-              <span className="text-lg font-semibold tracking-tight">Goldman Sachs</span>
-            </div>
-
-            {/* CRED - Official stacked coin logo */}
-            <div className="group flex items-center gap-2.5 text-muted-foreground/70 transition-colors hover:text-foreground">
-              <svg viewBox="0 0 24 24" className="size-6" fill="currentColor">
-                <path d="M12 2L4 6v2l8 4 8-4V6l-8-4z"/>
-                <path d="M4 10v2l8 4 8-4v-2l-8 4-8-4z"/>
-                <path d="M4 14v2l8 4 8-4v-2l-8 4-8-4z"/>
-              </svg>
-              <span className="text-lg font-bold tracking-wider">CRED</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ═══════════════ CATEGORY SHOWCASE ═══════════════ */}
       <div className="mx-auto max-w-6xl px-4 py-16 md:py-24">
         {/* Section intro */}
