@@ -97,16 +97,20 @@ function PreviewCard({ stack }: { stack: FlatStack }) {
         {/* Preview component - renders on top when ready */}
         {PreviewComponent && shouldRender && (
           <div
-            className="pointer-events-none absolute left-0 top-0 origin-top-left"
-            style={{
-              width: "200%",
-              height: "200%",
-              transform: "scale(0.5)",
-              ...(brand ? { "--primary": brand.accent, "--color-primary": brand.accent } as React.CSSProperties : {}),
-            }}
+            className="pointer-events-none absolute inset-0 bg-background"
           >
-            <div className="flex h-full w-full items-center justify-center p-6">
-              <PreviewComponent />
+            <div
+              className="origin-top-left"
+              style={{
+                width: "200%",
+                height: "200%",
+                transform: "scale(0.5)",
+                ...(brand ? { "--primary": brand.accent, "--color-primary": brand.accent } as React.CSSProperties : {}),
+              }}
+            >
+              <div className="flex h-full w-full items-center justify-center p-6">
+                <PreviewComponent />
+              </div>
             </div>
           </div>
         )}
