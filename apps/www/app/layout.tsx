@@ -134,7 +134,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         )}
       >
         {/* Paper noise texture — two layers for light/dark, hidden on stacks */}
-        <div
+        {/* <div
           aria-hidden
           className="noise-overlay pointer-events-none fixed inset-0 z-[9999] mix-blend-multiply opacity-[0.07] dark:hidden"
           style={{
@@ -150,7 +150,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             backgroundImage: 'url("/page-background/bg-paper-texture.webp")',
             backgroundSize: "200px 200px",
           }}
-        />
+        /> */}
         <SessionProvider>
           <PostHogProvider>
             <ThemeProvider
