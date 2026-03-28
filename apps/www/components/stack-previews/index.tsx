@@ -62,6 +62,7 @@ const MultiStepToolPreview = dynamic(() => import("./pro-agents").then((m) => ({
 const AgenticContextBuilderPreview = dynamic(() => import("./pro-agents").then((m) => ({ default: m.AgenticContextBuilderPreview })))
 const InquireMultipleChoicePreview = dynamic(() => import("./pro-agents").then((m) => ({ default: m.InquireMultipleChoicePreview })))
 const InquireTextPreview = dynamic(() => import("./pro-agents").then((m) => ({ default: m.InquireTextPreview })))
+const ImageSelectPreview = dynamic(() => import("./pro-agents").then((m) => ({ default: m.ImageSelectPreview })))
 
 /* ─── Pro: Chat Kit ─── */
 const ChatGPTPreview = dynamic(() => import("./pro-chat").then((m) => ({ default: m.ChatGPTPreview })))
@@ -177,6 +178,7 @@ export const stackPreviewRegistry: Record<string, ComponentType> = {
   "ai-human-in-the-loop-agentic-context-builder": AgenticContextBuilderPreview,
   "ai-human-in-the-loop-inquire-multiple-choice": InquireMultipleChoicePreview,
   "ai-human-in-the-loop-inquire-text": InquireTextPreview,
+  "ai-human-in-the-loop-image-select": ImageSelectPreview,
 
   // ── Pro: Chat Kit ──
   "chat-gpt": ChatGPTPreview,

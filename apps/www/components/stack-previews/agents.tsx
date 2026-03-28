@@ -349,104 +349,361 @@ export function ParallelProcessingPreview() {
 }
 
 /* ─── Human in the Loop ─── */
+
+// Shield icon (outlined, monochrome)
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  )
+}
+
+// Wrench/tool icon
+function WrenchIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  )
+}
+
+// Tool call badge - Claude style (monochrome)
+function HITLToolBadge({
+  name,
+  status,
+  isOpen,
+  onToggle
+}: {
+  name: string
+  status: "pending" | "approved" | "rejected"
+  isOpen: boolean
+  onToggle: () => void
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1.5 text-sm transition-colors hover:bg-muted"
+    >
+      <ShieldIcon className="text-muted-foreground" />
+      <span className="font-mono text-foreground">{name}</span>
+      {status === "approved" && (
+        <span className="flex items-center gap-1 text-foreground">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span className="text-xs">Approved</span>
+        </span>
+      )}
+      {status === "rejected" && (
+        <span className="flex items-center gap-1 text-muted-foreground">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+          <span className="text-xs">Rejected</span>
+        </span>
+      )}
+      <motion.svg
+        animate={{ rotate: isOpen ? 180 : 0 }}
+        transition={{ duration: 0.15 }}
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="text-muted-foreground"
+      >
+        <path d="M6 9l6 6 6-6" />
+      </motion.svg>
+    </button>
+  )
+}
+
 export function HumanInTheLoopPreview() {
-  const [approved, setApproved] = useState<boolean | null>(null)
+  const [input, setInput] = useState("")
+  const [phase, setPhase] = useState<"idle" | "processing" | "approval" | "done">("idle")
+  const [mainExpanded, setMainExpanded] = useState(true)
+  const [toolExpanded, setToolExpanded] = useState(true)
+  const [toolStatus, setToolStatus] = useState<"pending" | "approved" | "rejected">("pending")
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  const exampleTasks = [
+    "Send weekly report to team",
+    "Email the project update",
+    "Share analytics with stakeholders",
+  ]
+
+  const emailParams = {
+    to: "team@company.com",
+    subject: "Weekly Report",
+    body: "Here's the weekly progress summary with key metrics and action items for the upcoming sprint..."
+  }
+
+  function handleSubmit() {
+    if (!input.trim() || isProcessing) return
+    setInput("")
+    setPhase("processing")
+    setIsProcessing(true)
+    setToolStatus("pending")
+
+    setTimeout(() => {
+      setPhase("approval")
+      setIsProcessing(false)
+    }, 800)
+  }
+
+  function handleApprove() {
+    setToolStatus("approved")
+    setTimeout(() => setPhase("done"), 400)
+  }
+
+  function handleReject() {
+    setToolStatus("rejected")
+    setTimeout(() => setPhase("done"), 400)
+  }
+
+  function reset() {
+    setPhase("idle")
+    setInput("")
+    setIsProcessing(false)
+    setToolStatus("pending")
+    setMainExpanded(true)
+    setToolExpanded(true)
+  }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-3 p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...SPRING }}
-        className="rounded-xl border border-border bg-card p-4"
-      >
-        <div className="mb-3 flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">Claude Request</p>
-            <p className="text-xs text-muted-foreground">Claude wants to execute an action</p>
-          </div>
-        </div>
+    <div className="relative flex h-[540px] w-full max-w-3xl mx-auto flex-col">
+      <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
 
-        <div className="rounded-lg bg-muted/50 p-3">
-          <code className="font-mono text-xs text-foreground">
-            sendEmail({`{`}
-            <br />
-            {"  "}to: &quot;team@company.com&quot;,
-            <br />
-            {"  "}subject: &quot;Weekly Report&quot;,
-            <br />
-            {"  "}body: &quot;...generated content...&quot;
-            <br />
-            {`}`})
-          </code>
-        </div>
-      </motion.div>
+      {/* Conversation area */}
+      <div className="relative flex flex-1 flex-col overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
+          {phase === "idle" ? (
+            <motion.div
+              key="onboarding"
+              className="absolute inset-0 flex flex-col items-center justify-center px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="mb-4">
+                <ShieldIcon className="size-10 text-muted-foreground" />
+              </div>
+              <h1 className="mb-2 text-2xl font-medium text-foreground">Human-in-the-Loop</h1>
+              <p className="mb-6 text-sm text-muted-foreground text-center max-w-md">
+                Get human approval before executing sensitive actions
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {exampleTasks.map((task) => (
+                  <button
+                    key={task}
+                    onClick={() => setInput(task)}
+                    className="rounded-2xl border border-border bg-background px-4 py-2.5 text-sm text-muted-foreground hover:border-foreground/20 hover:text-foreground transition-all"
+                  >
+                    {task}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="conversation"
+              className="flex h-full w-full flex-col overflow-y-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {/* Clear button */}
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-background via-background to-transparent px-6 pt-3 pb-2">
+                <button
+                  onClick={reset}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
 
-      <AnimatePresence mode="wait">
-        {approved === null ? (
-          <motion.div
-            key="buttons"
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="flex gap-2"
-          >
-            <motion.button
-              onClick={() => setApproved(true)}
-              whileTap={{ scale: 0.97 }}
-              className="h-9 flex-1 rounded-lg bg-primary text-sm font-medium text-primary-foreground transition-all duration-150 hover:bg-primary/90"
-            >
-              Approve & Execute
-            </motion.button>
-            <motion.button
-              onClick={() => setApproved(false)}
-              whileTap={{ scale: 0.97 }}
-              className="h-9 flex-1 rounded-lg border border-border text-sm font-medium text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:text-foreground"
-            >
-              Reject
-            </motion.button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="result"
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...SPRING }}
-            className="flex items-center justify-between rounded-xl border border-border px-4 py-3"
-          >
-            <div className="flex items-center gap-2 text-sm">
-              {approved ? (
-                <>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <span className="font-medium text-foreground">Approved and executed</span>
-                </>
-              ) : (
-                <>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-destructive">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                  <span className="text-muted-foreground">Action rejected</span>
-                </>
-              )}
-            </div>
+              {/* Content */}
+              <div className="px-6 pb-4">
+                {/* Processing state */}
+                {phase === "processing" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 py-3"
+                  >
+                    <CircleSpinner size={16} className="text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Analyzing request...</span>
+                  </motion.div>
+                )}
+
+                {/* Approval section - Claude style */}
+                {(phase === "approval" || phase === "done") && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {/* Main dropdown header */}
+                    <button
+                      onClick={() => setMainExpanded(!mainExpanded)}
+                      className="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors py-1"
+                    >
+                      <ShieldIcon className="text-muted-foreground" />
+                      <span className="text-sm font-medium">Human Approval Required</span>
+                      <motion.svg
+                        animate={{ rotate: mainExpanded ? 0 : -90 }}
+                        transition={{ duration: 0.15 }}
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="text-muted-foreground"
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </motion.svg>
+                    </button>
+
+                    {/* Expanded content */}
+                    <AnimatePresence>
+                      {mainExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-3 space-y-3">
+                            {/* Tool Action header */}
+                            <div className="flex items-center gap-2">
+                              <WrenchIcon className="text-muted-foreground" />
+                              <span className="text-sm text-foreground">Tool Action</span>
+                            </div>
+
+                            {/* Content with left border */}
+                            <div className="ml-2 pl-4 border-l-2 border-border space-y-3">
+                              <p className="text-sm text-muted-foreground">
+                                Claude wants to execute an action that requires your approval
+                              </p>
+
+                              {/* Tool badge */}
+                              <HITLToolBadge
+                                name="sendEmail"
+                                status={toolStatus}
+                                isOpen={toolExpanded}
+                                onToggle={() => setToolExpanded(!toolExpanded)}
+                              />
+
+                              {/* Expandable tool details */}
+                              <AnimatePresence>
+                                {toolExpanded && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+                                      <div>
+                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">To</p>
+                                        <p className="text-sm font-mono text-foreground">{emailParams.to}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">Subject</p>
+                                        <p className="text-sm font-mono text-foreground">{emailParams.subject}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">Body</p>
+                                        <p className="text-sm text-muted-foreground">{emailParams.body}</p>
+                                      </div>
+
+                                      {/* Approve/Reject buttons */}
+                                      {toolStatus === "pending" && (
+                                        <div className="flex gap-2 pt-2">
+                                          <motion.button
+                                            onClick={handleApprove}
+                                            whileTap={{ scale: 0.97 }}
+                                            className="flex-1 h-9 rounded-lg bg-foreground text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+                                          >
+                                            Approve & Execute
+                                          </motion.button>
+                                          <motion.button
+                                            onClick={handleReject}
+                                            whileTap={{ scale: 0.97 }}
+                                            className="flex-1 h-9 rounded-lg border border-border text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                                          >
+                                            Reject
+                                          </motion.button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+
+                {/* Response content */}
+                {phase === "done" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: 0.1 }}
+                    className="mt-6 text-[15px] leading-relaxed text-foreground"
+                  >
+                    {toolStatus === "approved" ? (
+                      <p>The email has been sent successfully to {emailParams.to}.</p>
+                    ) : (
+                      <p className="text-muted-foreground">The action was rejected. No email was sent.</p>
+                    )}
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Input */}
+      <div className="shrink-0 px-4 pb-4">
+        <div className="rounded-2xl border border-border bg-background shadow-sm">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault()
+                handleSubmit()
+              }
+            }}
+            placeholder="Request an action that needs approval..."
+            disabled={isProcessing || phase !== "idle"}
+            rows={2}
+            className="min-h-[60px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-foreground outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
+          />
+          <div className="flex items-center justify-end px-3 pb-3">
             <button
-              onClick={() => setApproved(null)}
-              className="font-mono text-xs text-muted-foreground transition-all duration-150 hover:text-foreground"
+              onClick={handleSubmit}
+              disabled={!input.trim() || isProcessing || phase !== "idle"}
+              className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              reset
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
             </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
