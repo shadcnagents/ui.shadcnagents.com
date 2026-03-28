@@ -873,7 +873,7 @@ export function StackPageClient({ slug, registrySource, devMode = false }: Stack
 
       {/* Content area — padded viewport frame with rounded border */}
       <div className="flex min-h-0 flex-1 flex-col p-3">
-        <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+        <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-white dark:bg-zinc-950 shadow-sm">
           {activeTab === "preview" && (
             <div className="h-full overflow-y-scroll scrollbar-hide">
               {isPro && !userIsPro ? (

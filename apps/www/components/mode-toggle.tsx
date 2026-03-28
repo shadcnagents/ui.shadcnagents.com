@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { type Variants, motion as m } from "motion/react"
+import { motion as m } from "motion/react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
@@ -11,66 +11,16 @@ export function ModeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
   const playClick = useSound("/assets/button-click.mp3")
 
-  const theme = resolvedTheme === "dark" ? "dark" : "light"
-
   const switchTheme = useCallback(() => {
     playClick()
     const newTheme = resolvedTheme === "dark" ? "light" : "dark"
     setTheme(newTheme)
   }, [resolvedTheme, setTheme, playClick])
 
-  const raysVariants = {
-    hidden: {
-      strokeOpacity: 0,
-      transition: { staggerChildren: 0.05, staggerDirection: -1 },
-    },
-    visible: {
-      strokeOpacity: 1,
-      transition: { staggerChildren: 0.05 },
-    },
-  }
-
-  const rayVariant: Variants = {
-    hidden: { pathLength: 0, opacity: 0, scale: 0 },
-    visible: {
-      pathLength: 1,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-        pathLength: { duration: 0.3 },
-        opacity: { duration: 0.2 },
-        scale: { duration: 0.3 },
-      },
-    },
-  }
-
-  const shineVariant: Variants = {
-    hidden: {
-      opacity: 0,
-      scale: 2,
-      strokeDasharray: "20, 1000",
-      strokeDashoffset: 0,
-      filter: "blur(0px)",
-    },
-    visible: {
-      opacity: [0, 1, 0],
-      strokeDashoffset: [0, -50, -100],
-      filter: ["blur(2px)", "blur(2px)", "blur(0px)"],
-      transition: { duration: 0.75, ease: "linear" },
-    },
-  }
-
-  const sunPath =
-    "M70 49.5C70 60.8218 60.8218 70 49.5 70C38.1782 70 29 60.8218 29 49.5C29 38.1782 38.1782 29 49.5 29C60 29 69.5 38 70 49.5Z"
-  const moonPath =
-    "M70 49.5C70 60.8218 60.8218 70 49.5 70C38.1782 70 29 60.8218 29 49.5C29 38.1782 38.1782 29 49.5 29C39 45 49.5 59.5 70 49.5Z"
-
   return (
     <Button
       variant="ghost"
-      className="w-9 px-0"
+      className="size-9 px-0"
       onClick={() => {
         if (typeof document !== "undefined" && document.startViewTransition) {
           document.startViewTransition(switchTheme)
@@ -80,70 +30,28 @@ export function ModeToggle() {
       }}
     >
       <m.svg
-        strokeWidth="4"
-        strokeLinecap="round"
-        width={18}
-        height={18}
-        viewBox="0 0 100 100"
-        fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="relative"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-foreground"
+        whileTap={{ scale: 0.9 }}
+        animate={{ rotate: resolvedTheme === "dark" ? 180 : 0 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        {/* Moon glow */}
-        <m.path
-          variants={shineVariant}
-          d={moonPath}
-          className="stroke-blue-100 dark:stroke-blue-200/20"
-          initial="hidden"
-          animate={theme === "dark" ? "visible" : "hidden"}
-        />
-
-        {/* Sun rays */}
-        <m.g
-          variants={raysVariants}
-          initial="hidden"
-          animate={theme === "dark" ? "hidden" : "visible"}
-          className="stroke-[6] stroke-yellow-600"
-          style={{ strokeLinecap: "round" }}
-        >
-          <m.path className="origin-center" variants={rayVariant} d="M50 2V11" />
-          <m.path variants={rayVariant} d="M85 15L78 22" />
-          <m.path variants={rayVariant} d="M98 50H89" />
-          <m.path variants={rayVariant} d="M85 85L78 78" />
-          <m.path variants={rayVariant} d="M50 98V89" />
-          <m.path variants={rayVariant} d="M23 78L16 84" />
-          <m.path variants={rayVariant} d="M11 50H2" />
-          <m.path variants={rayVariant} d="M23 23L16 16" />
-        </m.g>
-
-        {/* Sun/Moon body */}
-        <m.path
-          d={sunPath}
-          fill="transparent"
-          transition={{ duration: 1, type: "spring" }}
-          initial={{ fillOpacity: 0, strokeOpacity: 0 }}
-          animate={
-            theme === "dark"
-              ? {
-                  d: moonPath,
-                  rotate: -360,
-                  scale: 2,
-                  stroke: "currentColor",
-                  fill: "currentColor",
-                  fillOpacity: 0.35,
-                  strokeOpacity: 1,
-                  transition: { delay: 0.1 },
-                }
-              : {
-                  d: sunPath,
-                  rotate: 0,
-                  stroke: "orange",
-                  fill: "orange",
-                  fillOpacity: 0.35,
-                  strokeOpacity: 1,
-                }
-          }
-        />
+        {/* Circle */}
+        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+        {/* Vertical divider */}
+        <path d="M12 3l0 18" />
+        {/* Diagonal stripes */}
+        <path d="M12 9l4.65 -4.65" />
+        <path d="M12 14.3l7.37 -7.37" />
+        <path d="M12 19.6l8.85 -8.85" />
       </m.svg>
       <span className="sr-only">Toggle theme</span>
     </Button>
