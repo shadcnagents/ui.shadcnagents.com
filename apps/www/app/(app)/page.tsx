@@ -1,19 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import {
-  ArrowRight,
-  Settings,
-  Server,
-  Cloud,
-  Sparkles,
-  User,
-  Crown,
-  Briefcase,
-  HelpCircle,
-  Layers,
-  MessageCircle,
-} from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 import { siteConfig } from "@/config/site"
 import { HeroSection } from "@/components/hero-section"
@@ -95,87 +83,64 @@ const faqItems = [
   {
     question: "Can I customize the components for my brand?",
     tag: "Styling and Customization",
-    icon: "settings",
     answer:
       "Everything is built with Tailwind CSS v4, and shadcn. Check out the theme selector to see how easy it is to customize each block. No proprietary styling system—just headless components you fully control.",
   },
   {
     question: "Do I need a backend to use these components?",
     tag: "Backend Requirements",
-    icon: "server",
     answer:
       "Stacks include Next.js API routes by default. Deploy to Vercel, Netlify, Railway, or any Node-compatible platform. The UI components work with any backend that speaks the AI SDK protocol.",
   },
   {
     question: "Can I run blocks outside of vercel?",
     tag: "Deployment Options",
-    icon: "cloud",
     answer:
       "Yes! While optimized for Vercel, all stacks work on any Node.js hosting platform including Netlify, Railway, Render, AWS, or self-hosted infrastructure.",
   },
   {
     question: "Which AI providers can I use?",
     tag: "AI Provider Compatibility",
-    icon: "sparkles",
     answer:
       "All of them. Works with @ai-sdk/openai, @ai-sdk/anthropic, @ai-sdk/google, @ai-sdk/groq, and any AI SDK-compatible provider. Switch models with a single line change.",
   },
   {
     question: "What's included in the Pro Plan?",
     tag: "Pro Features",
-    icon: "user",
     answer:
       `Access to all ${siteConfig.counts.stacks}+ stacks including agent orchestration, human-in-the-loop, real-world examples, marketing UI, and full-stack templates. Lifetime license — pay once, use forever.`,
   },
   {
     question: "What's included in the Premium Plan?",
     tag: "Premium Features",
-    icon: "crown",
     answer:
       "Everything in Pro, plus priority support, early access to new stacks, and exclusive enterprise patterns for production-scale AI applications.",
   },
   {
     question: "Can I use this in commercial projects?",
     tag: "Licensing",
-    icon: "briefcase",
     answer:
       "Yes. Your license allows unlimited commercial use. Build client projects, SaaS products, internal tools — no attribution required.",
   },
   {
     question: "What if this doesn't work for my project?",
     tag: "Money-Back Guarantee",
-    icon: "help",
     answer:
       "We offer a 14-day money-back guarantee. If the stacks don't fit your needs, reach out and we'll refund your purchase — no questions asked.",
   },
   {
     question: "Is AI SDK Agents separate from Cult-UI Pro?",
     tag: "Product Relationship",
-    icon: "layers",
     answer:
       "AI SDK Agents is a standalone product focused specifically on AI/LLM patterns. It complements Cult-UI Pro but is purchased separately.",
   },
   {
     question: "How do I get help if I'm stuck?",
     tag: "Support Options",
-    icon: "message",
     answer:
       "Join our Discord community for quick help, browse the documentation, or reach out via email. Pro and Premium users get priority support.",
   },
 ]
-
-const faqIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  settings: Settings,
-  server: Server,
-  cloud: Cloud,
-  sparkles: Sparkles,
-  user: User,
-  crown: Crown,
-  briefcase: Briefcase,
-  help: HelpCircle,
-  layers: Layers,
-  message: MessageCircle,
-}
 
 /* ─────────────────────── Category Row Component ─────────────────────── */
 
@@ -300,35 +265,27 @@ export default function IndexPage() {
 
         {/* FAQ Items */}
         <div className="divide-y divide-border border border-border">
-          {faqItems.map((item) => {
-            const IconComponent = faqIcons[item.icon]
-            return (
-              <details key={item.question} className="group">
-                <summary className="flex cursor-pointer items-start justify-between gap-4 px-6 py-5 text-left text-sm font-medium transition-colors hover:bg-muted/40 md:text-base [&::-webkit-details-marker]:hidden">
-                  <div className="flex items-start gap-4">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded border border-border bg-muted/50">
-                      {IconComponent && <IconComponent className="size-5 text-muted-foreground" />}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span>{item.question}</span>
-                      <span className="font-mono text-[10px] font-normal uppercase tracking-[0.15em] text-muted-foreground">
-                        {item.tag}
-                      </span>
-                    </div>
-                  </div>
-                  <span
-                    className="mt-2 shrink-0 text-muted-foreground transition-transform group-open:rotate-45"
-                    aria-hidden="true"
-                  >
-                    +
+          {faqItems.map((item) => (
+            <details key={item.question} className="group">
+              <summary className="flex cursor-pointer items-start justify-between gap-4 px-6 py-5 text-left text-sm font-medium transition-colors hover:bg-muted/40 md:text-base [&::-webkit-details-marker]:hidden">
+                <div className="flex flex-col gap-1">
+                  <span>{item.question}</span>
+                  <span className="font-mono text-[10px] font-normal uppercase tracking-[0.15em] text-muted-foreground">
+                    {item.tag}
                   </span>
-                </summary>
-                <div className="px-6 pb-5 pl-20 text-sm leading-relaxed text-muted-foreground md:text-base">
-                  {item.answer}
                 </div>
-              </details>
-            )
-          })}
+                <span
+                  className="mt-2 shrink-0 text-muted-foreground transition-transform group-open:rotate-45"
+                  aria-hidden="true"
+                >
+                  +
+                </span>
+              </summary>
+              <div className="px-6 pb-5 text-sm leading-relaxed text-muted-foreground md:text-base">
+                {item.answer}
+              </div>
+            </details>
+          ))}
         </div>
 
         {/* End of FAQ */}
