@@ -5,13 +5,13 @@ import * as __fd_glob_54 from "../content/docs/why-we/stack-stories/ai-error-bou
 import * as __fd_glob_53 from "../content/docs/why-we/research.mdx?collection=docs"
 import * as __fd_glob_52 from "../content/docs/why-we/models.mdx?collection=docs"
 import * as __fd_glob_51 from "../content/docs/why-we/index.mdx?collection=docs"
-import * as __fd_glob_50 from "../content/docs/installation/vite.mdx?collection=docs"
-import * as __fd_glob_49 from "../content/docs/installation/next.mdx?collection=docs"
-import * as __fd_glob_48 from "../content/docs/installation/manual.mdx?collection=docs"
-import * as __fd_glob_47 from "../content/docs/installation/index.mdx?collection=docs"
-import * as __fd_glob_46 from "../content/docs/prompts/few-shot-prompting.mdx?collection=docs"
-import * as __fd_glob_45 from "../content/docs/prompts/context-engineering.mdx?collection=docs"
-import * as __fd_glob_44 from "../content/docs/patterns/overview.mdx?collection=docs"
+import * as __fd_glob_50 from "../content/docs/prompts/few-shot-prompting.mdx?collection=docs"
+import * as __fd_glob_49 from "../content/docs/prompts/context-engineering.mdx?collection=docs"
+import * as __fd_glob_48 from "../content/docs/patterns/overview.mdx?collection=docs"
+import * as __fd_glob_47 from "../content/docs/installation/vite.mdx?collection=docs"
+import * as __fd_glob_46 from "../content/docs/installation/next.mdx?collection=docs"
+import * as __fd_glob_45 from "../content/docs/installation/manual.mdx?collection=docs"
+import * as __fd_glob_44 from "../content/docs/installation/index.mdx?collection=docs"
 import * as __fd_glob_43 from "../content/docs/components/youtube-video-player.mdx?collection=docs"
 import * as __fd_glob_42 from "../content/docs/components/typewriter.mdx?collection=docs"
 import * as __fd_glob_41 from "../content/docs/components/toolbar-expandable.mdx?collection=docs"
@@ -47,11 +47,11 @@ import * as __fd_glob_12 from "../content/docs/components/bg-image-texture.mdx?c
 import * as __fd_glob_11 from "../content/docs/components/bg-animated-fractal-grid.mdx?collection=docs"
 import * as __fd_glob_10 from "../content/docs/components/animated-number.mdx?collection=docs"
 import * as __fd_glob_9 from "../content/docs/components/ai-instructions.mdx?collection=docs"
-import * as __fd_glob_8 from "../content/docs/agents/router-agents.mdx?collection=docs"
-import * as __fd_glob_7 from "../content/docs/agents/building-agents.mdx?collection=docs"
-import * as __fd_glob_6 from "../content/docs/agents/agent-patterns.mdx?collection=docs"
-import * as __fd_glob_5 from "../content/docs/ai/ai-sdk-blocks.mdx?collection=docs"
-import * as __fd_glob_4 from "../content/docs/ai/ai-elements.mdx?collection=docs"
+import * as __fd_glob_8 from "../content/docs/ai/ai-sdk-blocks.mdx?collection=docs"
+import * as __fd_glob_7 from "../content/docs/ai/ai-elements.mdx?collection=docs"
+import * as __fd_glob_6 from "../content/docs/agents/router-agents.mdx?collection=docs"
+import * as __fd_glob_5 from "../content/docs/agents/building-agents.mdx?collection=docs"
+import * as __fd_glob_4 from "../content/docs/agents/agent-patterns.mdx?collection=docs"
 import * as __fd_glob_3 from "../content/docs/theming.mdx?collection=docs"
 import * as __fd_glob_2 from "../content/docs/mcp-server.mdx?collection=docs"
 import * as __fd_glob_1 from "../content/docs/index.mdx?collection=docs"
@@ -64,4 +64,4 @@ const create = server<typeof Config, import("fumadocs-mdx/runtime/types").Intern
   }
 }>({"doc":{"passthroughs":["extractedReferences"]}});
 
-export const docs = await create.docs("docs", "content/docs", {}, {"changelog.mdx": __fd_glob_0, "index.mdx": __fd_glob_1, "mcp-server.mdx": __fd_glob_2, "theming.mdx": __fd_glob_3, "ai/ai-elements.mdx": __fd_glob_4, "ai/ai-sdk-blocks.mdx": __fd_glob_5, "agents/agent-patterns.mdx": __fd_glob_6, "agents/building-agents.mdx": __fd_glob_7, "agents/router-agents.mdx": __fd_glob_8, "components/ai-instructions.mdx": __fd_glob_9, "components/animated-number.mdx": __fd_glob_10, "components/bg-animated-fractal-grid.mdx": __fd_glob_11, "components/bg-image-texture.mdx": __fd_glob_12, "components/bg-media.mdx": __fd_glob_13, "components/canvas-fractal-grid.mdx": __fd_glob_14, "components/code-block.mdx": __fd_glob_15, "components/color-picker.mdx": __fd_glob_16, "components/direction-aware-tabs.mdx": __fd_glob_17, "components/dock.mdx": __fd_glob_18, "components/expandable-screen.mdx": __fd_glob_19, "components/expandable.mdx": __fd_glob_20, "components/family-button.mdx": __fd_glob_21, "components/family-drawer.mdx": __fd_glob_22, "components/floating-panel.mdx": __fd_glob_23, "components/gradient-heading.mdx": __fd_glob_24, "components/hover-video-player.mdx": __fd_glob_25, "components/intro-disclosure.mdx": __fd_glob_26, "components/lightboard.mdx": __fd_glob_27, "components/minimal-card.mdx": __fd_glob_28, "components/mock-browser-window.mdx": __fd_glob_29, "components/popover-form.mdx": __fd_glob_30, "components/popover.mdx": __fd_glob_31, "components/prompt-library.mdx": __fd_glob_32, "components/side-panel.mdx": __fd_glob_33, "components/sortable-list.mdx": __fd_glob_34, "components/squiggle-arrow.mdx": __fd_glob_35, "components/stripe-bg-guides.mdx": __fd_glob_36, "components/text-animate.mdx": __fd_glob_37, "components/text-gif.mdx": __fd_glob_38, "components/texture-overlay.mdx": __fd_glob_39, "components/timer.mdx": __fd_glob_40, "components/toolbar-expandable.mdx": __fd_glob_41, "components/typewriter.mdx": __fd_glob_42, "components/youtube-video-player.mdx": __fd_glob_43, "patterns/overview.mdx": __fd_glob_44, "prompts/context-engineering.mdx": __fd_glob_45, "prompts/few-shot-prompting.mdx": __fd_glob_46, "installation/index.mdx": __fd_glob_47, "installation/manual.mdx": __fd_glob_48, "installation/next.mdx": __fd_glob_49, "installation/vite.mdx": __fd_glob_50, "why-we/index.mdx": __fd_glob_51, "why-we/models.mdx": __fd_glob_52, "why-we/research.mdx": __fd_glob_53, "why-we/stack-stories/ai-error-boundary.mdx": __fd_glob_54, "why-we/stack-stories/context-window-manager.mdx": __fd_glob_55, "why-we/stack-stories/index.mdx": __fd_glob_56, });
+export const docs = await create.docs("docs", "content/docs", {}, {"changelog.mdx": __fd_glob_0, "index.mdx": __fd_glob_1, "mcp-server.mdx": __fd_glob_2, "theming.mdx": __fd_glob_3, "agents/agent-patterns.mdx": __fd_glob_4, "agents/building-agents.mdx": __fd_glob_5, "agents/router-agents.mdx": __fd_glob_6, "ai/ai-elements.mdx": __fd_glob_7, "ai/ai-sdk-blocks.mdx": __fd_glob_8, "components/ai-instructions.mdx": __fd_glob_9, "components/animated-number.mdx": __fd_glob_10, "components/bg-animated-fractal-grid.mdx": __fd_glob_11, "components/bg-image-texture.mdx": __fd_glob_12, "components/bg-media.mdx": __fd_glob_13, "components/canvas-fractal-grid.mdx": __fd_glob_14, "components/code-block.mdx": __fd_glob_15, "components/color-picker.mdx": __fd_glob_16, "components/direction-aware-tabs.mdx": __fd_glob_17, "components/dock.mdx": __fd_glob_18, "components/expandable-screen.mdx": __fd_glob_19, "components/expandable.mdx": __fd_glob_20, "components/family-button.mdx": __fd_glob_21, "components/family-drawer.mdx": __fd_glob_22, "components/floating-panel.mdx": __fd_glob_23, "components/gradient-heading.mdx": __fd_glob_24, "components/hover-video-player.mdx": __fd_glob_25, "components/intro-disclosure.mdx": __fd_glob_26, "components/lightboard.mdx": __fd_glob_27, "components/minimal-card.mdx": __fd_glob_28, "components/mock-browser-window.mdx": __fd_glob_29, "components/popover-form.mdx": __fd_glob_30, "components/popover.mdx": __fd_glob_31, "components/prompt-library.mdx": __fd_glob_32, "components/side-panel.mdx": __fd_glob_33, "components/sortable-list.mdx": __fd_glob_34, "components/squiggle-arrow.mdx": __fd_glob_35, "components/stripe-bg-guides.mdx": __fd_glob_36, "components/text-animate.mdx": __fd_glob_37, "components/text-gif.mdx": __fd_glob_38, "components/texture-overlay.mdx": __fd_glob_39, "components/timer.mdx": __fd_glob_40, "components/toolbar-expandable.mdx": __fd_glob_41, "components/typewriter.mdx": __fd_glob_42, "components/youtube-video-player.mdx": __fd_glob_43, "installation/index.mdx": __fd_glob_44, "installation/manual.mdx": __fd_glob_45, "installation/next.mdx": __fd_glob_46, "installation/vite.mdx": __fd_glob_47, "patterns/overview.mdx": __fd_glob_48, "prompts/context-engineering.mdx": __fd_glob_49, "prompts/few-shot-prompting.mdx": __fd_glob_50, "why-we/index.mdx": __fd_glob_51, "why-we/models.mdx": __fd_glob_52, "why-we/research.mdx": __fd_glob_53, "why-we/stack-stories/ai-error-boundary.mdx": __fd_glob_54, "why-we/stack-stories/context-window-manager.mdx": __fd_glob_55, "why-we/stack-stories/index.mdx": __fd_glob_56, });
