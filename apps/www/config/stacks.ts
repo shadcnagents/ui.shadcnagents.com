@@ -180,6 +180,12 @@ export const stacksConfig: StackCategory[] = [
             link: "/stacks/ai-human-in-the-loop-inquire-text",
             tier: "pro",
           },
+          {
+            text: "Image Selection",
+            description: "Visual multi-select input",
+            link: "/stacks/ai-human-in-the-loop-image-select",
+            tier: "pro",
+          },
         ],
       },
       {
@@ -221,6 +227,12 @@ export const stacksConfig: StackCategory[] = [
         text: "Agentic Context Builder",
         description: "Context gathering application",
         link: "/stacks/ai-human-in-the-loop-agentic-context-builder",
+        tier: "pro",
+      },
+      {
+        text: "Image Selection Input",
+        description: "Visual multi-select for images",
+        link: "/stacks/ai-human-in-the-loop-image-select",
         tier: "pro",
       },
       {
