@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
+import { AIInput, AIInputTextarea, AIInputFooter, AIInputAction } from "@/components/ui/ai-input"
 import { WaveDotsLoader, CircleSpinner, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ─── Orchestrator Pattern ─── */
@@ -148,7 +149,7 @@ export function OrchestratorPatternPreview() {
               animate={{ opacity: 1 }}
             >
               {/* Clear button */}
-              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-background via-background to-transparent px-6 pt-3 pb-2">
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 px-6 pt-3 pb-2">
                 <button
                   onClick={reset}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -553,7 +554,7 @@ export function SubAgentOrchestratorPreview() {
               animate={{ opacity: 1 }}
             >
               {/* Clear button */}
-              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-background via-background to-transparent px-6 pt-3 pb-2">
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 px-6 pt-3 pb-2">
                 <button
                   onClick={reset}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -623,33 +624,27 @@ export function SubAgentOrchestratorPreview() {
 
       {/* Input */}
       <div className="shrink-0 px-4 pb-4">
-        <div className="rounded-2xl border border-border bg-background shadow-sm">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault()
-                handleSubmit()
-              }
-            }}
-            placeholder="Ask a question that will route to a sub-agent..."
-            disabled={isProcessing}
-            rows={2}
-            className="min-h-[60px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-foreground outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
-          />
-          <div className="flex items-center justify-end px-3 pb-3">
-            <button
-              onClick={handleSubmit}
-              disabled={!input.trim() || isProcessing}
-              className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <AIInput
+          value={input}
+          onValueChange={setInput}
+          onSubmit={handleSubmit}
+          isLoading={isProcessing}
+        >
+          <AIInputTextarea placeholder="Ask a question that will route to a sub-agent..." />
+          <AIInputFooter className="justify-end">
+            <AIInputAction>
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || isProcessing}
+                className="flex size-8 items-center justify-center rounded-full bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </AIInputAction>
+          </AIInputFooter>
+        </AIInput>
       </div>
     </div>
   )
@@ -1521,7 +1516,7 @@ export function InquireMultipleChoicePreview() {
               animate={{ opacity: 1 }}
             >
               {/* Clear button */}
-              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-background via-background to-transparent px-6 pt-3 pb-2">
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 px-6 pt-3 pb-2">
                 <button
                   onClick={reset}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -1722,33 +1717,28 @@ export function InquireMultipleChoicePreview() {
 
       {/* Input */}
       <div className="shrink-0 px-4 pb-4">
-        <div className="rounded-2xl border border-border bg-background shadow-sm">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault()
-                handleSubmit()
-              }
-            }}
-            placeholder="Ask something that requires choices..."
-            disabled={isProcessing || phase !== "idle"}
-            rows={2}
-            className="min-h-[60px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-foreground outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
-          />
-          <div className="flex items-center justify-end px-3 pb-3">
-            <button
-              onClick={handleSubmit}
-              disabled={!input.trim() || isProcessing || phase !== "idle"}
-              className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <AIInput
+          value={input}
+          onValueChange={setInput}
+          onSubmit={handleSubmit}
+          isLoading={isProcessing}
+          disabled={phase !== "idle"}
+        >
+          <AIInputTextarea placeholder="Ask something that requires choices..." />
+          <AIInputFooter className="justify-end">
+            <AIInputAction>
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || isProcessing || phase !== "idle"}
+                className="flex size-8 items-center justify-center rounded-full bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </AIInputAction>
+          </AIInputFooter>
+        </AIInput>
       </div>
     </div>
   )
@@ -1846,7 +1836,7 @@ export function InquireTextPreview() {
               animate={{ opacity: 1 }}
             >
               {/* Clear button */}
-              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-background via-background to-transparent px-6 pt-3 pb-2">
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 px-6 pt-3 pb-2">
                 <button
                   onClick={reset}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -2016,33 +2006,28 @@ export function InquireTextPreview() {
 
       {/* Input */}
       <div className="shrink-0 px-4 pb-4">
-        <div className="rounded-2xl border border-border bg-background shadow-sm">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault()
-                handleSubmit()
-              }
-            }}
-            placeholder="Ask something that needs detailed input..."
-            disabled={isProcessing || phase !== "idle"}
-            rows={2}
-            className="min-h-[60px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-foreground outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
-          />
-          <div className="flex items-center justify-end px-3 pb-3">
-            <button
-              onClick={handleSubmit}
-              disabled={!input.trim() || isProcessing || phase !== "idle"}
-              className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <AIInput
+          value={input}
+          onValueChange={setInput}
+          onSubmit={handleSubmit}
+          isLoading={isProcessing}
+          disabled={phase !== "idle"}
+        >
+          <AIInputTextarea placeholder="Ask something that needs detailed input..." />
+          <AIInputFooter className="justify-end">
+            <AIInputAction>
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || isProcessing || phase !== "idle"}
+                className="flex size-8 items-center justify-center rounded-full bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </AIInputAction>
+          </AIInputFooter>
+        </AIInput>
       </div>
     </div>
   )
@@ -2187,7 +2172,7 @@ export function ImageSelectPreview() {
           disabled={selected.size === 0}
           className={`rounded-full px-4 py-2 text-xs font-medium transition-all ${
             selected.size > 0
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-muted text-muted-foreground"
           }`}
           whileHover={selected.size > 0 ? { scale: 1.02 } : {}}

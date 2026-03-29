@@ -860,14 +860,6 @@ export function StackPageClient({ slug, registrySource, devMode = false }: Stack
           >
             <Github className="size-4" />
           </a>
-
-          <button
-            onClick={handleCopyCli}
-            className="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            title="Copy CLI command"
-          >
-            <ClipboardCopy className="size-4" />
-          </button>
         </div>
       </div>
 

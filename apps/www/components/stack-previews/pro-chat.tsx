@@ -88,7 +88,7 @@ export function ChatGPTPreview() {
               <div
                 className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-foreground text-background"
                     : "bg-card text-foreground"
                 }`}
               >
@@ -154,7 +154,7 @@ export function ChatGPTPreview() {
             whileTap={{ scale: 0.9 }}
             className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150 ${
               input.trim() && state === "idle"
-                ? "bg-primary text-primary-foreground"
+                ? "bg-foreground text-background"
                 : "bg-foreground/10 text-muted-foreground/50"
             }`}
           >
@@ -252,7 +252,7 @@ export function ChatClaudePreview() {
               <div
                 className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-foreground text-background"
                     : "bg-card text-foreground"
                 }`}
               >
@@ -318,7 +318,7 @@ export function ChatClaudePreview() {
             whileTap={{ scale: 0.9 }}
             className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150 ${
               input.trim() && state === "idle"
-                ? "bg-primary text-primary-foreground"
+                ? "bg-foreground text-background"
                 : "bg-foreground/10 text-muted-foreground/50"
             }`}
           >
@@ -416,7 +416,7 @@ export function ChatGrokPreview() {
               <div
                 className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 font-mono text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-foreground text-background"
                     : "bg-card text-foreground"
                 }`}
               >
@@ -482,7 +482,7 @@ export function ChatGrokPreview() {
             whileTap={{ scale: 0.9 }}
             className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150 ${
               input.trim() && state === "idle"
-                ? "bg-primary text-primary-foreground"
+                ? "bg-foreground text-background"
                 : "bg-foreground/10 text-muted-foreground/50"
             }`}
           >
@@ -786,7 +786,7 @@ export function MessageBranchNavigatorPreview() {
         transition={{ ...SPRING }}
         className="space-y-3"
       >
-        <div className="ml-8 rounded-2xl bg-primary px-3.5 py-2.5 text-sm text-primary-foreground">
+        <div className="ml-8 rounded-2xl bg-foreground px-3.5 py-2.5 text-sm text-background">
           Explain quantum computing simply
         </div>
         <div className="rounded-xl border border-border px-4 py-3">

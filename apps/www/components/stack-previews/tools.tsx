@@ -67,7 +67,7 @@ export function ClaudeWebSearchPreview() {
           whileTap={{ scale: 0.95 }}
           className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
             query.trim() && phase === "idle"
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-foreground/10 text-muted-foreground/50"
           }`}
         >
@@ -216,7 +216,7 @@ export function ExaWebSearchPreview() {
           whileTap={{ scale: 0.95 }}
           className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
             query.trim() && phase !== "searching"
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-foreground/10 text-muted-foreground/50"
           }`}
         >
@@ -324,7 +324,7 @@ export function CheerioScraperPreview() {
           whileTap={{ scale: 0.95 }}
           className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
             url.trim() && phase === "idle"
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-foreground/10 text-muted-foreground/50"
           }`}
         >
@@ -429,7 +429,7 @@ export function JinaScraperPreview() {
           whileTap={{ scale: 0.95 }}
           className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
             url.trim() && phase === "idle"
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-foreground/10 text-muted-foreground/50"
           }`}
         >
@@ -588,7 +588,7 @@ Read the [documentation](https://docs.example.com) for more details.`
           whileTap={{ scale: 0.95 }}
           className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
             phase !== "converting"
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-foreground/10 text-muted-foreground/50"
           }`}
         >

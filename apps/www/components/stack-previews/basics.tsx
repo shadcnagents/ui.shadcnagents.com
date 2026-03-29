@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { LiveWaveform } from "@/registry/stacks/basics-generate-speech/components/ui/live-waveform"
-import { ShimmeringText, SPRING, SuggestionPills, WaveDotsLoader, WAVE_KEYFRAMES } from "./shared"
+import { AIInput, AIInputTextarea, AIInputFooter, AIInputAction } from "@/components/ui/ai-input"
+import { CircleSpinner, ShimmeringText, SPRING, SuggestionPills, WaveDotsLoader, WAVE_KEYFRAMES } from "./shared"
 
 /* ─── Generate Text ─── */
 
@@ -58,117 +59,141 @@ export function GenerateTextPreview() {
   )
 
   return (
-    <div className="mx-auto flex h-[420px] w-full max-w-xl flex-col p-6">
+    <div className="mx-auto flex h-[420px] w-full max-w-2xl flex-col justify-end p-4">
       <style>{GT_KEYFRAMES}</style>
 
-      {/* ── Scrollable content area ── */}
+      {/* ── Response Area ── */}
       <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-        {/* ── User prompt bubble ── */}
         <AnimatePresence>
           {submittedPrompt && (
             <motion.div
-              initial={{ opacity: 0, y: 4 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
+              exit={{ opacity: 0, y: -6 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0 }}
-              className="mb-3 flex justify-end"
+              className="mb-4"
             >
-              <div className="max-w-[85%] rounded-2xl bg-primary px-3.5 py-2.5 text-sm text-primary-foreground">
-                {submittedPrompt}
+              {/* Question Bubble */}
+              <div className="mb-4 flex justify-end">
+                <div className="max-w-[85%] rounded-2xl bg-foreground px-4 py-3 text-sm leading-relaxed text-background">
+                  {submittedPrompt}
+                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* ── Thinking ── */}
-        <AnimatePresence>
-          {state === "thinking" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mb-5"
-            >
-              <WaveDotsLoader />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ── Complete — full block reveal (not streaming) ── */}
-        <AnimatePresence>
-          {state === "complete" && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="mb-5"
-            >
-              <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground">
-                {GT_RESPONSE}
-              </p>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="font-mono text-sm text-muted-foreground">
-                  gpt-4o · {GT_TOKENS} tokens · {(elapsed / 1000).toFixed(1)}s
-                </span>
-                <button
-                  onClick={reset}
-                  className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-                >
-                  clear
-                </button>
-              </div>
+              {/* Response */}
+              <AnimatePresence mode="wait">
+                {state === "thinking" ? (
+                  <motion.div
+                    key="thinking"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ShimmeringText
+                      text="Generating response..."
+                      className="text-base leading-relaxed"
+                      duration={1.5}
+                      spread={1.5}
+                    />
+                  </motion.div>
+                ) : state === "complete" ? (
+                  <motion.div
+                    key="complete"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground/80">
+                      {GT_RESPONSE}
+                    </p>
+                    <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{GT_TOKENS} tokens · {(elapsed / 1000).toFixed(1)}s</span>
+                      <button
+                        onClick={reset}
+                        className="transition-colors hover:text-foreground"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* ── Bottom-pinned: Suggestions + Input ── */}
-      <div className="shrink-0 pt-2">
-        <AnimatePresence>
-          {!prompt && state === "idle" && (
-            <div className="mb-3">
-              <SuggestionPills suggestions={GT_PLACEHOLDERS} onSelect={setPrompt} />
-            </div>
-          )}
-        </AnimatePresence>
+      {/* ── Suggestion Pills ── */}
+      <AnimatePresence>
+        {!prompt && state === "idle" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mb-3 flex flex-wrap justify-center gap-2"
+          >
+            {GT_PLACEHOLDERS.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setPrompt(suggestion)}
+                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="rounded-2xl border border-border bg-background shadow-sm transition-all duration-200 focus-within:border-foreground/30 focus-within:shadow-md">
-          <div className="px-4 pt-3.5 pb-1.5">
-            <input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submit()}
-              disabled={state === "thinking"}
-              placeholder="Enter a prompt..."
-              className="h-8 w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-40"
-            />
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              submit()
+            }
+          }}
+          placeholder="Enter a prompt..."
+          rows={1}
+          className="min-h-[44px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground"
+        />
+
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
+          {/* Model indicator pill */}
+          <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+            <span className="size-2 rounded-full bg-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">GPT-4o</span>
           </div>
-          <div className="flex items-center justify-between px-3 pb-3">
-            <div className="flex items-center gap-1">
-              <span className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-muted-foreground/60">
-                <span className="size-2 rounded-full bg-[#10a37f]" />
-                <span className="text-sm font-medium">GPT-4o</span>
-              </span>
-            </div>
-            <motion.button
-              onClick={submit}
-              disabled={!prompt.trim() || state === "thinking"}
-              whileTap={{ scale: 0.9 }}
-              className={cn(
-                "flex size-8 items-center justify-center rounded-lg transition-colors",
-                prompt.trim() && state !== "thinking"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-foreground/10 text-muted-foreground/50"
-              )}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
-            </motion.button>
-          </div>
+
+          {/* Send button */}
+          <motion.button
+            onClick={submit}
+            disabled={!prompt.trim() || state === "thinking"}
+            whileTap={{ scale: 0.92 }}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && state !== "thinking"
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </motion.button>
         </div>
       </div>
+
+      {/* Keyboard hint */}
+      <p className="mt-2.5 text-center text-xs text-muted-foreground">
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">↵</span>
+        <span className="ml-1.5">send</span>
+      </p>
     </div>
   )
 }
@@ -270,348 +295,424 @@ export function StreamTextPreview() {
       : null
 
   return (
-    <div className="mx-auto flex h-[420px] w-full max-w-xl flex-col p-6">
+    <div className="mx-auto flex h-[420px] w-full max-w-2xl flex-col justify-end p-4">
       <style>{ST_KEYFRAMES}</style>
 
-      {/* ── Scrollable content area ── */}
+      {/* ── Response Area ── */}
       <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-        {/* ── User prompt bubble ── */}
         <AnimatePresence>
           {submittedPrompt && (
             <motion.div
-              initial={{ opacity: 0, y: 4 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
+              exit={{ opacity: 0, y: -6 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0 }}
-              className="mb-3 flex justify-end"
+              className="mb-4"
             >
-              <div className="max-w-[85%] rounded-2xl bg-primary px-3.5 py-2.5 text-sm text-primary-foreground">
-                {submittedPrompt}
+              {/* Question Bubble */}
+              <div className="mb-4 flex justify-end">
+                <div className="max-w-[85%] rounded-2xl bg-foreground px-4 py-3 text-sm leading-relaxed text-background">
+                  {submittedPrompt}
+                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* ── Stream progress line ── */}
-        <AnimatePresence>
-          {isStreaming && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="mb-3 h-px overflow-hidden rounded-full bg-foreground/10"
-            >
-              <div
-                className="h-full w-1/3 rounded-full bg-foreground/25"
-                style={{ animation: "st-flow 1.5s ease-in-out infinite" }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {/* Streamed Response */}
+              {hasOutput && (
+                <div>
+                  <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground/80">
+                    {displayed}
+                    {isStreaming && (
+                      <span
+                        className="ml-px inline-block h-[15px] w-[1.5px] translate-y-[3px] rounded-full bg-foreground/60"
+                        style={{ animation: "st-pulse 0.6s ease-in-out infinite" }}
+                      />
+                    )}
+                  </p>
 
-        {/* ── Output ── */}
-        <AnimatePresence>
-          {hasOutput && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-              className="mb-5"
-            >
-              <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground">
-                {displayed}
-                {isStreaming && (
-                  <span
-                    className="ml-px inline-block h-[15px] w-[1.5px] translate-y-[3px] rounded-full bg-foreground/60"
-                    style={{ animation: "st-pulse 0.6s ease-in-out infinite" }}
-                  />
-                )}
-              </p>
+                  {/* Live token counter while streaming */}
+                  {isStreaming && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="mt-3"
+                    >
+                      <span className="text-xs tabular-nums text-muted-foreground">
+                        {tokenCount} tokens...
+                      </span>
+                    </motion.div>
+                  )}
 
-              {/* ── Live token counter while streaming ── */}
-              {isStreaming && (
-                <div className="mt-3 flex items-center gap-2">
-                  <WaveDotsLoader />
-                  <span className="font-mono text-sm tabular-nums text-muted-foreground">
-                    {tokenCount} tokens
-                  </span>
+                  {/* Completion footer */}
+                  {state === "complete" && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                      className="mt-4 flex items-center justify-between text-xs text-muted-foreground"
+                    >
+                      <span className="tabular-nums">
+                        {tokenCount} tokens · {(elapsed / 1000).toFixed(1)}s
+                        {tps && <> · {tps} tok/s</>}
+                      </span>
+                      <button
+                        onClick={reset}
+                        className="transition-colors hover:text-foreground"
+                      >
+                        Clear
+                      </button>
+                    </motion.div>
+                  )}
                 </div>
               )}
-
-              {/* ── Completion metadata ── */}
-              {state === "complete" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="mt-3 flex items-center justify-between"
-                >
-                  <span className="font-mono text-sm tabular-nums text-muted-foreground">
-                    {tokenCount} tokens · {(elapsed / 1000).toFixed(1)}s
-                    {tps && <> · {tps} tok/s</>}
-                  </span>
-                  <button
-                    onClick={reset}
-                    className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-                  >
-                    clear
-                  </button>
-                </motion.div>
-              )}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* ── Bottom-pinned: Suggestions + Input ── */}
-      <div className="shrink-0 pt-2">
-        <AnimatePresence>
-          {!prompt && state === "idle" && (
-            <div className="mb-3">
-              <SuggestionPills suggestions={ST_PLACEHOLDERS} onSelect={setPrompt} />
-            </div>
-          )}
-        </AnimatePresence>
+      {/* ── Suggestion Pills ── */}
+      <AnimatePresence>
+        {!prompt && state === "idle" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mb-3 flex flex-wrap justify-center gap-2"
+          >
+            {ST_PLACEHOLDERS.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setPrompt(suggestion)}
+                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="rounded-2xl border border-border bg-background shadow-sm transition-all duration-200 focus-within:border-foreground/30 focus-within:shadow-md">
-          <div className="px-4 pt-3.5 pb-1.5">
-            <input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submit()}
-              disabled={isStreaming}
-              placeholder="Ask anything..."
-              className="h-8 w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-40"
-            />
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              submit()
+            }
+          }}
+          placeholder="Ask anything..."
+          rows={1}
+          className="min-h-[44px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground"
+        />
+
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
+          {/* Stream indicator */}
+          <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+            {isStreaming ? (
+              <span
+                className="size-2 rounded-full bg-foreground"
+                style={{ animation: "st-pulse 0.6s ease-in-out infinite" }}
+              />
+            ) : (
+              <span className="size-2 rounded-full bg-foreground" />
+            )}
+            <span className="text-xs font-medium text-muted-foreground">Stream</span>
           </div>
-          <div className="flex items-center justify-between px-3 pb-3">
-            <span className="text-sm font-medium text-muted-foreground">AI SDK Stream</span>
-            <motion.button
-              onClick={submit}
-              disabled={!prompt.trim() || isStreaming}
-              whileTap={{ scale: 0.9 }}
-              className={cn(
-                "flex size-8 items-center justify-center rounded-lg transition-colors",
-                prompt.trim() && !isStreaming
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-foreground/10 text-muted-foreground/50"
-              )}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
-            </motion.button>
-          </div>
+
+          {/* Send button */}
+          <motion.button
+            onClick={submit}
+            disabled={!prompt.trim() || isStreaming}
+            whileTap={{ scale: 0.92 }}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && !isStreaming
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </motion.button>
         </div>
       </div>
+
+      {/* Keyboard hint */}
+      <p className="mt-2.5 text-center text-xs text-muted-foreground">
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">↵</span>
+        <span className="ml-1.5">send</span>
+      </p>
     </div>
   )
 }
 
 /* ─── Generate Image ─── */
-const imageVariants = [
-  {
-    gradient: "from-amber-200 via-orange-300 to-rose-400",
-    darkGradient: "dark:from-amber-900/60 dark:via-orange-800/50 dark:to-rose-900/60",
-    label: "Sunset Mountains",
-    shapes: (
-      <>
-        {/* Mountains */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <div className="absolute bottom-0 left-[10%] h-[60%] w-[45%] rounded-t-full bg-gradient-to-t from-stone-600/40 to-stone-500/20" />
-          <div className="absolute bottom-0 left-[35%] h-[75%] w-[40%] rounded-t-full bg-gradient-to-t from-stone-700/50 to-stone-500/25" />
-          <div className="absolute bottom-0 right-[5%] h-[50%] w-[50%] rounded-t-full bg-gradient-to-t from-stone-600/35 to-stone-400/15" />
-        </div>
-        {/* Sun */}
-        <div className="absolute right-[20%] top-[15%] size-[18%] rounded-full bg-yellow-200/60 blur-sm" />
-        <div className="absolute right-[21%] top-[16%] size-[16%] rounded-full bg-yellow-100/80" />
-      </>
-    ),
-  },
-  {
-    gradient: "from-sky-200 via-cyan-200 to-blue-300",
-    darkGradient: "dark:from-sky-900/60 dark:via-cyan-800/50 dark:to-blue-900/60",
-    label: "Ocean Waves",
-    shapes: (
-      <>
-        {/* Water waves */}
-        <div className="absolute bottom-0 left-0 right-0 h-[45%] bg-gradient-to-t from-blue-400/40 to-transparent" />
-        <div className="absolute bottom-[40%] left-0 right-0 h-[3px] rounded-full bg-white/20" />
-        <div className="absolute bottom-[32%] left-[10%] right-[20%] h-[2px] rounded-full bg-white/15" />
-        <div className="absolute bottom-[25%] left-[5%] right-[15%] h-[2px] rounded-full bg-white/10" />
-        {/* Cloud */}
-        <div className="absolute left-[15%] top-[12%] h-[12%] w-[25%] rounded-full bg-white/30 blur-sm" />
-      </>
-    ),
-  },
-  {
-    gradient: "from-violet-200 via-purple-300 to-indigo-400",
-    darkGradient: "dark:from-violet-900/60 dark:via-purple-800/50 dark:to-indigo-900/60",
-    label: "Northern Lights",
-    shapes: (
-      <>
-        {/* Aurora bands */}
-        <div className="absolute left-[10%] top-[10%] h-[30%] w-[80%] rotate-[-8deg] rounded-full bg-emerald-300/20 blur-md" />
-        <div className="absolute left-[20%] top-[20%] h-[25%] w-[60%] rotate-[-5deg] rounded-full bg-teal-300/15 blur-md" />
-        {/* Stars */}
-        <div className="absolute left-[20%] top-[15%] size-1 rounded-full bg-white/60" />
-        <div className="absolute left-[65%] top-[10%] size-0.5 rounded-full bg-white/40" />
-        <div className="absolute left-[45%] top-[25%] size-0.5 rounded-full bg-white/50" />
-        <div className="absolute left-[80%] top-[20%] size-1 rounded-full bg-white/30" />
-        {/* Ground */}
-        <div className="absolute bottom-0 left-0 right-0 h-[20%] bg-gradient-to-t from-slate-800/40 to-transparent" />
-      </>
-    ),
-  },
-  {
-    gradient: "from-emerald-200 via-green-200 to-teal-300",
-    darkGradient: "dark:from-emerald-900/60 dark:via-green-800/50 dark:to-teal-900/60",
-    label: "Forest Path",
-    shapes: (
-      <>
-        {/* Trees */}
-        <div className="absolute bottom-0 left-[5%] h-[70%] w-[20%]">
-          <div className="absolute bottom-0 left-1/2 h-[30%] w-[15%] -translate-x-1/2 bg-amber-800/30" />
-          <div className="absolute bottom-[25%] left-1/2 h-[50%] w-full -translate-x-1/2 rounded-t-full bg-green-600/30" />
-        </div>
-        <div className="absolute bottom-0 right-[8%] h-[80%] w-[18%]">
-          <div className="absolute bottom-0 left-1/2 h-[30%] w-[15%] -translate-x-1/2 bg-amber-800/25" />
-          <div className="absolute bottom-[25%] left-1/2 h-[55%] w-full -translate-x-1/2 rounded-t-full bg-green-700/35" />
-        </div>
-        {/* Path */}
-        <div className="absolute bottom-0 left-[30%] h-[40%] w-[40%] bg-gradient-to-t from-amber-200/20 to-transparent" style={{ clipPath: "polygon(35% 0%, 65% 0%, 100% 100%, 0% 100%)" }} />
-        {/* Light rays */}
-        <div className="absolute left-[40%] top-0 h-[60%] w-[20%] bg-gradient-to-b from-yellow-100/20 to-transparent blur-sm" />
-      </>
-    ),
-  },
+const GI_IMAGES = [
+  { src: "/app-assets/sample-01.jpg", label: "Variation 1" },
+  { src: "/app-assets/sample-02.jpg", label: "Variation 2" },
+  { src: "/app-assets/sample-03.jpg", label: "Variation 3" },
+  { src: "/app-assets/sample-04.jpg", label: "Variation 4" },
 ]
 
 export function GenerateImagePreview() {
-  const [state, setState] = useState<"idle" | "generating" | "complete">(
-    "idle"
-  )
+  const [state, setState] = useState<"idle" | "generating" | "complete">("idle")
+  const [loadingPhase, setLoadingPhase] = useState<"starting" | "rendering" | "done">("starting")
+  const [progress, setProgress] = useState(0)
   const [prompt, setPrompt] = useState("")
+  const [submittedPrompt, setSubmittedPrompt] = useState("")
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
 
   function generate() {
     if (!prompt.trim() || state === "generating") return
+    setSubmittedPrompt(prompt.trim())
+    setPrompt("")
     setState("generating")
+    setLoadingPhase("starting")
+    setProgress(0)
     setSelectedIdx(null)
-    setTimeout(() => setState("complete"), 2000)
   }
+
+  // Progressive reveal animation
+  useEffect(() => {
+    if (state !== "generating") return
+
+    // Start with "starting" phase for 800ms
+    const startingTimeout = setTimeout(() => {
+      setLoadingPhase("rendering")
+
+      const startTime = Date.now()
+      const duration = 2500 // 2.5 seconds for full reveal
+
+      const interval = setInterval(() => {
+        const elapsed = Date.now() - startTime
+        const progressPct = Math.min(100, (elapsed / duration) * 100)
+        setProgress(progressPct)
+
+        if (progressPct >= 100) {
+          clearInterval(interval)
+          setLoadingPhase("done")
+          setTimeout(() => setState("complete"), 300)
+        }
+      }, 16)
+
+      return () => clearInterval(interval)
+    }, 800)
+
+    return () => clearTimeout(startingTimeout)
+  }, [state])
 
   function reset() {
     setState("idle")
     setPrompt("")
+    setSubmittedPrompt("")
     setSelectedIdx(null)
+    setProgress(0)
+    setLoadingPhase("starting")
   }
 
+  const isGenerating = state === "generating"
+
+  // Get loading message based on phase
+  const loadingMessage = loadingPhase === "starting"
+    ? "Getting started..."
+    : loadingPhase === "rendering"
+      ? "Creating image. May take a moment."
+      : "Image created."
+
   return (
-    <div className="mx-auto w-full max-w-xl p-6">
+    <div className="mx-auto flex h-[500px] w-full max-w-2xl flex-col justify-end p-4">
       <style>{GT_KEYFRAMES}</style>
 
-      {/* ── Prompt textarea ── */}
-      <textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault()
-            generate()
-          }
-        }}
-        disabled={state === "generating"}
-        placeholder="A serene mountain landscape at golden hour, soft light filtering through clouds..."
-        rows={3}
-        className="w-full resize-none rounded-lg border border-border shadow-sm bg-card px-3 py-2.5 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus:border-foreground/10 disabled:opacity-40"
-      />
-      <div className="mt-2 flex items-center justify-between">
-        <span className="font-mono text-sm text-muted-foreground">
-          DALL·E 3 · 1024×1024
-        </span>
-        <button
-          onClick={generate}
-          disabled={!prompt.trim() || state === "generating"}
-          className="font-mono text-sm text-foreground/60 transition-colors hover:text-foreground disabled:opacity-20"
-        >
-          {state === "generating" ? "imagining..." : "generate →"}
-        </button>
+      {/* ── Output Area ── */}
+      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+        <AnimatePresence>
+          {submittedPrompt && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ type: "spring", duration: 0.4, bounce: 0 }}
+              className="mb-4"
+            >
+              {/* Prompt Bubble */}
+              <div className="mb-4 flex justify-end">
+                <div className="max-w-[85%] rounded-2xl bg-foreground px-4 py-3 text-sm leading-relaxed text-background">
+                  {submittedPrompt}
+                </div>
+              </div>
+
+              {/* Image Generation with Progressive Reveal */}
+              {(isGenerating || state === "complete") && (
+                <div className="flex flex-col gap-3">
+                  {/* Shimmer loading text */}
+                  <AnimatePresence mode="wait">
+                    {isGenerating && (
+                      <motion.span
+                        key={loadingPhase}
+                        className="bg-[linear-gradient(110deg,var(--color-muted-foreground),35%,var(--color-foreground),50%,var(--color-muted-foreground),75%,var(--color-muted-foreground))] bg-[length:200%_100%] bg-clip-text text-base font-medium text-transparent"
+                        initial={{ opacity: 0, backgroundPosition: "200% 0" }}
+                        animate={{
+                          opacity: 1,
+                          backgroundPosition: loadingPhase === "done" ? "0% 0" : "-200% 0"
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{
+                          opacity: { duration: 0.2 },
+                          backgroundPosition: {
+                            repeat: loadingPhase === "done" ? 0 : Infinity,
+                            duration: 2,
+                            ease: "linear",
+                          },
+                        }}
+                      >
+                        {loadingMessage}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Image grid with blur reveal */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {GI_IMAGES.map((img, i) => (
+                      <motion.button
+                        key={i}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, delay: i * 0.05 }}
+                        onClick={() => state === "complete" && setSelectedIdx(selectedIdx === i ? null : i)}
+                        disabled={isGenerating}
+                        className={cn(
+                          "group relative aspect-square overflow-hidden rounded-xl border border-border transition-all duration-200",
+                          state === "complete" && (
+                            selectedIdx === i
+                              ? "ring-2 ring-foreground/40 ring-offset-2 ring-offset-background"
+                              : selectedIdx !== null
+                                ? "opacity-40"
+                                : "hover:ring-1 hover:ring-foreground/20"
+                          )
+                        )}
+                      >
+                        {/* Actual image */}
+                        <img
+                          src={img.src}
+                          alt={img.label}
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+
+                        {/* Label - only show when complete */}
+                        {state === "complete" && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent px-2.5 pb-2 pt-8"
+                          >
+                            <p className="text-xs font-medium text-white/90">{img.label}</p>
+                          </motion.div>
+                        )}
+
+                        {/* Blur reveal overlay */}
+                        {isGenerating && (
+                          <motion.div
+                            className="pointer-events-none absolute -top-[25%] h-[125%] w-full backdrop-blur-2xl"
+                            initial={false}
+                            animate={{
+                              opacity: loadingPhase === "done" ? 0 : 1,
+                            }}
+                            transition={{ duration: 0.3 }}
+                            style={{
+                              clipPath: `polygon(0 ${progress}%, 100% ${progress}%, 100% 100%, 0 100%)`,
+                              maskImage: progress === 0
+                                ? "linear-gradient(to bottom, black -5%, black 100%)"
+                                : `linear-gradient(to bottom, transparent ${Math.max(0, progress - 10)}%, black ${progress + 5}%)`,
+                              WebkitMaskImage: progress === 0
+                                ? "linear-gradient(to bottom, black -5%, black 100%)"
+                                : `linear-gradient(to bottom, transparent ${Math.max(0, progress - 10)}%, black ${progress + 5}%)`,
+                            }}
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+
+                  {/* Footer */}
+                  {state === "complete" && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                      className="flex items-center justify-between text-xs text-muted-foreground"
+                    >
+                      <span>
+                        {selectedIdx !== null ? GI_IMAGES[selectedIdx].label : "Select a variation"}
+                      </span>
+                      <button
+                        onClick={reset}
+                        className="transition-colors hover:text-foreground"
+                      >
+                        Clear
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* ── Generating ── */}
-      <AnimatePresence>
-        {state === "generating" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="mt-6 flex items-center gap-2"
-          >
-            <WaveDotsLoader />
-            <span className="font-mono text-sm text-muted-foreground">
-              rendering 4 variations
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              generate()
+            }
+          }}
+          disabled={isGenerating}
+          placeholder="A serene mountain landscape at golden hour..."
+          rows={2}
+          className="min-h-[60px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-50"
+        />
 
-      {/* ── Image grid ── */}
-      <AnimatePresence>
-        {state === "complete" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ type: "spring", duration: 0.6, bounce: 0 }}
-            className="mt-5"
-          >
-            <div className="grid grid-cols-2 gap-2">
-              {imageVariants.map((v, i) => (
-                <motion.button
-                  key={i}
-                  initial={{ opacity: 0, filter: "blur(10px)" }}
-                  animate={{ opacity: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.5, delay: i * 0.12 }}
-                  onClick={() =>
-                    setSelectedIdx(selectedIdx === i ? null : i)
-                  }
-                  className={`group relative aspect-square overflow-hidden rounded-lg transition-all duration-200 ${
-                    selectedIdx === i
-                      ? "ring-1 ring-foreground/30 ring-offset-1 ring-offset-background"
-                      : selectedIdx !== null
-                        ? "opacity-40"
-                        : "hover:ring-1 hover:ring-foreground/10"
-                  }`}
-                >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${v.gradient} ${v.darkGradient}`}
-                  />
-                  {v.shapes}
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/25 to-transparent px-2 pb-1.5 pt-4">
-                    <p className="font-mono text-sm text-white/80">
-                      {v.label}
-                    </p>
-                  </div>
-                </motion.button>
-              ))}
-            </div>
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
+          {/* Model indicator */}
+          <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+            <span className="size-2 rounded-full bg-gradient-to-br from-pink-400 to-violet-500" />
+            <span className="text-xs font-medium text-muted-foreground">DALL·E 3</span>
+          </div>
 
-            <div className="mt-3 flex items-center justify-between">
-              <span className="font-mono text-sm text-muted-foreground">
-                {selectedIdx !== null
-                  ? imageVariants[selectedIdx].label
-                  : "select a variation"}
-              </span>
-              <button
-                onClick={reset}
-                className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-              >
-                clear
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {/* Generate button */}
+          <motion.button
+            onClick={generate}
+            disabled={!prompt.trim() || isGenerating}
+            whileTap={{ scale: 0.92 }}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && !isGenerating
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Keyboard hint */}
+      <p className="mt-2.5 text-center text-xs text-muted-foreground">
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">↵</span>
+        <span className="ml-1.5">generate</span>
+      </p>
     </div>
   )
 }
@@ -981,7 +1082,7 @@ export function GenerateSpeechPreview() {
           whileTap={{ scale: 0.97 }}
           whileHover={{ scale: 1.02 }}
           disabled={!text.trim() || state === "generating"}
-          className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-30"
+          className="rounded-full bg-foreground px-4 py-1.5 text-xs font-medium text-background transition-colors hover:bg-foreground/90 disabled:opacity-30"
         >
           {state === "generating" ? "Generating…" : "Speak"}
         </motion.button>
@@ -1259,7 +1360,7 @@ export function TranscribePreview() {
               onClick={transcribe}
               whileTap={{ scale: 0.97 }}
               whileHover={{ scale: 1.02 }}
-              className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
             >
               Transcribe
             </motion.button>
@@ -1412,398 +1513,1149 @@ export function TranscribePreview() {
 
 /* ─── Tool Calling ─── */
 
-const TOOL_STEPS = [
-  { type: "user" as const, content: "What's the weather in San Francisco?" },
+// Available tools with their detection patterns and response generators
+interface Tool {
+  name: string
+  icon: string
+  description: string
+  patterns: RegExp[]
+  extractArgs: (query: string) => Record<string, string>
+  generateResult: (args: Record<string, string>) => string
+  generateResponse: (args: Record<string, string>, result: string) => string
+}
+
+const AVAILABLE_TOOLS: Tool[] = [
   {
-    type: "tool_call" as const,
-    name: "getWeather",
-    args: '{ "city": "San Francisco" }',
+    name: "get_weather",
+    icon: "☀️",
+    description: "Get current weather for a location",
+    patterns: [/weather\s+(?:in|for|at)?\s*(.+)/i, /what.*weather.*(?:in|at)?\s*(.+)/i, /how.*(?:hot|cold|warm).*(?:in|at)?\s*(.+)/i],
+    extractArgs: (query) => {
+      const match = query.match(/(?:weather\s+(?:in|for|at)?\s*|what.*weather.*(?:in|at)?\s*|how.*(?:hot|cold|warm).*(?:in|at)?\s*)(.+?)(?:\?|$)/i)
+      return { location: match?.[1]?.trim() || "San Francisco" }
+    },
+    generateResult: (args) => {
+      const temps = [68, 72, 75, 80, 65, 70, 78]
+      const conditions = ["Sunny", "Partly Cloudy", "Clear", "Mostly Sunny"]
+      const temp = temps[Math.floor(Math.random() * temps.length)]
+      const condition = conditions[Math.floor(Math.random() * conditions.length)]
+      return JSON.stringify({ location: args.location, temperature: temp, unit: "°F", condition, humidity: "45%" }, null, 2)
+    },
+    generateResponse: (args, result) => {
+      const data = JSON.parse(result)
+      return `The current weather in ${data.location} is ${data.temperature}${data.unit} and ${data.condition.toLowerCase()}. Humidity is at ${data.humidity}.`
+    },
   },
   {
-    type: "tool_result" as const,
-    content:
-      '{ "temp": 18, "condition": "Partly Cloudy", "humidity": 65 }',
+    name: "calculate",
+    icon: "🔢",
+    description: "Perform mathematical calculations",
+    patterns: [/(?:calculate|compute|what is|what's|solve|evaluate)\s+(.+)/i, /(\d+[\s\d+\-*/().^%]+\d+)/],
+    extractArgs: (query) => {
+      const match = query.match(/(?:calculate|compute|what is|what's|solve|evaluate)\s+(.+?)(?:\?|$)/i) || query.match(/(\d+[\s\d+\-*/().^%]+)/i)
+      return { expression: match?.[1]?.trim() || "2 + 2" }
+    },
+    generateResult: (args) => {
+      try {
+        // Simple safe eval for basic math (demo only)
+        const expr = args.expression.replace(/[^0-9+\-*/().%\s^]/g, "").replace(/\^/g, "**")
+        const result = Function(`"use strict"; return (${expr})`)()
+        return JSON.stringify({ expression: args.expression, result: Number(result.toFixed(6)) })
+      } catch {
+        return JSON.stringify({ expression: args.expression, result: 42, note: "Computed result" })
+      }
+    },
+    generateResponse: (args, result) => {
+      const data = JSON.parse(result)
+      return `The result of ${data.expression} is **${data.result}**.`
+    },
   },
   {
-    type: "assistant" as const,
-    content:
-      "It's currently 18°C and partly cloudy in San Francisco with 65% humidity.",
+    name: "search_web",
+    icon: "🔍",
+    description: "Search the web for information",
+    patterns: [/search\s+(?:for\s+)?(.+)/i, /find\s+(?:info|information)\s+(?:about|on)\s+(.+)/i, /look\s+up\s+(.+)/i, /what\s+(?:is|are)\s+(.+)/i, /who\s+(?:is|was)\s+(.+)/i],
+    extractArgs: (query) => {
+      const match = query.match(/(?:search\s+(?:for\s+)?|find\s+(?:info|information)\s+(?:about|on)\s+|look\s+up\s+|what\s+(?:is|are)\s+|who\s+(?:is|was)\s+)(.+?)(?:\?|$)/i)
+      return { query: match?.[1]?.trim() || query }
+    },
+    generateResult: (args) => {
+      return JSON.stringify({
+        query: args.query,
+        results: [
+          { title: `${args.query} - Wikipedia`, snippet: `${args.query} is a topic with extensive documentation and research...` },
+          { title: `Understanding ${args.query}`, snippet: `A comprehensive guide to ${args.query} and its applications...` },
+        ],
+        total_results: 2450000,
+      }, null, 2)
+    },
+    generateResponse: (args, result) => {
+      const data = JSON.parse(result)
+      return `Based on my search for "${data.query}", I found ${data.total_results.toLocaleString()} results. ${data.results[0].snippet}`
+    },
+  },
+  {
+    name: "get_time",
+    icon: "🕐",
+    description: "Get current time in a timezone",
+    patterns: [/(?:what|current)?\s*time\s+(?:in|at)?\s*(.+)/i, /what\s+time\s+is\s+it\s+(?:in|at)?\s*(.+)/i],
+    extractArgs: (query) => {
+      const match = query.match(/time\s+(?:in|at)?\s*(.+?)(?:\?|$)/i)
+      return { timezone: match?.[1]?.trim() || "UTC" }
+    },
+    generateResult: (args) => {
+      const now = new Date()
+      const hours = now.getHours()
+      const mins = now.getMinutes().toString().padStart(2, "0")
+      const ampm = hours >= 12 ? "PM" : "AM"
+      const h12 = hours % 12 || 12
+      return JSON.stringify({ timezone: args.timezone, time: `${h12}:${mins} ${ampm}`, date: now.toLocaleDateString() })
+    },
+    generateResponse: (args, result) => {
+      const data = JSON.parse(result)
+      return `The current time in ${data.timezone} is ${data.time} on ${data.date}.`
+    },
   },
 ]
 
-export function ToolCallingPreview() {
-  const [step, setStep] = useState(0)
+const TC_PLACEHOLDERS = [
+  "What's the weather in Tokyo?",
+  "Calculate 15% of 250",
+  "Search for React best practices",
+  "What time is it in London?",
+]
 
-  useEffect(() => {
-    if (step < TOOL_STEPS.length) {
-      const timer = setTimeout(() => setStep((s) => s + 1), 1200)
-      return () => clearTimeout(timer)
+// Inline code component
+function InlineCode({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="mx-0.5 rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-foreground/80">
+      {children}
+    </code>
+  )
+}
+
+// Detect which tool to use based on query
+function detectTool(query: string): Tool | null {
+  for (const tool of AVAILABLE_TOOLS) {
+    if (tool.patterns.some((p) => p.test(query))) {
+      return tool
     }
-  }, [step])
+  }
+  return null
+}
+
+interface ToolCallState {
+  tool: Tool
+  args: Record<string, string>
+  result: string
+  response: string
+}
+
+export function ToolCallingPreview() {
+  const [state, setState] = useState<"idle" | "thinking" | "calling" | "result" | "complete">("idle")
+  const [prompt, setPrompt] = useState("")
+  const [submittedPrompt, setSubmittedPrompt] = useState("")
+  const [toolCall, setToolCall] = useState<ToolCallState | null>(null)
+  const [startTime, setStartTime] = useState<number>(0)
+  const [duration, setDuration] = useState<string>("0.0")
+
+  function submit() {
+    if (!prompt.trim() || state !== "idle") return
+    const query = prompt.trim()
+    setSubmittedPrompt(query)
+    setPrompt("")
+    setState("thinking")
+    setStartTime(Date.now())
+
+    // Detect which tool to use
+    const detectedTool = detectTool(query)
+
+    if (detectedTool) {
+      const args = detectedTool.extractArgs(query)
+
+      // Simulate thinking delay
+      setTimeout(() => {
+        setState("calling")
+
+        // Simulate tool call delay
+        setTimeout(() => {
+          const result = detectedTool.generateResult(args)
+          setState("result")
+
+          // Generate final response
+          setTimeout(() => {
+            const response = detectedTool.generateResponse(args, result)
+            setToolCall({ tool: detectedTool, args, result, response })
+            setDuration(((Date.now() - Date.now() + 2800) / 1000).toFixed(1))
+            setState("complete")
+          }, 600)
+        }, 1000)
+      }, 800)
+    } else {
+      // No tool needed - direct response
+      setTimeout(() => {
+        setToolCall(null)
+        setDuration("0.8")
+        setState("complete")
+      }, 800)
+    }
+  }
+
+  function reset() {
+    setState("idle")
+    setPrompt("")
+    setSubmittedPrompt("")
+    setToolCall(null)
+    setDuration("0.0")
+  }
+
+  const isProcessing = state !== "idle" && state !== "complete"
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-3 p-6">
+    <div className="mx-auto flex h-[520px] w-full max-w-2xl flex-col justify-end p-4">
       <style>{GT_KEYFRAMES}</style>
 
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-sm text-muted-foreground">
-          Claude Tool Use
-        </span>
-        <button
-          onClick={() => setStep(0)}
-          className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-        >
-          replay
-        </button>
+      {/* ── Response Area ── */}
+      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+        <AnimatePresence>
+          {submittedPrompt && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ type: "spring", duration: 0.4, bounce: 0 }}
+              className="space-y-4"
+            >
+              {/* User Question Bubble */}
+              <div className="flex justify-end">
+                <div className="max-w-[90%] rounded-2xl bg-foreground px-4 py-3 text-sm leading-relaxed text-background">
+                  {submittedPrompt}
+                </div>
+              </div>
+
+              {/* Thinking state */}
+              <AnimatePresence>
+                {state === "thinking" && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <ShimmeringText
+                      text="Analyzing request..."
+                      className="text-sm"
+                      duration={1.5}
+                      spread={1.5}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Tool Call Display */}
+              <AnimatePresence>
+                {(state === "calling" || state === "result" || state === "complete") && toolCall && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-3"
+                  >
+                    {/* Tool being called */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 rounded-md bg-muted/50 px-2 py-1">
+                        <span className="text-sm">{toolCall.tool.icon}</span>
+                        <span className="font-mono text-xs text-foreground">{toolCall.tool.name}</span>
+                      </div>
+                      {state === "calling" && (
+                        <CircleSpinner size={14} className="text-muted-foreground" />
+                      )}
+                      {(state === "result" || state === "complete") && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-green-600">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
+
+                    {/* Tool Arguments */}
+                    <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                      <p className="mb-1.5 text-xs font-medium text-muted-foreground">Arguments</p>
+                      <pre className="font-mono text-xs text-foreground/90">
+                        {JSON.stringify(toolCall.args, null, 2)}
+                      </pre>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Calling shimmer */}
+              <AnimatePresence>
+                {state === "calling" && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <ShimmeringText
+                      text="Executing tool..."
+                      className="text-sm"
+                      duration={1.5}
+                      spread={1.5}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Tool Result */}
+              <AnimatePresence>
+                {(state === "result" || state === "complete") && toolCall && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-lg border border-border/60 bg-muted/30 p-3"
+                  >
+                    <p className="mb-1.5 text-xs font-medium text-muted-foreground">Result</p>
+                    <pre className="font-mono text-xs text-foreground/90 whitespace-pre-wrap">
+                      {toolCall.result}
+                    </pre>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Result processing shimmer */}
+              <AnimatePresence>
+                {state === "result" && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <ShimmeringText
+                      text="Processing result..."
+                      className="text-sm"
+                      duration={1.5}
+                      spread={1.5}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Final Response */}
+              <AnimatePresence>
+                {state === "complete" && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="space-y-4"
+                  >
+                    <p className="text-sm leading-relaxed text-foreground">
+                      {toolCall ? toolCall.response : "I can help you with that! Try asking about the weather, calculations, searching the web, or checking the time in different locations."}
+                    </p>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>
+                        {toolCall ? `1 tool used · ${duration}s` : `No tools needed · ${duration}s`}
+                      </span>
+                      <button
+                        onClick={reset}
+                        className="transition-colors hover:text-foreground"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
+      {/* ── Suggestion Pills ── */}
       <AnimatePresence>
-        {TOOL_STEPS.slice(0, step).map((s, i) => (
+        {!prompt && state === "idle" && (
           <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", duration: 0.4, bounce: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mb-3 flex flex-wrap justify-center gap-2"
           >
-            {s.type === "user" && (
-              <div className="flex justify-end">
-                <div className="rounded-full bg-foreground/10 px-3 py-1.5 text-sm text-foreground">
-                  {s.content}
-                </div>
-              </div>
-            )}
-            {s.type === "tool_call" && (
-              <div className="rounded-lg bg-muted/70 px-3 py-2.5">
-                <div className="flex items-center gap-1.5">
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="text-foreground/50"
-                  >
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                  </svg>
-                  <span className="font-mono text-sm text-foreground/50">
-                    {s.name}
-                  </span>
-                </div>
-                <pre className="mt-1 font-mono text-sm text-foreground/60">
-                  {s.args}
-                </pre>
-              </div>
-            )}
-            {s.type === "tool_result" && (
-              <div className="rounded-lg border border-dashed border-border shadow-sm px-3 py-2.5">
-                <span className="font-mono text-sm text-muted-foreground">
-                  result
-                </span>
-                <pre className="mt-1 font-mono text-sm text-foreground/60">
-                  {s.content}
-                </pre>
-              </div>
-            )}
-            {s.type === "assistant" && (
-              <p className="text-base leading-[1.8] text-foreground">
-                {s.content}
-              </p>
-            )}
+            {TC_PLACEHOLDERS.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setPrompt(suggestion)}
+                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+              >
+                {suggestion}
+              </button>
+            ))}
           </motion.div>
-        ))}
+        )}
       </AnimatePresence>
 
-      {step > 0 && step < TOOL_STEPS.length && (
-        <div className="flex items-center gap-2">
-          <WaveDotsLoader />
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              submit()
+            }
+          }}
+          disabled={isProcessing}
+          placeholder="Ask something that needs a tool..."
+          rows={1}
+          className="min-h-[44px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-50"
+        />
+
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
+          {/* Tool indicator */}
+          <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+            </svg>
+            <span className="text-xs font-medium text-muted-foreground">4 Tools</span>
+          </div>
+
+          {/* Send button */}
+          <motion.button
+            onClick={submit}
+            disabled={!prompt.trim() || isProcessing}
+            whileTap={{ scale: 0.92 }}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && !isProcessing
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </motion.button>
         </div>
-      )}
+      </div>
+
+      {/* Keyboard hint */}
+      <p className="mt-2.5 text-center text-xs text-muted-foreground">
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">↵</span>
+        <span className="ml-1.5">send</span>
+      </p>
     </div>
   )
 }
 
-/* ─── Agent Playground (OpenAI Style) ─── */
+/* ─── Agent with Control & Trust Patterns ─── */
 
-const PLAYGROUND_MODELS = [
-  { id: "gpt-4o", name: "gpt-4o" },
-  { id: "gpt-4o-mini", name: "gpt-4o-mini" },
-  { id: "gpt-4-turbo", name: "gpt-4-turbo" },
-  { id: "gpt-3.5-turbo", name: "gpt-3.5-turbo" },
-]
+// Agent action types with risk levels
+type AgentActionType = "search" | "read" | "write" | "terminal"
+type RiskLevel = "safe" | "moderate" | "risky"
+type AutonomyLevel = "manual" | "semi" | "auto"
 
-const PLAYGROUND_MODES = [
-  { id: "chat", name: "Chat", icon: "chat" },
-  { id: "complete", name: "Complete", icon: "complete" },
-]
-
-interface Message {
-  role: "user" | "assistant"
-  content: string
+interface AgentStep {
+  id: string
+  type: AgentActionType
+  description: string
+  target: string
+  risk: RiskLevel
+  status: "pending" | "approved" | "running" | "complete" | "skipped" | "undone"
+  result?: string
+  tokens?: number
 }
 
-const SAMPLE_RESPONSE = `Creativity is the ability to generate new and innovative ideas, original thoughts, and imaginative solutions. It involves thinking in unique and unconventional ways according to diverse. Creativity is characterized by combining different elements, rearranging new insights, producing imaginative possibilities, and utilizing designs independent to formulate concepts and strategies. It involves mentally exploration gain effective results appreciate knowledge and emphasize a novel perspective throughout enabling transformations inspiring limitless facets extensive disenable uniqueness ultimately entertain change constructive unexpected pursue connection hugh solve differing entails skills necessary could related engaging lacking generation easily various encountering able collaborative range degree imagining push thoughts rationale process experimenting influence experiments advance presence addition significantly-driven disciplines target address create problems improvements.`
+// Generate dynamic plan based on task
+function generateAgentSteps(task: string): AgentStep[] {
+  const taskLower = task.toLowerCase()
+
+  if (taskLower.includes("dark mode") || taskLower.includes("toggle") || taskLower.includes("theme")) {
+    return [
+      { id: "1", type: "search", description: "Find existing theme configuration", target: "src/**/*theme*", risk: "safe", status: "pending", tokens: 120 },
+      { id: "2", type: "read", description: "Analyze current styling approach", target: "src/styles/globals.css", risk: "safe", status: "pending", tokens: 85 },
+      { id: "3", type: "write", description: "Create theme context provider", target: "src/contexts/ThemeContext.tsx", risk: "moderate", status: "pending", tokens: 340 },
+      { id: "4", type: "write", description: "Add toggle component", target: "src/components/ThemeToggle.tsx", risk: "moderate", status: "pending", tokens: 210 },
+      { id: "5", type: "terminal", description: "Run type check", target: "npm run typecheck", risk: "safe", status: "pending", tokens: 45 },
+    ]
+  }
+
+  if (taskLower.includes("fix") || taskLower.includes("bug")) {
+    return [
+      { id: "1", type: "search", description: "Search for error patterns", target: "src/**/*.{ts,tsx}", risk: "safe", status: "pending", tokens: 150 },
+      { id: "2", type: "read", description: "Read error source file", target: "src/utils/api.ts", risk: "safe", status: "pending", tokens: 95 },
+      { id: "3", type: "write", description: "Apply bug fix", target: "src/utils/api.ts", risk: "moderate", status: "pending", tokens: 180 },
+      { id: "4", type: "terminal", description: "Run test suite", target: "npm run test", risk: "safe", status: "pending", tokens: 60 },
+    ]
+  }
+
+  if (taskLower.includes("test")) {
+    return [
+      { id: "1", type: "read", description: "Analyze component to test", target: "src/components/Button.tsx", risk: "safe", status: "pending", tokens: 110 },
+      { id: "2", type: "write", description: "Create test file", target: "src/components/Button.test.tsx", risk: "safe", status: "pending", tokens: 290 },
+      { id: "3", type: "terminal", description: "Execute tests", target: "npm run test Button", risk: "safe", status: "pending", tokens: 55 },
+    ]
+  }
+
+  return [
+    { id: "1", type: "search", description: "Explore codebase structure", target: "src/**/*", risk: "safe", status: "pending", tokens: 130 },
+    { id: "2", type: "read", description: "Read relevant files", target: "src/index.ts", risk: "safe", status: "pending", tokens: 90 },
+    { id: "3", type: "write", description: "Implement changes", target: "src/feature.ts", risk: "moderate", status: "pending", tokens: 250 },
+    { id: "4", type: "terminal", description: "Verify build", target: "npm run build", risk: "safe", status: "pending", tokens: 50 },
+  ]
+}
+
+// Generate result based on step type
+function generateStepResult(step: AgentStep): string {
+  switch (step.type) {
+    case "search":
+      return `Found 3 matching files:\n• ${step.target.replace("**/*", "config/theme.ts")}\n• ${step.target.replace("**/*", "hooks/useTheme.ts")}\n• ${step.target.replace("**/*", "components/ThemeProvider.tsx")}`
+    case "read":
+      return `Analyzed ${step.target}\n• 124 lines of code\n• 3 exports found\n• No issues detected`
+    case "write":
+      return `✓ Successfully wrote to ${step.target}\n• Added 45 lines\n• Modified 12 lines`
+    case "terminal":
+      return step.target.includes("test")
+        ? `✓ All tests passed (8/8)\n• 100% coverage on modified files`
+        : `✓ ${step.target} completed successfully`
+    default:
+      return "✓ Completed"
+  }
+}
+
+const AGENT_SUGGESTIONS = [
+  "Add dark mode toggle",
+  "Fix the login bug",
+  "Write tests for Button",
+  "Refactor API calls",
+]
+
+// Step icon based on type and status
+function StepIcon({ type, status, risk }: { type: AgentActionType; status: string; risk: RiskLevel }) {
+  if (status === "running") {
+    return <CircleSpinner size={14} className="text-foreground" />
+  }
+  if (status === "complete") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-green-600">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    )
+  }
+  if (status === "skipped") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground/50">
+        <path d="M5 12h14" />
+      </svg>
+    )
+  }
+  if (status === "undone") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-yellow-600">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+      </svg>
+    )
+  }
+
+  const icons: Record<AgentActionType, React.ReactNode> = {
+    search: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
+      </svg>
+    ),
+    read: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+      </svg>
+    ),
+    write: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={risk === "risky" ? "text-red-500" : risk === "moderate" ? "text-yellow-600" : "text-muted-foreground"}>
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+    ),
+    terminal: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+        <polyline points="4 17 10 11 4 5" />
+        <line x1="12" y1="19" x2="20" y2="19" />
+      </svg>
+    ),
+  }
+  return icons[type]
+}
+
+// Risk badge
+function RiskBadge({ risk }: { risk: RiskLevel }) {
+  const styles = {
+    safe: "bg-green-500/10 text-green-600",
+    moderate: "bg-yellow-500/10 text-yellow-600",
+    risky: "bg-red-500/10 text-red-500",
+  }
+  return (
+    <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", styles[risk])}>
+      {risk}
+    </span>
+  )
+}
 
 export function AgentSetupPreview() {
-  const [mode, setMode] = useState("chat")
-  const [model, setModel] = useState("gpt-3.5-turbo")
-  const [temperature, setTemperature] = useState(2)
-  const [maxLength, setMaxLength] = useState(256)
-  const [stopSequences, setStopSequences] = useState("")
-  const [topP, setTopP] = useState(1)
-  const [frequencyPenalty, setFrequencyPenalty] = useState(0)
-  const [presencePenalty, setPresencePenalty] = useState(0)
-  const [systemPrompt, setSystemPrompt] = useState("You are a helpful assistant.")
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "user", content: "What is creativity?" },
-    { role: "assistant", content: SAMPLE_RESPONSE }
-  ])
-  const [showModelDropdown, setShowModelDropdown] = useState(false)
-  const [showModeDropdown, setShowModeDropdown] = useState(false)
+  const [state, setState] = useState<"idle" | "planning" | "reviewing" | "running" | "paused" | "complete">("idle")
+  const [autonomy, setAutonomy] = useState<AutonomyLevel>("semi")
+  const [prompt, setPrompt] = useState("")
+  const [submittedPrompt, setSubmittedPrompt] = useState("")
+  const [steps, setSteps] = useState<AgentStep[]>([])
+  const [currentStepIndex, setCurrentStepIndex] = useState(-1)
+  const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set())
+  const [elapsedTime, setElapsedTime] = useState(0)
+  const [completedSteps, setCompletedSteps] = useState<string[]>([])
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const executionRef = useRef<{ cancelled: boolean; paused: boolean }>({ cancelled: false, paused: false })
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const totalTokens = steps.reduce((sum, s) => sum + (s.tokens || 0), 0)
+  const usedTokens = steps.filter(s => s.status === "complete").reduce((sum, s) => sum + (s.tokens || 0), 0)
+
+  // Submit task and generate plan
+  function submitTask() {
+    if (!prompt.trim() || state !== "idle") return
+    const task = prompt.trim()
+    setSubmittedPrompt(task)
+    setPrompt("")
+    setState("planning")
+
+    // Generate plan after short delay
+    setTimeout(() => {
+      const plan = generateAgentSteps(task)
+      setSteps(plan)
+      setState("reviewing")
+    }, 800)
+  }
+
+  // Approve plan and start execution
+  function approvePlan(runAll: boolean) {
+    if (runAll || autonomy === "auto") {
+      setSteps(prev => prev.map(s => ({ ...s, status: "approved" as const })))
+    }
+    startExecution()
+  }
+
+  // Start or resume execution
+  function startExecution() {
+    setState("running")
+    executionRef.current = { cancelled: false, paused: false }
+    setElapsedTime(0)
+
+    timerRef.current = setInterval(() => {
+      setElapsedTime(t => t + 0.1)
+    }, 100)
+
+    executeNextStep(0)
+  }
+
+  // Execute steps sequentially
+  function executeNextStep(index: number) {
+    if (executionRef.current.cancelled) return
+    if (executionRef.current.paused) {
+      setState("paused")
+      return
+    }
+
+    const pendingSteps = steps.filter(s => s.status === "pending" || s.status === "approved")
+    if (pendingSteps.length === 0 || index >= steps.length) {
+      completeExecution()
+      return
+    }
+
+    const step = steps[index]
+    if (step.status === "skipped" || step.status === "complete" || step.status === "undone") {
+      executeNextStep(index + 1)
+      return
+    }
+
+    // In manual mode, wait for approval
+    if (autonomy === "manual" && step.status === "pending") {
+      setCurrentStepIndex(index)
+      setState("paused")
+      return
+    }
+
+    // Execute step
+    setCurrentStepIndex(index)
+    setSteps(prev => prev.map((s, i) => i === index ? { ...s, status: "running" as const } : s))
+
+    setTimeout(() => {
+      if (executionRef.current.cancelled) return
+
+      const result = generateStepResult(step)
+      setSteps(prev => prev.map((s, i) => i === index ? { ...s, status: "complete" as const, result } : s))
+      setCompletedSteps(prev => [...prev, step.id])
+      setExpandedSteps(prev => new Set(prev).add(step.id))
+
+      setTimeout(() => executeNextStep(index + 1), 200)
+    }, 500 + Math.random() * 300)
+  }
+
+  // Complete execution
+  function completeExecution() {
+    if (timerRef.current) clearInterval(timerRef.current)
+    setState("complete")
+  }
+
+  // Pause execution
+  function pauseExecution() {
+    executionRef.current.paused = true
+    setState("paused")
+  }
+
+  // Resume execution
+  function resumeExecution() {
+    executionRef.current.paused = false
+    setState("running")
+
+    if (!timerRef.current) {
+      timerRef.current = setInterval(() => setElapsedTime(t => t + 0.1), 100)
+    }
+
+    executeNextStep(currentStepIndex)
+  }
+
+  // Approve single step (manual mode)
+  function approveStep(stepId: string) {
+    setSteps(prev => prev.map(s => s.id === stepId ? { ...s, status: "approved" as const } : s))
+    resumeExecution()
+  }
+
+  // Skip a step
+  function skipStep(stepId: string) {
+    setSteps(prev => prev.map(s => s.id === stepId ? { ...s, status: "skipped" as const } : s))
+    if (state === "paused") {
+      resumeExecution()
+    }
+  }
+
+  // Undo last completed step
+  function undoLastStep() {
+    if (completedSteps.length === 0) return
+    const lastId = completedSteps[completedSteps.length - 1]
+    setSteps(prev => prev.map(s => s.id === lastId ? { ...s, status: "undone" as const, result: undefined } : s))
+    setCompletedSteps(prev => prev.slice(0, -1))
+  }
+
+  // Abort and reset
+  function abort() {
+    executionRef.current.cancelled = true
+    if (timerRef.current) clearInterval(timerRef.current)
+    reset()
+  }
+
+  // Full reset
+  function reset() {
+    if (timerRef.current) clearInterval(timerRef.current)
+    setState("idle")
+    setPrompt("")
+    setSubmittedPrompt("")
+    setSteps([])
+    setCurrentStepIndex(-1)
+    setExpandedSteps(new Set())
+    setElapsedTime(0)
+    setCompletedSteps([])
+    executionRef.current = { cancelled: false, paused: false }
+  }
+
+  function toggleStep(stepId: string) {
+    setExpandedSteps(prev => {
+      const next = new Set(prev)
+      if (next.has(stepId)) next.delete(stepId)
+      else next.add(stepId)
+      return next
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (scrollRef.current && (state === "running" || state === "reviewing")) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [currentStepIndex, state, steps])
+
+  const isActive = state !== "idle"
 
   return (
-    <div className="flex h-[520px] w-full max-w-5xl mx-auto border border-border/40 rounded-lg overflow-hidden bg-background">
-      {/* Left Sidebar - System */}
-      <div className="w-48 border-r border-border/40 flex flex-col">
-        <div className="p-4 flex-1">
-          <label className="text-xs font-semibold text-foreground tracking-wide mb-3 block">
-            SYSTEM
-          </label>
-          <textarea
-            value={systemPrompt}
-            onChange={(e) => setSystemPrompt(e.target.value)}
-            className="w-full h-20 bg-transparent text-sm text-muted-foreground resize-none outline-none placeholder:text-muted-foreground/40 leading-relaxed"
-            placeholder="You are a helpful assistant."
-          />
-        </div>
-      </div>
+    <div className="mx-auto flex h-[520px] w-full max-w-2xl flex-col p-4">
+      <style>{GT_KEYFRAMES}</style>
 
-      {/* Main Content - Messages */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-border/40">
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {messages.map((msg, i) => (
-            <div key={i} className="flex gap-6">
-              <span className={cn(
-                "text-xs font-semibold tracking-wide shrink-0 w-20 pt-0.5",
-                msg.role === "user" ? "text-foreground" : "text-muted-foreground"
-              )}>
-                {msg.role === "user" ? "USER" : "ASSISTANT"}
-              </span>
-              <p className="text-sm text-muted-foreground leading-relaxed flex-1">
-                {msg.content}
-              </p>
-            </div>
-          ))}
-        </div>
+      {/* ── Main Content Area ── */}
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
+        <AnimatePresence mode="wait">
+          {/* Planning State */}
+          {state === "planning" && (
+            <motion.div
+              key="planning"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-4"
+            >
+              <div className="flex justify-end">
+                <div className="max-w-[85%] rounded-2xl bg-foreground px-4 py-3 text-sm text-background">
+                  {submittedPrompt}
+                </div>
+              </div>
+              <ShimmeringText text="Planning steps..." className="text-sm" duration={1.5} spread={1.5} />
+            </motion.div>
+          )}
 
-        {/* Add Message */}
-        <div className="px-6 py-3 border-t border-border/40">
-          <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 8v8M8 12h8" />
-            </svg>
-            Add message
-          </button>
-        </div>
+          {/* Review State - INTENT PREVIEW */}
+          {state === "reviewing" && (
+            <motion.div
+              key="reviewing"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="space-y-4"
+            >
+              {/* Task */}
+              <div className="flex justify-end">
+                <div className="max-w-[85%] rounded-2xl bg-foreground px-4 py-3 text-sm text-background">
+                  {submittedPrompt}
+                </div>
+              </div>
 
-        {/* Bottom Bar */}
-        <div className="px-6 py-4 border-t border-border/40 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button className="px-4 py-2 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium transition-colors">
-              Submit
-            </button>
-            <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                <path d="M3 3v5h5" />
-              </svg>
-            </button>
-          </div>
-          <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            Give us feedback
-          </button>
-        </div>
-      </div>
+              {/* Plan Header */}
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-foreground">Proposed Plan</p>
+                <span className="text-xs text-muted-foreground">~{totalTokens} tokens</span>
+              </div>
 
-      {/* Right Sidebar - Settings */}
-      <div className="w-52 overflow-y-auto">
-        <div className="p-4 space-y-5">
-          {/* Mode */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block">
-              Mode
-            </label>
-            <div className="relative">
-              <button
-                onClick={() => setShowModeDropdown(!showModeDropdown)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-md border border-border/60 bg-background text-sm text-foreground hover:border-foreground/20 transition-colors"
-              >
-                <span className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                  Chat
-                </span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-              {showModeDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 py-1 rounded-md border border-border/60 bg-background shadow-lg z-10">
-                  {PLAYGROUND_MODES.map((m) => (
+              {/* Steps Preview */}
+              <div className="space-y-2">
+                {steps.map((step, index) => (
+                  <motion.div
+                    key={step.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-background p-3"
+                  >
+                    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground">
+                      {index + 1}
+                    </span>
+                    <StepIcon type={step.type} status={step.status} risk={step.risk} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground">{step.description}</p>
+                      <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">{step.target}</p>
+                    </div>
+                    <RiskBadge risk={step.risk} />
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Approval Buttons */}
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  onClick={() => approvePlan(true)}
+                  className="flex-1 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+                >
+                  Approve & Run All
+                </button>
+                <button
+                  onClick={() => { setAutonomy("manual"); approvePlan(false) }}
+                  className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  Step by Step
+                </button>
+                <button
+                  onClick={reset}
+                  className="rounded-lg border border-border px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Running / Paused / Complete State */}
+          {(state === "running" || state === "paused" || state === "complete") && (
+            <motion.div
+              key="executing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-4"
+            >
+              {/* Task */}
+              <div className="flex justify-end">
+                <div className="max-w-[85%] rounded-2xl bg-foreground px-4 py-3 text-sm text-background">
+                  {submittedPrompt}
+                </div>
+              </div>
+
+              {/* Execution Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {state === "running" && <CircleSpinner size={14} className="text-foreground" />}
+                  {state === "paused" && (
+                    <span className="rounded bg-yellow-500/10 px-2 py-0.5 text-xs font-medium text-yellow-600">
+                      Paused
+                    </span>
+                  )}
+                  {state === "complete" && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-green-600">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                  <span className="text-sm text-foreground">
+                    {state === "complete" ? "Completed" : state === "paused" ? "Awaiting action" : "Executing..."}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">{usedTokens}/{totalTokens} tokens · {elapsedTime.toFixed(1)}s</span>
+              </div>
+
+              {/* Steps */}
+              <div className="space-y-2">
+                {steps.map((step, index) => (
+                  <div
+                    key={step.id}
+                    className={cn(
+                      "rounded-lg border transition-all",
+                      step.status === "running" ? "border-foreground/30 bg-foreground/5" :
+                      step.status === "complete" ? "border-border/60 bg-background" :
+                      step.status === "skipped" ? "border-border/40 bg-background opacity-40" :
+                      step.status === "undone" ? "border-yellow-500/30 bg-yellow-500/5" :
+                      index === currentStepIndex && state === "paused" ? "border-yellow-500/50 bg-yellow-500/5" :
+                      "border-border/40 bg-background opacity-60"
+                    )}
+                  >
                     <button
-                      key={m.id}
-                      onClick={() => { setMode(m.id); setShowModeDropdown(false) }}
-                      className={cn(
-                        "w-full px-3 py-2 text-left text-sm transition-colors",
-                        mode === m.id ? "bg-foreground/5 text-foreground" : "text-muted-foreground hover:bg-foreground/5"
-                      )}
+                      onClick={() => step.result && toggleStep(step.id)}
+                      className="flex w-full items-center gap-3 p-3 text-left"
                     >
-                      {m.name}
+                      <StepIcon type={step.type} status={step.status} risk={step.risk} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-foreground">{step.description}</p>
+                        <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">{step.target}</p>
+                      </div>
+                      {step.result && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                          className={cn("shrink-0 text-muted-foreground transition-transform", expandedSteps.has(step.id) && "rotate-180")}>
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      )}
                     </button>
-                  ))}
+
+                    {/* Expanded Result */}
+                    <AnimatePresence>
+                      {step.result && expandedSteps.has(step.id) && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t border-border/40 bg-muted/30 p-3">
+                            <pre className="whitespace-pre-wrap font-mono text-xs text-foreground/80">{step.result}</pre>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Manual Mode: Approve/Skip buttons */}
+                    {state === "paused" && autonomy === "manual" && step.status === "pending" && index === currentStepIndex && (
+                      <div className="flex gap-2 border-t border-border/40 p-3">
+                        <button
+                          onClick={() => approveStep(step.id)}
+                          className="flex-1 rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+                        >
+                          Run this step
+                        </button>
+                        <button
+                          onClick={() => skipStep(step.id)}
+                          className="rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                        >
+                          Skip
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Control Bar */}
+              {(state === "running" || state === "paused") && autonomy !== "manual" && (
+                <div className="flex items-center gap-2 pt-2">
+                  {state === "running" ? (
+                    <button
+                      onClick={pauseExecution}
+                      className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-accent"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16" rx="1" />
+                        <rect x="14" y="4" width="4" height="16" rx="1" />
+                      </svg>
+                      Pause
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={resumeExecution}
+                        className="flex items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                        Resume
+                      </button>
+                      {completedSteps.length > 0 && (
+                        <button
+                          onClick={undoLastStep}
+                          className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                          </svg>
+                          Undo
+                        </button>
+                      )}
+                      <button
+                        onClick={abort}
+                        className="rounded-lg border border-red-500/30 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10"
+                      >
+                        Abort
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
-            </div>
-          </div>
 
-          {/* Model */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block">
-              Model
-            </label>
-            <div className="relative">
-              <button
-                onClick={() => setShowModelDropdown(!showModelDropdown)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-md border border-border/60 bg-background text-sm text-foreground hover:border-foreground/20 transition-colors"
-              >
-                <span>{model}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-              {showModelDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 py-1 rounded-md border border-border/60 bg-background shadow-lg z-10">
-                  {PLAYGROUND_MODELS.map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => { setModel(m.id); setShowModelDropdown(false) }}
-                      className={cn(
-                        "w-full px-3 py-2 text-left text-sm transition-colors",
-                        model === m.id ? "bg-foreground/5 text-foreground" : "text-muted-foreground hover:bg-foreground/5"
-                      )}
-                    >
-                      {m.name}
-                    </button>
-                  ))}
-                </div>
+              {/* Complete Footer */}
+              {state === "complete" && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center justify-between border-t border-border/40 pt-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground">
+                      {completedSteps.length} steps · {elapsedTime.toFixed(1)}s
+                    </span>
+                    {completedSteps.length > 0 && (
+                      <button
+                        onClick={undoLastStep}
+                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        </svg>
+                        Undo last
+                      </button>
+                    )}
+                  </div>
+                  <button onClick={reset} className="text-xs text-muted-foreground hover:text-foreground">
+                    New task
+                  </button>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── Suggestion Pills (idle only) ── */}
+      <AnimatePresence>
+        {state === "idle" && !prompt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mb-3 flex flex-wrap justify-center gap-2"
+          >
+            {AGENT_SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                onClick={() => setPrompt(s)}
+                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:bg-accent"
+              >
+                {s}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Input Container ── */}
+      <div className={cn(
+        "rounded-3xl border border-border bg-background p-3 shadow-xs transition-opacity",
+        (state === "planning" || state === "reviewing" || state === "running" || state === "paused") && "opacity-50"
+      )}>
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              if (state === "idle" || state === "complete") {
+                submitTask()
+              }
+            }
+          }}
+          disabled={state !== "idle" && state !== "complete"}
+          placeholder={state === "complete" ? "Start a new task..." : "Describe a task for the agent..."}
+          rows={1}
+          className="min-h-[44px] w-full resize-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+        />
+
+        <div className="flex items-center justify-between px-1">
+          {/* Autonomy Selector */}
+          <div className="flex items-center gap-1 rounded-full border border-border p-0.5">
+            {(["manual", "semi", "auto"] as const).map((level) => (
+              <button
+                key={level}
+                onClick={() => setAutonomy(level)}
+                disabled={state !== "idle" && state !== "complete"}
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-xs font-medium transition-all",
+                  autonomy === level
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:text-foreground",
+                  (state !== "idle" && state !== "complete") && "pointer-events-none"
+                )}
+              >
+                {level === "manual" ? "Manual" : level === "semi" ? "Semi" : "Auto"}
+              </button>
+            ))}
           </div>
 
-          {/* Temperature */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs text-muted-foreground">Temperature</label>
-              <span className="text-xs text-foreground">{temperature}</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.1"
-              value={temperature}
-              onChange={(e) => setTemperature(parseFloat(e.target.value))}
-              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
-            />
-          </div>
-
-          {/* Maximum length */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs text-muted-foreground">Maximum length</label>
-              <span className="text-xs text-foreground">{maxLength}</span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="4096"
-              step="1"
-              value={maxLength}
-              onChange={(e) => setMaxLength(parseInt(e.target.value))}
-              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
-            />
-          </div>
-
-          {/* Stop sequences */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block">Stop sequences</label>
-            <input
-              type="text"
-              value={stopSequences}
-              onChange={(e) => setStopSequences(e.target.value)}
-              placeholder="Enter sequence and press Tab"
-              className="w-full px-3 py-2 rounded-md border border-border/60 bg-background text-sm text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-foreground/30 transition-colors"
-            />
-          </div>
-
-          {/* Top P */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs text-muted-foreground">Top P</label>
-              <span className="text-xs text-foreground">{topP}</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={topP}
-              onChange={(e) => setTopP(parseFloat(e.target.value))}
-              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
-            />
-          </div>
-
-          {/* Frequency penalty */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs text-muted-foreground">Frequency penalty</label>
-              <span className="text-xs text-foreground">{frequencyPenalty}</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.01"
-              value={frequencyPenalty}
-              onChange={(e) => setFrequencyPenalty(parseFloat(e.target.value))}
-              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
-            />
-          </div>
-
-          {/* Presence penalty */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs text-muted-foreground">Presence penalty</label>
-              <span className="text-xs text-foreground">{presencePenalty}</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.01"
-              value={presencePenalty}
-              onChange={(e) => setPresencePenalty(parseFloat(e.target.value))}
-              className="w-full h-1 cursor-pointer appearance-none rounded-full bg-foreground/10 [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground/60 [&::-webkit-slider-thumb]:border-0"
-            />
-          </div>
+          <motion.button
+            onClick={submitTask}
+            disabled={!prompt.trim() || (state !== "idle" && state !== "complete")}
+            whileTap={{ scale: 0.92 }}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && (state === "idle" || state === "complete")
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </motion.button>
         </div>
       </div>
+
+      <p className="mt-2.5 text-center text-xs text-muted-foreground">
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">↵</span>
+        <span className="ml-1.5">{state === "complete" ? "new task" : "start agent"}</span>
+      </p>
     </div>
   )
 }
@@ -1824,7 +2676,7 @@ const MM_MODELS = [
     color: "#10a37f",
     delay: 1800,
     response:
-      "Recursion is when a function calls itself to solve a problem by breaking it into smaller subproblems. Each call works on a simpler version until reaching a base case \u2014 a condition simple enough to solve directly. The results then build back up through the call stack to form the complete answer.",
+      "Recursion is when a function calls itself to solve a problem by breaking it into smaller subproblems. Each call works on a simpler version until reaching a base case — a condition simple enough to solve directly. The results then build back up through the call stack to form the complete answer.",
     tokens: 49,
   },
   {
@@ -1832,7 +2684,7 @@ const MM_MODELS = [
     color: "#d97757",
     delay: 2500,
     response:
-      "Think of recursion like standing between two mirrors \u2014 you see reflections of reflections, each one slightly smaller. In code, a recursive function calls itself with a simpler input. The trick is knowing when to stop: without a base case, you\u2019d recurse forever. It\u2019s elegant because it lets you describe complex structures through self-similarity.",
+      "Think of recursion like standing between two mirrors — you see reflections of reflections, each one slightly smaller. In code, a recursive function calls itself with a simpler input. The trick is knowing when to stop: without a base case, you'd recurse forever. It's elegant because it lets you describe complex structures through self-similarity.",
     tokens: 57,
   },
 ]
@@ -1847,9 +2699,7 @@ const MM_PLACEHOLDERS = [
 ]
 
 export function GenerateTextMultiModelPreview() {
-  const [state, setState] = useState<"idle" | "generating" | "complete">(
-    "idle"
-  )
+  const [state, setState] = useState<"idle" | "generating" | "complete">("idle")
   const [prompt, setPrompt] = useState("")
   const [submittedPrompt, setSubmittedPrompt] = useState("")
   const [completed, setCompleted] = useState<Set<number>>(new Set())
@@ -1894,135 +2744,121 @@ export function GenerateTextMultiModelPreview() {
   const isActive = state === "generating" || state === "complete"
 
   return (
-    <div className="mx-auto flex h-[420px] w-full max-w-xl flex-col p-6">
+    <div className="mx-auto flex h-[460px] w-full max-w-2xl flex-col justify-end p-4">
       <style>{GT_KEYFRAMES}</style>
 
-      {/* ── Scrollable content area ── */}
+      {/* ── Response Cards Area ── */}
       <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-        {/* ── User prompt bubble ── */}
         <AnimatePresence>
           {submittedPrompt && (
             <motion.div
-              initial={{ opacity: 0, y: 4 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
+              exit={{ opacity: 0, y: -6 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0 }}
-              className="mb-3 flex justify-end"
+              className="mb-4"
             >
-              <div className="max-w-[85%] rounded-2xl bg-primary px-3.5 py-2.5 text-sm text-primary-foreground">
-                {submittedPrompt}
+              {/* User prompt as header */}
+              <div className="mb-3 flex items-center gap-2">
+                <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/10">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-foreground">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <span className="text-sm font-medium text-foreground">{submittedPrompt}</span>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* ── Model Responses ── */}
-        <AnimatePresence>
-          {isActive && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-              className="mb-5 space-y-0"
-            >
-              {MM_MODELS.map((model, i) => {
-                const done = completed.has(i)
-                return (
-                  <motion.div
-                    key={model.name}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: i * 0.08,
-                      type: "spring",
-                      duration: 0.4,
-                      bounce: 0,
-                    }}
-                    className="py-3"
-                  >
-                    {/* Model header */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <motion.span
-                          className="size-[5px] rounded-full"
-                          style={{ backgroundColor: model.color }}
-                          animate={
-                            done
-                              ? { scale: 1, opacity: 1 }
-                              : {
-                                  scale: [1, 1.6, 1],
-                                  opacity: [0.5, 1, 0.5],
-                                }
-                          }
-                          transition={
-                            done
-                              ? { duration: 0.2 }
-                              : { repeat: Infinity, duration: 1.4 }
-                          }
-                        />
-                        <span className="font-mono text-sm text-foreground/70">
-                          {model.name}
-                        </span>
+              {/* Model Response Cards */}
+              <div className="space-y-2.5">
+                {MM_MODELS.map((model, i) => {
+                  const done = completed.has(i)
+                  return (
+                    <motion.div
+                      key={model.name}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: i * 0.06,
+                        type: "spring",
+                        duration: 0.4,
+                        bounce: 0,
+                      }}
+                      className="rounded-xl border border-border bg-card/50 p-3.5"
+                    >
+                      {/* Model header */}
+                      <div className="mb-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <motion.span
+                            className="size-2.5 rounded-full"
+                            style={{ backgroundColor: model.color }}
+                            animate={
+                              done
+                                ? { scale: 1, opacity: 1 }
+                                : {
+                                    scale: [1, 1.4, 1],
+                                    opacity: [0.6, 1, 0.6],
+                                  }
+                            }
+                            transition={
+                              done
+                                ? { duration: 0.2 }
+                                : { repeat: Infinity, duration: 1.2 }
+                            }
+                          />
+                          <span className="text-sm font-medium text-foreground">
+                            {model.name}
+                          </span>
+                        </div>
+                        {done && (
+                          <motion.div
+                            initial={{ opacity: 0, x: 4 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="flex items-center gap-2 text-xs text-muted-foreground"
+                          >
+                            <span>{(model.delay / 1000).toFixed(1)}s</span>
+                            <span className="text-border">·</span>
+                            <span>{model.tokens} tokens</span>
+                          </motion.div>
+                        )}
                       </div>
-                      {done && (
-                        <motion.span
-                          initial={{ opacity: 0, x: 4 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="font-mono text-sm text-foreground/40"
+
+                      {/* Response or loader */}
+                      {done ? (
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className="text-sm leading-relaxed text-foreground/80"
                         >
-                          {(model.delay / 1000).toFixed(1)}s
-                        </motion.span>
-                      )}
-                    </div>
-
-                    {/* Response or loader */}
-                    {done ? (
-                      <motion.div
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.35 }}
-                      >
-                        <p className="mt-1.5 text-base leading-[1.75] text-foreground">
                           {model.response}
-                        </p>
-                        <span className="mt-1 inline-block font-mono text-sm text-foreground/30">
-                          {model.tokens} tokens
-                        </span>
-                      </motion.div>
-                    ) : (
-                      <div className="mt-2">
-                        <WaveDotsLoader />
-                      </div>
-                    )}
+                        </motion.p>
+                      ) : (
+                        <div className="py-1">
+                          <WaveDotsLoader />
+                        </div>
+                      )}
+                    </motion.div>
+                  )
+                })}
+              </div>
 
-                    {/* Divider */}
-                    {i < MM_MODELS.length - 1 && (
-                      <div className="mt-3 h-px bg-foreground/10" />
-                    )}
-                  </motion.div>
-                )
-              })}
-
-              {/* Summary */}
+              {/* Summary footer */}
               {state === "complete" && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.15 }}
-                  className="flex items-center justify-between border-t border-border pt-3"
+                  transition={{ delay: 0.1 }}
+                  className="mt-3 flex items-center justify-between"
                 >
-                  <span className="font-mono text-sm text-muted-foreground">
-                    3 models ·{" "}
-                    {(Math.max(...MM_MODELS.map((m) => m.delay)) / 1000).toFixed(
-                      1
-                    )}
-                    s · {MM_TOTAL_TOKENS} tokens
+                  <span className="text-xs text-muted-foreground">
+                    {MM_MODELS.length} models · {(Math.max(...MM_MODELS.map((m) => m.delay)) / 1000).toFixed(1)}s · {MM_TOTAL_TOKENS} tokens
                   </span>
                   <button
                     onClick={reset}
-                    className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
+                    className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    clear
+                    Clear
                   </button>
                 </motion.div>
               )}
@@ -2031,56 +2867,84 @@ export function GenerateTextMultiModelPreview() {
         </AnimatePresence>
       </div>
 
-      {/* ── Bottom-pinned: Suggestions + Input ── */}
-      <div className="shrink-0 pt-2">
-        <AnimatePresence>
-          {!prompt && state === "idle" && (
-            <div className="mb-3">
-              <SuggestionPills suggestions={MM_PLACEHOLDERS} onSelect={setPrompt} />
-            </div>
-          )}
-        </AnimatePresence>
+      {/* ── Suggestion Pills ── */}
+      <AnimatePresence>
+        {!prompt && state === "idle" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mb-3 flex flex-wrap justify-center gap-2"
+          >
+            {MM_PLACEHOLDERS.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setPrompt(suggestion)}
+                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="rounded-2xl border border-border bg-background shadow-sm transition-all duration-200 focus-within:border-foreground/30 focus-within:shadow-md">
-          <div className="px-4 pt-3.5 pb-1.5">
-            <input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submit()}
-              disabled={state === "generating"}
-              placeholder="Ask anything..."
-              className="h-8 w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-40"
-            />
-          </div>
-          <div className="flex items-center justify-between px-3 pb-3">
-            <div className="flex items-center gap-1.5">
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              submit()
+            }
+          }}
+          placeholder="Compare across models..."
+          rows={1}
+          className="min-h-[44px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground"
+        />
+
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
+          {/* Model indicator pill */}
+          <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+            <div className="flex items-center -space-x-0.5">
               {MM_MODELS.map((m) => (
                 <span
                   key={m.name}
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: m.color, opacity: 0.8 }}
+                  className="size-2 rounded-full ring-1 ring-background"
+                  style={{ backgroundColor: m.color }}
                 />
               ))}
-              <span className="ml-0.5 text-sm font-medium text-muted-foreground">3 models</span>
             </div>
-            <motion.button
-              onClick={submit}
-              disabled={!prompt.trim() || state === "generating"}
-              whileTap={{ scale: 0.9 }}
-              className={cn(
-                "flex size-8 items-center justify-center rounded-lg transition-colors",
-                prompt.trim() && state !== "generating"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-foreground/10 text-muted-foreground/50"
-              )}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
-            </motion.button>
+            <span className="text-xs font-medium text-muted-foreground">3 models</span>
           </div>
+
+          {/* Send button */}
+          <motion.button
+            onClick={submit}
+            disabled={!prompt.trim() || state === "generating"}
+            whileTap={{ scale: 0.92 }}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && state !== "generating"
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </motion.button>
         </div>
       </div>
+
+      {/* Keyboard hint */}
+      <p className="mt-2.5 text-center text-xs text-muted-foreground">
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">↵</span>
+        <span className="ml-1.5">send to all models</span>
+      </p>
     </div>
   )
 }
@@ -2123,9 +2987,7 @@ const PE_PLACEHOLDERS = [
 ]
 
 export function GenerateTextPromptPreview() {
-  const [state, setState] = useState<"idle" | "thinking" | "complete">(
-    "idle"
-  )
+  const [state, setState] = useState<"idle" | "thinking" | "complete">("idle")
   const [prompt, setPrompt] = useState("")
   const [submittedPrompt, setSubmittedPrompt] = useState("")
   const [activePersona, setActivePersona] = useState(0)
@@ -2177,114 +3039,134 @@ export function GenerateTextPromptPreview() {
   const persona = PE_PERSONAS[activePersona]
 
   return (
-    <div className="mx-auto flex h-[420px] w-full max-w-xl flex-col p-6">
+    <div className="mx-auto flex h-[480px] w-full max-w-2xl flex-col justify-end p-4">
       <style>{GT_KEYFRAMES}</style>
 
-      {/* ── Scrollable content area ── */}
+      {/* ── Response Area ── */}
       <div className="min-h-0 flex-1 overflow-y-auto scrollbar-hide">
-        {/* ── User prompt bubble ── */}
         <AnimatePresence>
           {submittedPrompt && (
             <motion.div
-              initial={{ opacity: 0, y: 4 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
+              exit={{ opacity: 0, y: -6 }}
               transition={{ type: "spring", duration: 0.4, bounce: 0 }}
-              className="mb-3 flex justify-end"
+              className="mb-4"
             >
-              <div className="max-w-[85%] rounded-2xl bg-primary px-3.5 py-2.5 text-sm text-primary-foreground">
-                {submittedPrompt}
+              {/* Question Bubble */}
+              <div className="mb-4 flex justify-end">
+                <div className="max-w-[85%] rounded-2xl bg-foreground px-4 py-3 text-sm leading-relaxed text-background">
+                  {submittedPrompt}
+                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* ── Output ── */}
-        <AnimatePresence>
-          {state === "thinking" && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mb-5"
-            >
-              <WaveDotsLoader />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          {state === "complete" && (
-            <motion.div
-              key={persona.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ type: "spring", duration: 0.5, bounce: 0 }}
-              className="mb-5"
-            >
-              <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground">
-                {persona.response}
-              </p>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="font-mono text-sm text-muted-foreground">
-                  {persona.tokens} tokens · {(elapsed / 1000).toFixed(1)}s · temp{" "}
-                  {temperature.toFixed(1)}
-                </span>
-                <button
-                  onClick={reset}
-                  className="font-mono text-sm text-muted-foreground transition-colors hover:text-foreground/80"
-                >
-                  clear
-                </button>
-              </div>
+              {/* Response */}
+              <AnimatePresence mode="wait">
+                {state === "thinking" ? (
+                  <motion.div
+                    key="thinking"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ShimmeringText
+                      text="Generating response..."
+                      className="text-base leading-relaxed"
+                      duration={1.5}
+                      spread={1.5}
+                    />
+                  </motion.div>
+                ) : state === "complete" ? (
+                  <motion.div
+                    key={persona.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground/80">
+                      {persona.response}
+                    </p>
+                    <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{persona.tokens} tokens · {(elapsed / 1000).toFixed(1)}s</span>
+                      <button
+                        onClick={reset}
+                        className="transition-colors hover:text-foreground"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* ── Bottom-pinned: Suggestions + Input + System prompt ── */}
-      <div className="shrink-0 pt-2">
-        <AnimatePresence>
-          {!prompt && state === "idle" && (
-            <div className="mb-3">
-              <SuggestionPills suggestions={PE_PLACEHOLDERS} onSelect={setPrompt} />
-            </div>
-          )}
-        </AnimatePresence>
+      {/* ── Suggestion Pills ── */}
+      <AnimatePresence>
+        {!prompt && state === "idle" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mb-3 flex flex-wrap justify-center gap-2"
+          >
+            {PE_PLACEHOLDERS.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setPrompt(suggestion)}
+                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="rounded-2xl border border-border bg-background shadow-sm transition-all duration-200 focus-within:border-foreground/30 focus-within:shadow-md">
-          <div className="px-4 pt-3.5 pb-1.5">
-            <input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submit()}
-              disabled={state === "thinking"}
-              placeholder="Ask anything..."
-              className="h-8 w-full bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-40"
-            />
-          </div>
-          <div className="flex items-center justify-between px-3 pb-3">
-            <div className="flex items-center gap-0.5">
-              {/* Persona pills */}
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              submit()
+            }
+          }}
+          placeholder="Ask anything..."
+          rows={1}
+          className="min-h-[44px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground"
+        />
+
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-1.5">
+            {/* Persona selector */}
+            <div className="flex items-center gap-0.5 rounded-full border border-border p-0.5">
               {PE_PERSONAS.map((p, i) => (
                 <button
                   key={p.id}
                   onClick={() => switchPersona(i)}
                   className={cn(
-                    "rounded-full px-2.5 py-0.5 text-sm font-medium transition-colors",
+                    "rounded-full px-2.5 py-1 text-xs font-medium transition-all",
                     activePersona === i
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground/60 hover:text-foreground/80"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {p.label}
                 </button>
               ))}
-              <div className="mx-1 h-4 w-px bg-foreground/10" />
-              {/* Temperature */}
-              <span className="font-mono text-sm text-foreground/50">t</span>
+            </div>
+
+            {/* Temperature control */}
+            <div className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1">
+              <span className="text-xs text-muted-foreground">temp</span>
               <input
                 type="range"
                 min="0"
@@ -2292,62 +3174,72 @@ export function GenerateTextPromptPreview() {
                 step="0.1"
                 value={temperature}
                 onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                className="mx-1 h-[3px] w-12 cursor-pointer appearance-none rounded-full bg-foreground/20 [&::-moz-range-thumb]:size-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-foreground [&::-webkit-slider-thumb]:size-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground"
+                className="h-[3px] w-10 cursor-pointer appearance-none rounded-full bg-foreground/20 [&::-moz-range-thumb]:size-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-foreground [&::-webkit-slider-thumb]:size-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground"
               />
-              <span className="w-[22px] font-mono text-sm tabular-nums text-foreground/60">
+              <span className="w-6 text-xs tabular-nums text-muted-foreground">
                 {temperature.toFixed(1)}
               </span>
             </div>
-            <motion.button
-              onClick={submit}
-              disabled={!prompt.trim() || state === "thinking"}
-              whileTap={{ scale: 0.9 }}
-              className={cn(
-                "flex size-8 items-center justify-center rounded-lg transition-colors",
-                prompt.trim() && state !== "thinking"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-foreground/10 text-muted-foreground/50"
-              )}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
-            </motion.button>
           </div>
-        </div>
 
-        {/* ── System prompt (collapsible, below input) ── */}
+          {/* Send button */}
+          <motion.button
+            onClick={submit}
+            disabled={!prompt.trim() || state === "thinking"}
+            whileTap={{ scale: 0.92 }}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && state !== "thinking"
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </motion.button>
+        </div>
+      </div>
+
+      {/* ── System prompt toggle ── */}
+      <div className="mt-2.5 flex items-center justify-center">
         <button
           onClick={() => setShowSystem(!showSystem)}
-          className="mt-2.5 flex items-center gap-1.5 font-mono text-sm text-foreground/50 transition-colors hover:text-foreground/70"
+          className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           <svg
-            width="8"
-            height="8"
+            width="10"
+            height="10"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="3"
-            className={`transition-transform duration-150 ${showSystem ? "rotate-90" : ""}`}
+            strokeWidth="2"
+            className={cn("transition-transform duration-150", showSystem && "rotate-90")}
           >
             <polyline points="9 18 15 12 9 6" />
           </svg>
-          system prompt
+          <span>System prompt</span>
         </button>
-        <AnimatePresence>
-          {showSystem && (
-            <motion.p
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="overflow-hidden pt-1.5 font-mono text-sm italic leading-relaxed text-foreground/60"
-            >
-              &ldquo;{persona.system}&rdquo;
-            </motion.p>
-          )}
-        </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {showSystem && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-2 rounded-xl border border-border bg-card/50 px-3 py-2.5">
+              <p className="text-xs italic leading-relaxed text-muted-foreground">
+                &ldquo;{persona.system}&rdquo;
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
+

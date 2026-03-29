@@ -86,7 +86,7 @@ export function ChatBaseClonePreview() {
               <div
                 className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-foreground text-background"
                     : "bg-card text-foreground"
                 }`}
               >
@@ -152,7 +152,7 @@ export function ChatBaseClonePreview() {
             whileTap={{ scale: 0.9 }}
             className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-150 ${
               input.trim() && state === "idle"
-                ? "bg-primary text-primary-foreground"
+                ? "bg-foreground text-background"
                 : "bg-foreground/10 text-muted-foreground/50"
             }`}
           >

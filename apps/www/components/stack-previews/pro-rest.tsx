@@ -84,7 +84,7 @@ export function JSONRenderGeneratePreview() {
         <span className="text-sm font-medium text-foreground">v0 Code Generator</span>
         <div className="flex gap-1 rounded-xl border border-border p-0.5">
           {(["json", "code"] as const).map((m) => (
-            <button key={m} onClick={() => setMode(m)} className={`rounded-lg px-2.5 py-1 text-xs font-medium capitalize transition-all duration-150 ${mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+            <button key={m} onClick={() => setMode(m)} className={`rounded-lg px-2.5 py-1 text-xs font-medium capitalize transition-all duration-150 ${mode === m ? "bg-foreground text-background" : "text-muted-foreground"}`}>
               {m}
             </button>
           ))}
@@ -369,7 +369,7 @@ export function ExaWebSearch2Preview() {
           whileTap={{ scale: 0.95 }}
           className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
             query.trim() && phase !== "searching"
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-foreground/10 text-muted-foreground/50"
           }`}
         >
@@ -1214,37 +1214,45 @@ export function ChangelogPreview() {
    ══════════════════════════════════════════ */
 
 /* ─── AI Prompt Input ─── */
+
+const PROMPT_SUGGESTIONS = [
+  "Write a blog post about AI agents",
+  "Explain quantum entanglement",
+  "Debug my React component",
+  "Create a marketing strategy",
+]
+
 export function AIPromptInputPreview() {
   const [value, setValue] = useState("")
-  const [focused, setFocused] = useState(false)
-  const [thinking, setThinking] = useState(false)
+  const [searchEnabled, setSearchEnabled] = useState(false)
   const [hasAttachment, setHasAttachment] = useState(false)
-  const suggestions = [
-    "Ask ChatGPT anything...",
-    "Write a blog post about AI agents",
-    "Explain quantum entanglement",
-    "Debug my React component",
-  ]
 
   return (
-    <div className="mx-auto w-full max-w-xl p-6">
-      {/* Suggestions */}
+    <div className="mx-auto flex h-[400px] w-full max-w-2xl flex-col justify-end p-4">
+      {/* ── Suggestion Pills ── */}
       <AnimatePresence>
         {!value && (
-          <div className="mb-3">
-            <SuggestionPills suggestions={suggestions} onSelect={setValue} />
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mb-4 flex flex-wrap justify-center gap-2"
+          >
+            {PROMPT_SUGGESTIONS.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setValue(suggestion)}
+                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </motion.div>
         )}
       </AnimatePresence>
 
-      <div
-        className={cn(
-          "relative rounded-2xl border bg-background transition-all duration-200",
-          focused
-            ? "border-border ring-1 ring-foreground/[0.04]"
-            : "border-border"
-        )}
-      >
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
         {/* Attachment preview */}
         <AnimatePresence>
           {hasAttachment && (
@@ -1252,25 +1260,23 @@ export function AIPromptInputPreview() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden border-b border-border"
+              className="mb-2 overflow-hidden"
             >
-              <div className="px-4 py-2.5">
-                <div className="flex items-center gap-2.5 rounded-lg bg-card px-3 py-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="shrink-0 text-muted-foreground/80">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
+              <div className="flex items-center gap-2.5 rounded-xl border border-border bg-card/50 px-3 py-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-muted-foreground">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <span className="text-sm text-foreground">requirements.pdf</span>
+                <span className="text-xs text-muted-foreground">12 KB</span>
+                <button
+                  onClick={() => setHasAttachment(false)}
+                  className="ml-auto rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 6L6 18M6 6l12 12" />
                   </svg>
-                  <span className="text-sm text-muted-foreground">requirements.pdf</span>
-                  <span className="font-mono text-xs text-muted-foreground/60">12 KB</span>
-                  <button
-                    onClick={() => setHasAttachment(false)}
-                    className="ml-auto rounded-md p-0.5 text-muted-foreground/60 transition-colors hover:bg-card hover:text-muted-foreground"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <path d="M18 6L6 18M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
+                </button>
               </div>
             </motion.div>
           )}
@@ -1280,72 +1286,82 @@ export function AIPromptInputPreview() {
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder="Ask ChatGPT anything..."
-          rows={3}
-          className="block w-full resize-none bg-transparent px-4 pt-4 pb-2 text-base leading-relaxed text-foreground outline-none placeholder:text-muted-foreground/70"
+          placeholder="Ask anything..."
+          rows={1}
+          className="min-h-[44px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground"
         />
 
-        {/* Toolbar */}
-        <div className="flex items-center justify-between px-3 pb-3">
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-1">
-            {/* Attachment */}
+            {/* Attachment button */}
             <button
-              onClick={() => setHasAttachment((a) => !a)}
-              className="flex size-8 items-center justify-center rounded-lg text-muted-foreground/70 transition-colors hover:bg-card hover:text-muted-foreground"
+              onClick={() => setHasAttachment(!hasAttachment)}
+              className={cn(
+                "flex size-9 items-center justify-center rounded-full border transition-colors",
+                hasAttachment
+                  ? "border-foreground/20 bg-foreground/5 text-foreground"
+                  : "border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                <path d="M12 5v14M5 12h14" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
               </svg>
             </button>
 
-            {/* Divider */}
-            <div className="mx-0.5 h-4 w-px bg-foreground/15" />
+            {/* Model indicator */}
+            <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
+              <span className="size-2 rounded-full bg-[#10a37f]" />
+              <span className="text-xs font-medium text-muted-foreground">GPT-4o</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
 
-            {/* Model label */}
-            <span className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-muted-foreground/60">
-              <BrandOpenAI className="size-3 text-foreground/60" />
-              <span className="text-xs">ChatGPT</span>
-            </span>
-
-            {/* Think toggle */}
+            {/* Search toggle */}
             <button
-              onClick={() => setThinking((t) => !t)}
+              onClick={() => setSearchEnabled(!searchEnabled)}
               className={cn(
-                "flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs transition-all",
-                thinking
-                  ? "bg-primary/10 text-foreground"
-                  : "text-muted-foreground/60 hover:text-muted-foreground"
+                "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all",
+                searchEnabled
+                  ? "border-foreground/20 bg-foreground/5 text-foreground"
+                  : "border-border text-muted-foreground hover:border-foreground/20 hover:text-foreground"
               )}
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
-              Think
+              <span className="hidden sm:inline">Search</span>
             </button>
           </div>
 
-          {/* Send */}
+          {/* Send button */}
           <motion.button
             whileTap={{ scale: 0.92 }}
             className={cn(
-              "flex size-8 items-center justify-center rounded-lg transition-colors",
+              "flex size-9 items-center justify-center rounded-full transition-all",
               value.trim()
-                ? "bg-primary text-primary-foreground"
-                : "bg-foreground/15 text-muted-foreground/25"
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
             )}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 19V5M5 12l7-7 7 7" />
             </svg>
           </motion.button>
         </div>
       </div>
 
-      {/* Subtle keyboard hints */}
-      <p className="mt-2.5 text-center font-mono text-[10px] text-foreground/50">
-        ChatGPT · ↵ send · shift+↵ newline · ⌘V paste files
+      {/* Keyboard hints */}
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">↵</span>
+        <span className="mx-1.5">send</span>
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">⇧↵</span>
+        <span className="mx-1.5">newline</span>
+        <span className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px]">⌘V</span>
+        <span className="ml-1.5">paste files</span>
       </p>
     </div>
   )

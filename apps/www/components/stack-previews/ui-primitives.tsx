@@ -1303,6 +1303,316 @@ export function AIImageOutputPreview() {
 
 
 /* ─────────────────────────────────────────────────────────────────
+ * MULTI-MODEL SELECTOR — Zola-style multi-model picker
+ * ───────────────────────────────────────────────────────────────── */
+
+const MMS_MODELS = [
+  { id: "gpt-4.1-nano", name: "GPT-4.1 Nano", provider: "OpenAI", color: "#10a37f", context: 1047576, inputPrice: 0.10, outputPrice: 0.40, vision: true, tools: true, reasoning: false, description: "Fastest, most cost-effective GPT-4.1 model" },
+  { id: "mistral-large", name: "Mistral Large", provider: "Mistral", color: "#f97316", context: 128000, inputPrice: 2.00, outputPrice: 6.00, vision: false, tools: true, reasoning: false, description: "Mistral's flagship model for complex tasks" },
+  { id: "pixtral-large", name: "Pixtral Large", provider: "Mistral", color: "#f97316", context: 128000, inputPrice: 2.00, outputPrice: 6.00, vision: true, tools: true, reasoning: false, description: "Multimodal model with vision capabilities" },
+  { id: "deepseek-r1", name: "DeepSeek R1", provider: "DeepSeek", color: "#4f46e5", context: 64000, inputPrice: 0.55, outputPrice: 2.19, vision: false, tools: false, reasoning: true, description: "Advanced reasoning model" },
+  { id: "llama-3.3-8b", name: "Llama 3.3 8B Instruct", provider: "Meta", color: "#0081fb", context: 131072, inputPrice: 0.05, outputPrice: 0.08, vision: false, tools: false, reasoning: false, description: "Fast, efficient open-source model" },
+  { id: "gpt-3.5-turbo", name: "GPT-3.5 Turbo", provider: "OpenAI", color: "#10a37f", context: 16385, inputPrice: 0.50, outputPrice: 1.50, vision: false, tools: true, reasoning: false, description: "Fast and affordable for simple tasks" },
+  { id: "gpt-4-turbo", name: "GPT-4 Turbo", provider: "OpenAI", color: "#10a37f", context: 128000, inputPrice: 10.00, outputPrice: 30.00, vision: true, tools: true, reasoning: false, description: "Most capable GPT-4 model" },
+  { id: "claude-sonnet-4", name: "Claude Sonnet 4", provider: "Anthropic", color: "#d97757", context: 200000, inputPrice: 3.00, outputPrice: 15.00, vision: true, tools: true, reasoning: true, description: "Balanced performance and capability" },
+]
+
+const MMS_SUGGESTIONS = [
+  "What is recursion?",
+  "Explain REST vs GraphQL...",
+  "How does garbage collection work?",
+  "What are closures in JavaScript?",
+]
+
+const MMS_ACTION_MODES = [
+  { id: "summary", label: "Summary", icon: "📝" },
+  { id: "code", label: "Code", icon: "</>" },
+  { id: "design", label: "Design", icon: "🎨" },
+  { id: "research", label: "Research", icon: "📚" },
+  { id: "inspire", label: "Get Inspired", icon: "✨" },
+  { id: "think", label: "Think Deeply", icon: "🧠" },
+  { id: "learn", label: "Learn Gently", icon: "💡" },
+]
+
+export function MultiModelSelectorPreview() {
+  const [prompt, setPrompt] = useState("")
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>(["gpt-4.1-nano", "mistral-large", "deepseek-r1"])
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [hoveredModelId, setHoveredModelId] = useState<string | null>(null)
+  const [activeMode, setActiveMode] = useState<string | null>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const filteredModels = MMS_MODELS.filter((model) =>
+    model.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const hoveredModel = hoveredModelId ? MMS_MODELS.find((m) => m.id === hoveredModelId) : null
+  const selectedModels = selectedModelIds.map((id) => MMS_MODELS.find((m) => m.id === id)!).filter(Boolean)
+
+  function toggleModel(modelId: string) {
+    if (selectedModelIds.includes(modelId)) {
+      setSelectedModelIds(selectedModelIds.filter((id) => id !== modelId))
+    } else if (selectedModelIds.length < 5) {
+      setSelectedModelIds([...selectedModelIds, modelId])
+    }
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+        setHoveredModelId(null)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  return (
+    <div className="mx-auto flex h-[520px] w-full max-w-2xl flex-col justify-end p-4">
+      {/* ── Suggestion Pills ── */}
+      <div className="mb-4 flex flex-wrap justify-center gap-2">
+        {MMS_SUGGESTIONS.map((suggestion) => (
+          <button
+            key={suggestion}
+            onClick={() => setPrompt(suggestion)}
+            className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Main Input Container ── */}
+      <div className="rounded-3xl border border-border bg-background p-3 shadow-xs">
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Ask anything..."
+          rows={1}
+          className="min-h-[44px] w-full resize-none border-none bg-transparent px-2 py-2 text-base text-foreground outline-none placeholder:text-muted-foreground"
+        />
+
+        {/* Actions bar */}
+        <div className="flex items-center justify-between px-1">
+          {/* Model selector with colored dots */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm transition-colors hover:bg-accent"
+            >
+              {/* Colored dots */}
+              <div className="flex -space-x-1">
+                {selectedModels.slice(0, 3).map((model, index) => (
+                  <motion.div
+                    key={model.id}
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25, delay: index * 0.05 }}
+                    className="flex size-4 items-center justify-center rounded-full border border-background"
+                    style={{ backgroundColor: model.color, zIndex: 3 - index }}
+                  />
+                ))}
+              </div>
+              <span className="font-medium text-muted-foreground">
+                {selectedModelIds.length} model{selectedModelIds.length !== 1 ? "s" : ""}
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+
+            {/* Dropdown */}
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute bottom-full left-0 z-50 mb-2 flex overflow-visible"
+                >
+                  {/* Model list */}
+                  <div className="flex h-[320px] w-[280px] flex-col rounded-lg border border-border bg-popover shadow-lg">
+                    {/* Search input */}
+                    <div className="border-b border-border p-2">
+                      <div className="relative">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute left-2.5 top-2.5 text-muted-foreground">
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="M21 21l-4.35-4.35" />
+                        </svg>
+                        <input
+                          type="text"
+                          placeholder="Search models..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full rounded-md border-none bg-transparent py-1.5 pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Model list */}
+                    <div className="flex-1 overflow-y-auto p-1">
+                      {filteredModels.map((model) => {
+                        const isSelected = selectedModelIds.includes(model.id)
+                        return (
+                          <button
+                            key={model.id}
+                            onClick={() => toggleModel(model.id)}
+                            onMouseEnter={() => setHoveredModelId(model.id)}
+                            className={cn(
+                              "flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition-colors",
+                              isSelected ? "bg-accent" : "hover:bg-accent/50"
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="size-5 rounded-full" style={{ backgroundColor: model.color }} />
+                              <span className="text-sm text-foreground">{model.name}</span>
+                            </div>
+                            {isSelected && (
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-foreground">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Model details panel */}
+                  <AnimatePresence>
+                    {hoveredModel && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -8 }}
+                        transition={{ duration: 0.1 }}
+                        className="ml-2 w-[260px] rounded-lg border border-border bg-popover p-3 shadow-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="size-5 rounded-full" style={{ backgroundColor: hoveredModel.color }} />
+                          <h3 className="font-medium text-foreground">{hoveredModel.name}</h3>
+                        </div>
+                        <p className="mt-2 text-sm text-muted-foreground">{hoveredModel.description}</p>
+
+                        {/* Capability badges */}
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {hoveredModel.vision && <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-400">🖼 Vision</span>}
+                          {hoveredModel.tools && <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">🔧 Tools</span>}
+                          {hoveredModel.reasoning && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">🧠 Reasoning</span>}
+                        </div>
+
+                        {/* Specs */}
+                        <div className="mt-4 space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="font-medium text-foreground">Context</span>
+                            <span className="text-muted-foreground">{Intl.NumberFormat("en-US").format(hoveredModel.context)} tokens</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-medium text-foreground">Input Pricing</span>
+                            <span className="text-muted-foreground">${hoveredModel.inputPrice.toFixed(2)} / 1M tokens</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-medium text-foreground">Output Pricing</span>
+                            <span className="text-muted-foreground">${hoveredModel.outputPrice.toFixed(2)} / 1M tokens</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-medium text-foreground">Provider</span>
+                            <span className="text-muted-foreground">{hoveredModel.provider}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-medium text-foreground">Id</span>
+                            <span className="font-mono text-xs text-muted-foreground">{hoveredModel.id}</span>
+                          </div>
+                        </div>
+
+                        {/* Links */}
+                        <div className="mt-4 flex gap-4 border-t border-border pt-3">
+                          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+                            API Docs
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                              <polyline points="15 3 21 3 21 9" />
+                              <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                          </button>
+                          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+                            Model Page
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                              <polyline points="15 3 21 3 21 9" />
+                              <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Send button */}
+          <button
+            disabled={!prompt.trim() || selectedModelIds.length === 0}
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full transition-all",
+              prompt.trim() && selectedModelIds.length > 0
+                ? "bg-foreground text-background"
+                : "bg-foreground/10 text-muted-foreground/50"
+            )}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* ── Action Mode Buttons ── */}
+      <div className="mt-3 flex flex-wrap justify-center gap-2">
+        {MMS_ACTION_MODES.slice(0, 5).map((mode) => (
+          <button
+            key={mode.id}
+            onClick={() => setActiveMode(activeMode === mode.id ? null : mode.id)}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all",
+              activeMode === mode.id
+                ? "border-foreground/20 bg-foreground/5 text-foreground"
+                : "border-border text-muted-foreground hover:border-foreground/20 hover:text-foreground"
+            )}
+          >
+            <span>{mode.icon}</span>
+            <span>{mode.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 flex flex-wrap justify-center gap-2">
+        {MMS_ACTION_MODES.slice(5).map((mode) => (
+          <button
+            key={mode.id}
+            onClick={() => setActiveMode(activeMode === mode.id ? null : mode.id)}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all",
+              activeMode === mode.id
+                ? "border-foreground/20 bg-foreground/5 text-foreground"
+                : "border-border text-muted-foreground hover:border-foreground/20 hover:text-foreground"
+            )}
+          >
+            <span>{mode.icon}</span>
+            <span>{mode.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────
  * Shared micro-icons (inline SVG, no lucide dep)
  * ───────────────────────────────────────────────────────────────── */
 
