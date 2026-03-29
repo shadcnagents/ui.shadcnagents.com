@@ -213,82 +213,82 @@ export const stacksConfig: StackCategory[] = [
       },
     ],
   },
-  {
-    name: "Starter Apps",
-    id: "examples",
-    items: [
-      {
-        text: "Chat-Base Clone",
-        description: "Full-stack chat application",
-        link: "/stacks/examples-chat-base-clone",
-        tier: "pro",
-      },
-      {
-        text: "Agentic Context Builder",
-        description: "Context gathering application",
-        link: "/stacks/ai-human-in-the-loop-agentic-context-builder",
-        tier: "pro",
-      },
-      {
-        text: "Image Selection Input",
-        description: "Visual multi-select for images",
-        link: "/stacks/ai-human-in-the-loop-image-select",
-        tier: "pro",
-      },
-      {
-        text: "Form Generator",
-        description: "Dynamic form builder",
-        link: "/stacks/examples-form-generator",
-        tier: "pro",
-      },
-      {
-        text: "Research Agents",
-        children: [
-          {
-            text: "Data Analysis Agent",
-            description: "Data insight extraction",
-            link: "/stacks/example-agent-data-analysis",
-            tier: "pro",
-          },
-          {
-            text: "Branding Agent",
-            description: "Brand strategy automation",
-            link: "/stacks/example-agent-branding",
-            tier: "pro",
-          },
-          {
-            text: "Competitor Research",
-            description: "Market analysis agent",
-            link: "/stacks/example-agent-competitor",
-            tier: "pro",
-          },
-          {
-            text: "SEO Audit Agent",
-            description: "SEO assessment automation",
-            link: "/stacks/example-agent-seo-audit",
-            tier: "pro",
-          },
-          {
-            text: "Reddit Validation",
-            description: "Social validation agent",
-            link: "/stacks/example-agent-reddit-validation",
-            tier: "pro",
-          },
-        ],
-      },
-      {
-        text: "Audit Agents",
-        children: [
-          {
-            text: "A11y Audit Agent",
-            description: "Accessibility audit automation",
-            link: "/stacks/example-agent-a11y-audit",
-            tier: "pro",
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   name: "Starter Apps",
+  //   id: "examples",
+  //   items: [
+  //     {
+  //       text: "Chat-Base Clone",
+  //       description: "Full-stack chat application",
+  //       link: "/stacks/examples-chat-base-clone",
+  //       tier: "pro",
+  //     },
+  //     {
+  //       text: "Agentic Context Builder",
+  //       description: "Context gathering application",
+  //       link: "/stacks/ai-human-in-the-loop-agentic-context-builder",
+  //       tier: "pro",
+  //     },
+  //     {
+  //       text: "Image Selection Input",
+  //       description: "Visual multi-select for images",
+  //       link: "/stacks/ai-human-in-the-loop-image-select",
+  //       tier: "pro",
+  //     },
+  //     {
+  //       text: "Form Generator",
+  //       description: "Dynamic form builder",
+  //       link: "/stacks/examples-form-generator",
+  //       tier: "pro",
+  //     },
+  //     {
+  //       text: "Research Agents",
+  //       children: [
+  //         {
+  //           text: "Data Analysis Agent",
+  //           description: "Data insight extraction",
+  //           link: "/stacks/example-agent-data-analysis",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "Branding Agent",
+  //           description: "Brand strategy automation",
+  //           link: "/stacks/example-agent-branding",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "Competitor Research",
+  //           description: "Market analysis agent",
+  //           link: "/stacks/example-agent-competitor",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "SEO Audit Agent",
+  //           description: "SEO assessment automation",
+  //           link: "/stacks/example-agent-seo-audit",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "Reddit Validation",
+  //           description: "Social validation agent",
+  //           link: "/stacks/example-agent-reddit-validation",
+  //           tier: "pro",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Audit Agents",
+  //       children: [
+  //         {
+  //           text: "A11y Audit Agent",
+  //           description: "Accessibility audit automation",
+  //           link: "/stacks/example-agent-a11y-audit",
+  //           tier: "pro",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
   {
     name: "Rich Output",
     id: "artifacts",
@@ -594,6 +594,12 @@ export const stacksConfig: StackCategory[] = [
             tier: "free",
           },
           {
+            text: "Multi-Model Selector",
+            description: "Zola-style multi-model picker with search and details panel",
+            link: "/stacks/multi-model-selector",
+            tier: "free",
+          },
+          {
             text: "Token Counter",
             description: "Context window meter with circular progress ring",
             link: "/stacks/token-counter",
@@ -639,227 +645,227 @@ export const stacksConfig: StackCategory[] = [
             link: "/stacks/ai-loading-states",
             tier: "free",
           },
-          {
-            text: "Token Stream Effect",
-            description: "Smooth token-by-token text animation for LLM output",
-            link: "/stacks/ai-token-stream",
-            tier: "pro",
-          },
+          // {
+          //   text: "Token Stream Effect",
+          //   description: "Smooth token-by-token text animation for LLM output",
+          //   link: "/stacks/ai-token-stream",
+          //   tier: "pro",
+          // },
         ],
       },
     ],
   },
-  {
-    name: "Production Infrastructure",
-    id: "production-infra",
-    items: [
-      {
-        text: "Resilience",
-        children: [
-          {
-            text: "Rate Limit Handler",
-            description: "Exponential backoff, jitter, and circuit breaker for API resilience",
-            link: "/stacks/rate-limit-handler",
-            tier: "free",
-          },
-          {
-            text: "Model Fallback Handler",
-            description: "Auto-switch providers on 429/5xx errors with health monitoring",
-            link: "/stacks/model-fallback-handler",
-            tier: "free",
-          },
-          {
-            text: "Streaming Reconnect",
-            description: "SSE reconnection with Last-Event-ID and message recovery",
-            link: "/stacks/streaming-reconnect",
-            tier: "free",
-          },
-        ],
-      },
-      {
-        text: "Security",
-        children: [
-          {
-            text: "Output Sanitizer",
-            description: "XSS prevention for AI-generated content with threat detection",
-            link: "/stacks/output-sanitizer",
-            tier: "free",
-          },
-          {
-            text: "AI Error Boundary",
-            description: "Graceful error recovery and user feedback patterns",
-            link: "/stacks/ai-error-boundary",
-            tier: "free",
-          },
-          {
-            text: "Prompt Injection Guard",
-            description: "OWASP LLM01 protection with jailbreak and extraction detection",
-            link: "/stacks/prompt-injection-guard",
-            tier: "free",
-          },
-        ],
-      },
-      {
-        text: "Observability",
-        children: [
-          {
-            text: "Cost Tracker",
-            description: "Real-time token usage and cost monitoring across models",
-            link: "/stacks/cost-tracker",
-            tier: "free",
-          },
-          {
-            text: "Context Window Manager",
-            description: "Token counting, truncation, and context optimization",
-            link: "/stacks/context-window-manager",
-            tier: "free",
-          },
-        ],
-      },
-      {
-        text: "Output Validation",
-        children: [
-          {
-            text: "Structured Output Validator",
-            description: "Auto-repair malformed JSON with schema validation and retry",
-            link: "/stacks/structured-output-validator",
-            tier: "free",
-          },
-        ],
-      },
-      {
-        text: "Persistence",
-        children: [
-          {
-            text: "Chat Persistence Kit",
-            description: "Full-stack conversation history with database adapters",
-            link: "/stacks/chat-persistence-kit",
-            tier: "pro",
-          },
-        ],
-      },
-      {
-        text: "Caching",
-        children: [
-          {
-            text: "Semantic Response Cache",
-            description: "Cut costs 80% with embedding-based semantic caching",
-            link: "/stacks/semantic-cache",
-            tier: "free",
-          },
-        ],
-      },
-      {
-        text: "Agent Memory",
-        children: [
-          {
-            text: "Agent Memory Kit",
-            description: "Human-like memory with short-term, long-term, and semantic types",
-            link: "/stacks/agent-memory-kit",
-            tier: "free",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Landing Blocks",
-    id: "marketing-ui",
-    items: [
-      {
-        text: "Feature Sections",
-        children: [
-          {
-            text: "Code Block 1",
-            description: "Code feature showcase",
-            link: "/stacks/marketing-feature-code-block-1",
-            tier: "free",
-          },
-          {
-            text: "Code Block 2",
-            description: "Alternative code showcase",
-            link: "/stacks/marketing-feature-code-block-2",
-            tier: "free",
-          },
-          {
-            text: "Code Block 3",
-            description: "Dark code showcase",
-            link: "/stacks/marketing-feature-code-block-3",
-            tier: "free",
-          },
-          {
-            text: "Feature Grid",
-            description: "Grid feature layout",
-            link: "/stacks/marketing-feature-grid-1",
-            tier: "pro",
-          },
-        ],
-      },
-      {
-        text: "Bento Layout",
-        description: "Bento grid composition",
-        link: "/stacks/marketing-bento-1",
-        tier: "free",
-      },
-      {
-        text: "Comparison Tables",
-        children: [
-          {
-            text: "Model Comparison",
-            description: "Side-by-side model compare",
-            link: "/stacks/marketing-model-comparison",
-            tier: "pro",
-          },
-          {
-            text: "Comparison Compact",
-            description: "Dense model comparison",
-            link: "/stacks/marketing-model-comparison-compact",
-            tier: "pro",
-          },
-          {
-            text: "Comparison Table",
-            description: "Tabular model comparison",
-            link: "/stacks/marketing-model-comparison-table-1",
-            tier: "pro",
-          },
-        ],
-      },
-      {
-        text: "Integrations",
-        children: [
-          {
-            text: "Integration Showcase",
-            description: "Partner integrations grid",
-            link: "/stacks/marketing-integrations-1",
-            tier: "pro",
-          },
-          {
-            text: "Integrations Circle",
-            description: "Circular integration layout",
-            link: "/stacks/marketing-integrations-2",
-            tier: "pro",
-          },
-        ],
-      },
-      {
-        text: "Business Tools",
-        children: [
-          {
-            text: "ROI Calculator",
-            description: "Cost-benefit calculator",
-            link: "/stacks/marketing-calculator-agent-roi",
-            tier: "pro",
-          },
-          {
-            text: "Changelog",
-            description: "Release notes display",
-            link: "/stacks/marketing-changelog-1",
-            tier: "pro",
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   name: "Production Infrastructure",
+  //   id: "production-infra",
+  //   items: [
+  //     {
+  //       text: "Resilience",
+  //       children: [
+  //         {
+  //           text: "Rate Limit Handler",
+  //           description: "Exponential backoff, jitter, and circuit breaker for API resilience",
+  //           link: "/stacks/rate-limit-handler",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "Model Fallback Handler",
+  //           description: "Auto-switch providers on 429/5xx errors with health monitoring",
+  //           link: "/stacks/model-fallback-handler",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "Streaming Reconnect",
+  //           description: "SSE reconnection with Last-Event-ID and message recovery",
+  //           link: "/stacks/streaming-reconnect",
+  //           tier: "free",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Security",
+  //       children: [
+  //         {
+  //           text: "Output Sanitizer",
+  //           description: "XSS prevention for AI-generated content with threat detection",
+  //           link: "/stacks/output-sanitizer",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "AI Error Boundary",
+  //           description: "Graceful error recovery and user feedback patterns",
+  //           link: "/stacks/ai-error-boundary",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "Prompt Injection Guard",
+  //           description: "OWASP LLM01 protection with jailbreak and extraction detection",
+  //           link: "/stacks/prompt-injection-guard",
+  //           tier: "free",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Observability",
+  //       children: [
+  //         {
+  //           text: "Cost Tracker",
+  //           description: "Real-time token usage and cost monitoring across models",
+  //           link: "/stacks/cost-tracker",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "Context Window Manager",
+  //           description: "Token counting, truncation, and context optimization",
+  //           link: "/stacks/context-window-manager",
+  //           tier: "free",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Output Validation",
+  //       children: [
+  //         {
+  //           text: "Structured Output Validator",
+  //           description: "Auto-repair malformed JSON with schema validation and retry",
+  //           link: "/stacks/structured-output-validator",
+  //           tier: "free",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Persistence",
+  //       children: [
+  //         {
+  //           text: "Chat Persistence Kit",
+  //           description: "Full-stack conversation history with database adapters",
+  //           link: "/stacks/chat-persistence-kit",
+  //           tier: "pro",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Caching",
+  //       children: [
+  //         {
+  //           text: "Semantic Response Cache",
+  //           description: "Cut costs 80% with embedding-based semantic caching",
+  //           link: "/stacks/semantic-cache",
+  //           tier: "free",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Agent Memory",
+  //       children: [
+  //         {
+  //           text: "Agent Memory Kit",
+  //           description: "Human-like memory with short-term, long-term, and semantic types",
+  //           link: "/stacks/agent-memory-kit",
+  //           tier: "free",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: "Landing Blocks",
+  //   id: "marketing-ui",
+  //   items: [
+  //     {
+  //       text: "Feature Sections",
+  //       children: [
+  //         {
+  //           text: "Code Block 1",
+  //           description: "Code feature showcase",
+  //           link: "/stacks/marketing-feature-code-block-1",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "Code Block 2",
+  //           description: "Alternative code showcase",
+  //           link: "/stacks/marketing-feature-code-block-2",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "Code Block 3",
+  //           description: "Dark code showcase",
+  //           link: "/stacks/marketing-feature-code-block-3",
+  //           tier: "free",
+  //         },
+  //         {
+  //           text: "Feature Grid",
+  //           description: "Grid feature layout",
+  //           link: "/stacks/marketing-feature-grid-1",
+  //           tier: "pro",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Bento Layout",
+  //       description: "Bento grid composition",
+  //       link: "/stacks/marketing-bento-1",
+  //       tier: "free",
+  //     },
+  //     {
+  //       text: "Comparison Tables",
+  //       children: [
+  //         {
+  //           text: "Model Comparison",
+  //           description: "Side-by-side model compare",
+  //           link: "/stacks/marketing-model-comparison",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "Comparison Compact",
+  //           description: "Dense model comparison",
+  //           link: "/stacks/marketing-model-comparison-compact",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "Comparison Table",
+  //           description: "Tabular model comparison",
+  //           link: "/stacks/marketing-model-comparison-table-1",
+  //           tier: "pro",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Integrations",
+  //       children: [
+  //         {
+  //           text: "Integration Showcase",
+  //           description: "Partner integrations grid",
+  //           link: "/stacks/marketing-integrations-1",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "Integrations Circle",
+  //           description: "Circular integration layout",
+  //           link: "/stacks/marketing-integrations-2",
+  //           tier: "pro",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       text: "Business Tools",
+  //       children: [
+  //         {
+  //           text: "ROI Calculator",
+  //           description: "Cost-benefit calculator",
+  //           link: "/stacks/marketing-calculator-agent-roi",
+  //           tier: "pro",
+  //         },
+  //         {
+  //           text: "Changelog",
+  //           description: "Release notes display",
+  //           link: "/stacks/marketing-changelog-1",
+  //           tier: "pro",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
 ]
 
 /** Flatten all stacks */

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "motion/react"
+import { AIInput, AIInputTextarea, AIInputFooter, AIInputAction } from "@/components/ui/ai-input"
 import { WaveDotsLoader, CircleSpinner, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ─── Agent Configuration ─── */
@@ -515,7 +516,7 @@ export function HumanInTheLoopPreview() {
               animate={{ opacity: 1 }}
             >
               {/* Clear button */}
-              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-background via-background to-transparent px-6 pt-3 pb-2">
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 px-6 pt-3 pb-2">
                 <button
                   onClick={reset}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -676,33 +677,27 @@ export function HumanInTheLoopPreview() {
 
       {/* Input */}
       <div className="shrink-0 px-4 pb-4">
-        <div className="rounded-2xl border border-border bg-background shadow-sm">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault()
-                handleSubmit()
-              }
-            }}
-            placeholder="Request an action that needs approval..."
-            disabled={isProcessing || phase !== "idle"}
-            rows={2}
-            className="min-h-[60px] w-full resize-none bg-transparent px-4 pt-3 pb-2 text-[15px] text-foreground outline-none placeholder:text-muted-foreground/60 disabled:opacity-50"
-          />
-          <div className="flex items-center justify-end px-3 pb-3">
-            <button
-              onClick={handleSubmit}
-              disabled={!input.trim() || isProcessing || phase !== "idle"}
-              className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <AIInput
+          value={input}
+          onValueChange={setInput}
+          onSubmit={handleSubmit}
+          isLoading={isProcessing}
+        >
+          <AIInputTextarea placeholder="Request an action that needs approval..." disabled={phase !== "idle"} />
+          <AIInputFooter className="justify-end pt-2">
+            <AIInputAction tooltip="Send">
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || isProcessing || phase !== "idle"}
+                className="flex size-8 items-center justify-center rounded-full bg-foreground text-background transition-all hover:bg-foreground/90 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </AIInputAction>
+          </AIInputFooter>
+        </AIInput>
       </div>
     </div>
   )
@@ -757,7 +752,7 @@ export function URLAnalysisPreview() {
           whileTap={{ scale: 0.95 }}
           className={`h-9 shrink-0 rounded-xl px-4 text-sm font-medium transition-all duration-150 ${
             url.trim() && step < 0
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-foreground/10 text-muted-foreground/50"
           }`}
         >

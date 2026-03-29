@@ -47,6 +47,7 @@ const ArtifactCanvasPreview = dynamic(() => import("./ui-primitives").then((m) =
 const VoiceInputPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.VoiceInputPreview })))
 const StreamingMarkdownPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.StreamingMarkdownPreview })))
 const ModelSelectorPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.ModelSelectorPreview })))
+const MultiModelSelectorPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.MultiModelSelectorPreview })))
 const PromptSuggestionsPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.PromptSuggestionsPreview })))
 const TokenCounterPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.TokenCounterPreview })))
 const AILoadingStatesPreview = dynamic(() => import("./ui-primitives").then((m) => ({ default: m.AILoadingStatesPreview })))
@@ -162,6 +163,7 @@ export const stackPreviewRegistry: Record<string, ComponentType> = {
   "voice-input-button": VoiceInputPreview,
   "streaming-markdown-renderer": StreamingMarkdownPreview,
   "model-selector": ModelSelectorPreview,
+  "multi-model-selector": MultiModelSelectorPreview,
   "prompt-suggestion-pills": PromptSuggestionsPreview,
   "token-counter": TokenCounterPreview,
   "ai-loading-states": AILoadingStatesPreview,
