@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { LiveWaveform } from "@/registry/stacks/basics-generate-speech/components/ui/live-waveform"
@@ -9,12 +9,7 @@ import { CircleSpinner, ShimmeringText, SPRING, SuggestionPills, WaveDotsLoader,
 
 /* ─── Generate Text ─── */
 
-const GT_RESPONSE =
-  "Language models predict the next word in a sequence. That\u2019s it. But trained on enough text, this simple objective forces the model to learn grammar, facts, logic, and reasoning \u2014 all as byproducts of prediction.\n\nWhat emerges is something that looks like understanding. The model can explain, create, translate, and reason. Whether this is genuine intelligence or sophisticated pattern matching remains an open question."
-
 const GT_KEYFRAMES = WAVE_KEYFRAMES
-
-const GT_TOKENS = GT_RESPONSE.split(/\s+/).length
 
 const GT_PLACEHOLDERS = [
   "Summarize this article...",
@@ -24,39 +19,64 @@ const GT_PLACEHOLDERS = [
 ]
 
 export function GenerateTextPreview() {
-  const [state, setState] = useState<"idle" | "thinking" | "complete">("idle")
+  const [state, setState] = useState<"idle" | "thinking" | "streaming" | "complete">("idle")
   const [prompt, setPrompt] = useState("")
   const [submittedPrompt, setSubmittedPrompt] = useState("")
+  const [response, setResponse] = useState("")
   const [elapsed, setElapsed] = useState(0)
   const t0Ref = useRef(0)
-  const tmRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  function submit() {
-    if (!prompt.trim() || state === "thinking") return
-    setSubmittedPrompt(prompt.trim())
+  const submit = useCallback(async () => {
+    if (!prompt.trim() || state === "thinking" || state === "streaming") return
+    const userPrompt = prompt.trim()
+    setSubmittedPrompt(userPrompt)
     setPrompt("")
+    setResponse("")
     setState("thinking")
     t0Ref.current = Date.now()
-    tmRef.current = setTimeout(() => {
+
+    try {
+      const res = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: userPrompt }],
+          system: "You are a helpful AI assistant. Provide thoughtful, concise responses (2-3 short paragraphs max). Be informative and engaging.",
+        }),
+      })
+
+      if (!res.ok) throw new Error("Failed to fetch")
+
+      const reader = res.body?.getReader()
+      if (!reader) throw new Error("No reader")
+
+      setState("streaming")
+      const decoder = new TextDecoder()
+      let fullText = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        fullText += decoder.decode(value, { stream: true })
+        setResponse(fullText)
+      }
+
       setElapsed(Date.now() - t0Ref.current)
       setState("complete")
-    }, 2000)
-  }
+    } catch (error) {
+      setResponse("Sorry, something went wrong. Please try again.")
+      setElapsed(Date.now() - t0Ref.current)
+      setState("complete")
+    }
+  }, [prompt, state])
 
   function reset() {
-    if (tmRef.current) clearTimeout(tmRef.current)
     setState("idle")
     setPrompt("")
     setSubmittedPrompt("")
+    setResponse("")
     setElapsed(0)
   }
-
-  useEffect(
-    () => () => {
-      if (tmRef.current) clearTimeout(tmRef.current)
-    },
-    []
-  )
 
   return (
     <div className="mx-auto flex h-[420px] w-full max-w-2xl flex-col justify-end p-4">
@@ -97,6 +117,18 @@ export function GenerateTextPreview() {
                       spread={1.5}
                     />
                   </motion.div>
+                ) : state === "streaming" ? (
+                  <motion.div
+                    key="streaming"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground/80">
+                      {response}
+                      <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-foreground/60" />
+                    </p>
+                  </motion.div>
                 ) : state === "complete" ? (
                   <motion.div
                     key="complete"
@@ -105,10 +137,10 @@ export function GenerateTextPreview() {
                     transition={{ duration: 0.3 }}
                   >
                     <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground/80">
-                      {GT_RESPONSE}
+                      {response}
                     </p>
                     <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{GT_TOKENS} tokens · {(elapsed / 1000).toFixed(1)}s</span>
+                      <span>Generated in {(elapsed / 1000).toFixed(1)}s</span>
                       <button
                         onClick={reset}
                         className="transition-colors hover:text-foreground"
@@ -137,7 +169,7 @@ export function GenerateTextPreview() {
               <button
                 key={suggestion}
                 onClick={() => setPrompt(suggestion)}
-                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
               >
                 {suggestion}
               </button>
@@ -173,11 +205,11 @@ export function GenerateTextPreview() {
           {/* Send button */}
           <motion.button
             onClick={submit}
-            disabled={!prompt.trim() || state === "thinking"}
+            disabled={!prompt.trim() || state === "thinking" || state === "streaming"}
             whileTap={{ scale: 0.92 }}
             className={cn(
               "flex size-9 items-center justify-center rounded-full transition-all",
-              prompt.trim() && state !== "thinking"
+              prompt.trim() && state !== "thinking" && state !== "streaming"
                 ? "bg-foreground text-background"
                 : "bg-foreground/10 text-muted-foreground/50"
             )}
@@ -200,9 +232,6 @@ export function GenerateTextPreview() {
 
 /* ─── Stream Text ─── */
 
-const ST_RESPONSE =
-  "Streaming changes the relationship between model and interface. Instead of waiting for a complete response, tokens arrive as they\u2019re generated \u2014 each one a small signal that the system is thinking, working, building toward an answer.\n\nThis isn\u2019t just faster. It\u2019s a fundamentally different interaction model. The user watches meaning assemble in real time. Latency becomes invisible. The gap between asking and understanding collapses."
-
 const ST_KEYFRAMES = `
 @keyframes st-pulse{0%,100%{opacity:.4}50%{opacity:1}}
 @keyframes st-flow{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
@@ -216,83 +245,78 @@ const ST_PLACEHOLDERS = [
 ]
 
 export function StreamTextPreview() {
-  const [state, setState] = useState<
-    "idle" | "streaming" | "complete"
-  >("idle")
+  const [state, setState] = useState<"idle" | "streaming" | "complete">("idle")
   const [prompt, setPrompt] = useState("")
   const [submittedPrompt, setSubmittedPrompt] = useState("")
   const [displayed, setDisplayed] = useState("")
-  const [tokenCount, setTokenCount] = useState(0)
-  const idxRef = useRef(0)
-  const tmRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const t0Ref = useRef(0)
   const [elapsed, setElapsed] = useState(0)
+  const abortRef = useRef<AbortController | null>(null)
 
-  function submit() {
+  const submit = useCallback(async () => {
     if (!prompt.trim() || state === "streaming") return
-    setSubmittedPrompt(prompt.trim())
+    const userPrompt = prompt.trim()
+    setSubmittedPrompt(userPrompt)
     setPrompt("")
     setState("streaming")
     setDisplayed("")
-    setTokenCount(0)
-    idxRef.current = 0
-    t0Ref.current = Date.now()
-  }
+    const startTime = Date.now()
+
+    abortRef.current = new AbortController()
+
+    try {
+      const response = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: userPrompt }],
+          system: "You are a helpful AI assistant. Provide thoughtful, informative responses. Keep your response to 2-3 paragraphs.",
+        }),
+        signal: abortRef.current.signal,
+      })
+
+      if (!response.ok) throw new Error("Failed to fetch")
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No reader")
+
+      const decoder = new TextDecoder()
+      let fullText = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        fullText += decoder.decode(value, { stream: true })
+        setDisplayed(fullText)
+      }
+
+      setElapsed(Date.now() - startTime)
+      setState("complete")
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        setDisplayed("Sorry, something went wrong. Please try again.")
+        setElapsed(Date.now() - startTime)
+        setState("complete")
+      }
+    }
+  }, [prompt, state])
 
   function reset() {
-    if (tmRef.current) clearTimeout(tmRef.current)
+    if (abortRef.current) abortRef.current.abort()
     setState("idle")
     setPrompt("")
     setSubmittedPrompt("")
     setDisplayed("")
-    setTokenCount(0)
     setElapsed(0)
-    idxRef.current = 0
   }
 
-  /* char-by-char streaming */
   useEffect(() => {
-    if (state !== "streaming") return
-    let wordBoundary = 0
-    function tick() {
-      const n = 2 + Math.floor(Math.random() * 3)
-      idxRef.current = Math.min(idxRef.current + n, ST_RESPONSE.length)
-      const slice = ST_RESPONSE.slice(0, idxRef.current)
-      setDisplayed(slice)
-
-      /* count tokens at word boundaries */
-      const spaces = slice.split(/\s+/).length
-      if (spaces > wordBoundary) {
-        wordBoundary = spaces
-        setTokenCount(spaces)
-      }
-
-      if (idxRef.current >= ST_RESPONSE.length) {
-        setElapsed(Date.now() - t0Ref.current)
-        setState("complete")
-      } else {
-        tmRef.current = setTimeout(tick, 14 + Math.random() * 10)
-      }
-    }
-    tmRef.current = setTimeout(tick, 30)
     return () => {
-      if (tmRef.current) clearTimeout(tmRef.current)
+      if (abortRef.current) abortRef.current.abort()
     }
-  }, [state])
-
-  useEffect(
-    () => () => {
-      if (tmRef.current) clearTimeout(tmRef.current)
-    },
-    []
-  )
+  }, [])
 
   const isStreaming = state === "streaming"
   const hasOutput = state === "streaming" || state === "complete"
-  const tps =
-    state === "complete" && elapsed > 0
-      ? (tokenCount / (elapsed / 1000)).toFixed(0)
-      : null
 
   return (
     <div className="mx-auto flex h-[420px] w-full max-w-2xl flex-col justify-end p-4">
@@ -329,15 +353,15 @@ export function StreamTextPreview() {
                     )}
                   </p>
 
-                  {/* Live token counter while streaming */}
+                  {/* Streaming indicator */}
                   {isStreaming && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="mt-3"
                     >
-                      <span className="text-xs tabular-nums text-muted-foreground">
-                        {tokenCount} tokens...
+                      <span className="text-xs text-muted-foreground">
+                        Streaming...
                       </span>
                     </motion.div>
                   )}
@@ -350,10 +374,7 @@ export function StreamTextPreview() {
                       transition={{ delay: 0.1 }}
                       className="mt-4 flex items-center justify-between text-xs text-muted-foreground"
                     >
-                      <span className="tabular-nums">
-                        {tokenCount} tokens · {(elapsed / 1000).toFixed(1)}s
-                        {tps && <> · {tps} tok/s</>}
-                      </span>
+                      <span>Completed in {(elapsed / 1000).toFixed(1)}s</span>
                       <button
                         onClick={reset}
                         className="transition-colors hover:text-foreground"
@@ -382,7 +403,7 @@ export function StreamTextPreview() {
               <button
                 key={suggestion}
                 onClick={() => setPrompt(suggestion)}
-                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
               >
                 {suggestion}
               </button>
@@ -1652,20 +1673,23 @@ interface ToolCallState {
 }
 
 export function ToolCallingPreview() {
-  const [state, setState] = useState<"idle" | "thinking" | "calling" | "result" | "complete">("idle")
+  const [state, setState] = useState<"idle" | "thinking" | "calling" | "result" | "generating" | "complete">("idle")
   const [prompt, setPrompt] = useState("")
   const [submittedPrompt, setSubmittedPrompt] = useState("")
   const [toolCall, setToolCall] = useState<ToolCallState | null>(null)
   const [startTime, setStartTime] = useState<number>(0)
   const [duration, setDuration] = useState<string>("0.0")
+  const [aiResponse, setAiResponse] = useState("")
 
-  function submit() {
+  const submit = useCallback(async () => {
     if (!prompt.trim() || state !== "idle") return
     const query = prompt.trim()
     setSubmittedPrompt(query)
     setPrompt("")
     setState("thinking")
-    setStartTime(Date.now())
+    setAiResponse("")
+    const start = Date.now()
+    setStartTime(start)
 
     // Detect which tool to use
     const detectedTool = detectTool(query)
@@ -1674,38 +1698,95 @@ export function ToolCallingPreview() {
       const args = detectedTool.extractArgs(query)
 
       // Simulate thinking delay
-      setTimeout(() => {
-        setState("calling")
+      await new Promise(r => setTimeout(r, 800))
+      setState("calling")
 
-        // Simulate tool call delay
-        setTimeout(() => {
-          const result = detectedTool.generateResult(args)
-          setState("result")
+      // Simulate tool call delay
+      await new Promise(r => setTimeout(r, 1000))
+      const result = detectedTool.generateResult(args)
+      setState("result")
 
-          // Generate final response
-          setTimeout(() => {
-            const response = detectedTool.generateResponse(args, result)
-            setToolCall({ tool: detectedTool, args, result, response })
-            setDuration(((Date.now() - Date.now() + 2800) / 1000).toFixed(1))
-            setState("complete")
-          }, 600)
-        }, 1000)
-      }, 800)
+      // Use AI to generate final response based on tool result
+      await new Promise(r => setTimeout(r, 400))
+      setState("generating")
+
+      try {
+        const response = await fetch("/api/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: `Tool "${detectedTool.name}" returned: ${result}\n\nProvide a helpful, conversational response to the user's original question: "${query}"` }],
+            system: "You are a helpful AI that interprets tool results and provides friendly, concise responses. Keep your response to 1-2 sentences.",
+          }),
+        })
+
+        if (!response.ok) throw new Error("Failed")
+
+        const reader = response.body?.getReader()
+        if (!reader) throw new Error("No reader")
+
+        const decoder = new TextDecoder()
+        let fullText = ""
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          fullText += decoder.decode(value, { stream: true })
+          setAiResponse(fullText)
+        }
+
+        setToolCall({ tool: detectedTool, args, result, response: fullText })
+      } catch {
+        const fallbackResponse = detectedTool.generateResponse(args, result)
+        setAiResponse(fallbackResponse)
+        setToolCall({ tool: detectedTool, args, result, response: fallbackResponse })
+      }
+
+      setDuration(((Date.now() - start) / 1000).toFixed(1))
+      setState("complete")
     } else {
-      // No tool needed - direct response
-      setTimeout(() => {
-        setToolCall(null)
-        setDuration("0.8")
-        setState("complete")
-      }, 800)
+      // No tool needed - use AI for direct response
+      await new Promise(r => setTimeout(r, 500))
+
+      try {
+        const response = await fetch("/api/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: query }],
+            system: "You are a helpful AI assistant. Provide a concise, friendly response.",
+          }),
+        })
+
+        if (response.ok) {
+          const reader = response.body?.getReader()
+          if (reader) {
+            const decoder = new TextDecoder()
+            let fullText = ""
+            while (true) {
+              const { done, value } = await reader.read()
+              if (done) break
+              fullText += decoder.decode(value, { stream: true })
+              setAiResponse(fullText)
+            }
+          }
+        }
+      } catch {
+        setAiResponse("I can help with weather, calculations, web searches, and time queries. Try asking one of those!")
+      }
+
+      setToolCall(null)
+      setDuration(((Date.now() - start) / 1000).toFixed(1))
+      setState("complete")
     }
-  }
+  }, [prompt, state])
 
   function reset() {
     setState("idle")
     setPrompt("")
     setSubmittedPrompt("")
     setToolCall(null)
+    setAiResponse("")
     setDuration("0.0")
   }
 
@@ -1822,18 +1903,33 @@ export function ToolCallingPreview() {
 
               {/* Result processing shimmer */}
               <AnimatePresence>
-                {state === "result" && (
+                {(state === "result" || state === "generating") && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
                     <ShimmeringText
-                      text="Processing result..."
+                      text={state === "generating" ? "Generating response..." : "Processing result..."}
                       className="text-sm"
                       duration={1.5}
                       spread={1.5}
                     />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Streaming AI Response */}
+              <AnimatePresence>
+                {state === "generating" && aiResponse && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <p className="text-sm leading-relaxed text-foreground">
+                      {aiResponse}
+                      <span className="ml-0.5 inline-block h-3 w-0.5 animate-pulse bg-foreground/60" />
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1848,7 +1944,7 @@ export function ToolCallingPreview() {
                     className="space-y-4"
                   >
                     <p className="text-sm leading-relaxed text-foreground">
-                      {toolCall ? toolCall.response : "I can help you with that! Try asking about the weather, calculations, searching the web, or checking the time in different locations."}
+                      {aiResponse || "I can help you with that! Try asking about the weather, calculations, searching the web, or checking the time in different locations."}
                     </p>
 
                     {/* Footer */}
@@ -1884,7 +1980,7 @@ export function ToolCallingPreview() {
               <button
                 key={suggestion}
                 onClick={() => setPrompt(suggestion)}
-                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
               >
                 {suggestion}
               </button>
@@ -2368,13 +2464,13 @@ export function AgentSetupPreview() {
                 </button>
                 <button
                   onClick={() => { setAutonomy("manual"); approvePlan(false) }}
-                  className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                  className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   Step by Step
                 </button>
                 <button
                   onClick={reset}
-                  className="rounded-lg border border-border px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  className="rounded-lg border border-border px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   Cancel
                 </button>
@@ -2494,7 +2590,7 @@ export function AgentSetupPreview() {
                   {state === "running" ? (
                     <button
                       onClick={pauseExecution}
-                      className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-accent"
+                      className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-muted"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <rect x="6" y="4" width="4" height="16" rx="1" />
@@ -2582,7 +2678,7 @@ export function AgentSetupPreview() {
               <button
                 key={s}
                 onClick={() => setPrompt(s)}
-                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground hover:bg-accent"
+                className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
               >
                 {s}
               </button>
@@ -2880,7 +2976,7 @@ export function GenerateTextMultiModelPreview() {
               <button
                 key={suggestion}
                 onClick={() => setPrompt(suggestion)}
-                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
               >
                 {suggestion}
               </button>
@@ -2987,54 +3083,95 @@ const PE_PLACEHOLDERS = [
 ]
 
 export function GenerateTextPromptPreview() {
-  const [state, setState] = useState<"idle" | "thinking" | "complete">("idle")
+  const [state, setState] = useState<"idle" | "thinking" | "streaming" | "complete">("idle")
   const [prompt, setPrompt] = useState("")
   const [submittedPrompt, setSubmittedPrompt] = useState("")
   const [activePersona, setActivePersona] = useState(0)
   const [temperature, setTemperature] = useState(0.7)
   const [elapsed, setElapsed] = useState(0)
   const [showSystem, setShowSystem] = useState(false)
+  const [response, setResponse] = useState("")
   const t0Ref = useRef(0)
-  const tmRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
 
-  function submit() {
-    if (!prompt.trim() || state === "thinking") return
-    setSubmittedPrompt(prompt.trim())
-    setPrompt("")
-    generate()
-  }
-
-  function generate() {
+  const generate = useCallback(async (userPrompt: string, personaIdx: number) => {
+    const persona = PE_PERSONAS[personaIdx]
     setState("thinking")
+    setResponse("")
     t0Ref.current = Date.now()
-    const delay = 1200 + temperature * 600
-    if (tmRef.current) clearTimeout(tmRef.current)
-    tmRef.current = setTimeout(() => {
+
+    // Abort any previous request
+    if (abortRef.current) abortRef.current.abort()
+    abortRef.current = new AbortController()
+
+    try {
+      const res = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: userPrompt }],
+          system: persona.system,
+        }),
+        signal: abortRef.current.signal,
+      })
+
+      if (!res.ok) throw new Error("Failed to fetch")
+
+      const reader = res.body?.getReader()
+      if (!reader) throw new Error("No reader")
+
+      setState("streaming")
+      const decoder = new TextDecoder()
+      let fullText = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        fullText += decoder.decode(value, { stream: true })
+        setResponse(fullText)
+      }
+
       setElapsed(Date.now() - t0Ref.current)
       setState("complete")
-    }, delay)
+    } catch (error) {
+      if ((error as Error).name === "AbortError") return
+      // Fallback to persona's default response
+      setResponse(persona.response)
+      setElapsed(Date.now() - t0Ref.current)
+      setState("complete")
+    }
+  }, [])
+
+  function submit() {
+    if (!prompt.trim() || state === "thinking" || state === "streaming") return
+    const userPrompt = prompt.trim()
+    setSubmittedPrompt(userPrompt)
+    setPrompt("")
+    generate(userPrompt, activePersona)
   }
 
   function switchPersona(idx: number) {
     setActivePersona(idx)
-    if (state === "complete") generate()
+    if ((state === "complete" || state === "streaming") && submittedPrompt) {
+      generate(submittedPrompt, idx)
+    }
   }
 
   function reset() {
-    if (tmRef.current) clearTimeout(tmRef.current)
+    if (abortRef.current) abortRef.current.abort()
     setState("idle")
     setPrompt("")
     setSubmittedPrompt("")
+    setResponse("")
     setElapsed(0)
     setShowSystem(false)
   }
 
-  useEffect(
-    () => () => {
-      if (tmRef.current) clearTimeout(tmRef.current)
-    },
-    []
-  )
+  useEffect(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort()
+    }
+  }, [])
 
   const persona = PE_PERSONAS[activePersona]
 
@@ -3077,19 +3214,31 @@ export function GenerateTextPromptPreview() {
                       spread={1.5}
                     />
                   </motion.div>
+                ) : state === "streaming" ? (
+                  <motion.div
+                    key="streaming"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground/80">
+                      {response}
+                      <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-foreground/60" />
+                    </p>
+                  </motion.div>
                 ) : state === "complete" ? (
                   <motion.div
-                    key={persona.id}
+                    key="complete"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
                     <p className="whitespace-pre-wrap text-base leading-[1.8] text-foreground/80">
-                      {persona.response}
+                      {response}
                     </p>
                     <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{persona.tokens} tokens · {(elapsed / 1000).toFixed(1)}s</span>
+                      <span>Generated in {(elapsed / 1000).toFixed(1)}s</span>
                       <button
                         onClick={reset}
                         className="transition-colors hover:text-foreground"
@@ -3118,7 +3267,7 @@ export function GenerateTextPromptPreview() {
               <button
                 key={suggestion}
                 onClick={() => setPrompt(suggestion)}
-                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
               >
                 {suggestion}
               </button>
@@ -3185,11 +3334,11 @@ export function GenerateTextPromptPreview() {
           {/* Send button */}
           <motion.button
             onClick={submit}
-            disabled={!prompt.trim() || state === "thinking"}
+            disabled={!prompt.trim() || state === "thinking" || state === "streaming"}
             whileTap={{ scale: 0.92 }}
             className={cn(
               "flex size-9 items-center justify-center rounded-full transition-all",
-              prompt.trim() && state !== "thinking"
+              prompt.trim() && state !== "thinking" && state !== "streaming"
                 ? "bg-foreground text-background"
                 : "bg-foreground/10 text-muted-foreground/50"
             )}

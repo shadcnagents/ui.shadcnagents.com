@@ -1378,7 +1378,7 @@ export function MultiModelSelectorPreview() {
           <button
             key={suggestion}
             onClick={() => setPrompt(suggestion)}
-            className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+            className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
           >
             {suggestion}
           </button>
@@ -1401,7 +1401,7 @@ export function MultiModelSelectorPreview() {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm transition-colors hover:bg-accent"
+              className="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm transition-colors hover:bg-muted"
             >
               {/* Colored dots */}
               <div className="flex -space-x-1">
@@ -1464,7 +1464,7 @@ export function MultiModelSelectorPreview() {
                             onMouseEnter={() => setHoveredModelId(model.id)}
                             className={cn(
                               "flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition-colors",
-                              isSelected ? "bg-accent" : "hover:bg-accent/50"
+                              isSelected ? "bg-muted" : "hover:bg-muted/50"
                             )}
                           >
                             <div className="flex items-center gap-3">
