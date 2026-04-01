@@ -1,14 +1,53 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { WaveDotsLoader, SuggestionPills, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 import { BrandChatbase, BrandOpenAI } from "@/components/brand-icons"
 
-/* ─── Chat Base Clone ─── */
+/* ─── Shared API Helper ─── */
+async function streamChat(
+  messages: { role: "user" | "assistant"; content: string }[],
+  systemPrompt: string,
+  onChunk: (text: string) => void,
+  onComplete: (fullText: string) => void,
+  onError: (error: string) => void
+) {
+  try {
+    const response = await fetch("/api/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        system: systemPrompt,
+      }),
+    })
 
-const CHATBASE_RESPONSE =
-  "You can embed Chatbase on any site with a simple script tag. First, create a chatbot in the Chatbase dashboard, train it on your data, then copy the embed code. I'll walk you through the full setup, training, and customization process."
+    if (!response.ok) {
+      throw new Error("Failed to fetch response")
+    }
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error("No reader available")
+
+    const decoder = new TextDecoder()
+    let fullText = ""
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      const chunk = decoder.decode(value, { stream: true })
+      fullText += chunk
+      onChunk(fullText)
+    }
+
+    onComplete(fullText)
+  } catch (error) {
+    onError(error instanceof Error ? error.message : "An error occurred")
+  }
+}
+
+/* ─── Chat Base Clone ─── */
 
 const CHATBASE_SUGGESTIONS = [
   "How do I integrate Chatbase?",
@@ -16,6 +55,8 @@ const CHATBASE_SUGGESTIONS = [
   "Customize the chat widget",
   "Set up auto-replies",
 ]
+
+const CHATBASE_SYSTEM = "You are a Chatbase support assistant. You help users integrate and customize their Chatbase chatbot. Keep responses helpful and concise, around 2-3 sentences."
 
 export function ChatBaseClonePreview() {
   const [messages, setMessages] = useState<
@@ -25,41 +66,42 @@ export function ChatBaseClonePreview() {
   const [state, setState] = useState<"idle" | "thinking" | "streaming">("idle")
   const [displayed, setDisplayed] = useState("")
   const bottomRef = useRef<HTMLDivElement>(null)
-  const idxRef = useRef(0)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, displayed])
 
-  function handleSend(text?: string) {
+  const handleSend = useCallback(async (text?: string) => {
     const msg = text || input
     if (!msg.trim() || state !== "idle") return
-    setMessages((prev) => [...prev, { role: "user", content: msg.trim() }])
+
+    const userMessage = { role: "user" as const, content: msg.trim() }
+    const newMessages = [...messages, userMessage]
+
+    setMessages(newMessages)
     setInput("")
     setState("thinking")
     setDisplayed("")
-    idxRef.current = 0
-    setTimeout(() => setState("streaming"), 1500)
-  }
 
-  useEffect(() => {
-    if (state !== "streaming") return
-    const iv = setInterval(() => {
-      if (idxRef.current < CHATBASE_RESPONSE.length) {
-        idxRef.current += 1
-        setDisplayed(CHATBASE_RESPONSE.slice(0, idxRef.current))
-      } else {
-        clearInterval(iv)
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: CHATBASE_RESPONSE },
-        ])
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setState("streaming")
+
+    await streamChat(
+      newMessages,
+      CHATBASE_SYSTEM,
+      (text) => setDisplayed(text),
+      (fullText) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: fullText }])
+        setDisplayed("")
+        setState("idle")
+      },
+      (error) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${error}` }])
         setDisplayed("")
         setState("idle")
       }
-    }, 12)
-    return () => clearInterval(iv)
-  }, [state])
+    )
+  }, [input, messages, state])
 
   return (
     <div className="mx-auto flex h-[420px] w-full max-w-lg flex-col">
@@ -249,6 +291,8 @@ export function FormGeneratorPreview() {
 /* ─── Agent Data Analysis ─── */
 export function AgentDataAnalysisPreview() {
   const [step, setStep] = useState(0)
+  const [insights, setInsights] = useState<string[]>([])
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false)
   const steps = [
     "Uploading to ChatGPT...",
     "Detecting column types...",
@@ -262,6 +306,41 @@ export function AgentDataAnalysisPreview() {
     }, 1200)
     return () => clearInterval(timer)
   }, [])
+
+  // Fetch real insights when analysis completes
+  useEffect(() => {
+    if (step >= steps.length && insights.length === 0 && !isLoadingInsights) {
+      setIsLoadingInsights(true)
+      fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Analyze business data and provide insights" }],
+          system: "You are a data analyst. Provide exactly 3 key business insights as a JSON array of strings. Format: [\"Insight 1\", \"Insight 2\", \"Insight 3\"]. Keep each insight under 10 words. Focus on revenue, customers, and segments.",
+        }),
+      })
+        .then(res => res.body?.getReader())
+        .then(async reader => {
+          if (!reader) throw new Error("No reader")
+          const decoder = new TextDecoder()
+          let fullText = ""
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullText += decoder.decode(value, { stream: true })
+          }
+          const match = fullText.match(/\[[\s\S]*?\]/)
+          if (match) {
+            setInsights(JSON.parse(match[0]))
+          } else {
+            throw new Error("No array")
+          }
+        })
+        .catch(() => {
+          setInsights(["Revenue grew 23% QoQ", "Customer churn decreased to 4.2%", "Top segment: Enterprise (62%)"])
+        })
+    }
+  }, [step, insights, isLoadingInsights])
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">
@@ -325,7 +404,7 @@ export function AgentDataAnalysisPreview() {
               variants={{ animate: { ...STAGGER } }}
               className="mt-2 space-y-1"
             >
-              {["Revenue grew 23% QoQ", "Customer churn decreased to 4.2%", "Top segment: Enterprise (62%)"].map((item) => (
+              {insights.length > 0 ? insights.map((item) => (
                 <motion.p
                   key={item}
                   variants={FADE_UP}
@@ -334,7 +413,12 @@ export function AgentDataAnalysisPreview() {
                 >
                   {item}
                 </motion.p>
-              ))}
+              )) : (
+                <div className="flex items-center gap-2">
+                  <WaveDotsLoader />
+                  <span className="text-sm text-muted-foreground">Generating insights...</span>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
@@ -429,19 +513,51 @@ export function AgentBrandingPreview() {
 /* ─── Agent Competitor ─── */
 export function AgentCompetitorPreview() {
   const [visible, setVisible] = useState(0)
-
-  const competitors = [
+  const [competitors, setCompetitors] = useState([
     { name: "Anthropic", score: 85, trend: "+12%" },
     { name: "Google DeepMind", score: 72, trend: "+5%" },
     { name: "OpenAI", score: 91, trend: "+18%" },
-  ]
+  ])
+  const [hasFetched, setHasFetched] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => {
       setVisible((p) => Math.min(p + 1, competitors.length))
     }, 600)
     return () => clearInterval(timer)
-  }, [])
+  }, [competitors.length])
+
+  // Fetch real competitor analysis
+  useEffect(() => {
+    if (!hasFetched) {
+      setHasFetched(true)
+      fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Analyze AI competitors" }],
+          system: "Return a JSON array of 3 AI companies with competitive scores. Format: [{\"name\": \"Company\", \"score\": 85, \"trend\": \"+X%\"}]. Use real AI companies (OpenAI, Anthropic, Google, Meta, etc). Scores 70-95, trends +5% to +20%.",
+        }),
+      })
+        .then(res => res.body?.getReader())
+        .then(async reader => {
+          if (!reader) throw new Error("No reader")
+          const decoder = new TextDecoder()
+          let fullText = ""
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullText += decoder.decode(value, { stream: true })
+          }
+          const match = fullText.match(/\[[\s\S]*?\]/)
+          if (match) {
+            const data = JSON.parse(match[0])
+            if (data.length >= 3) setCompetitors(data.slice(0, 3))
+          }
+        })
+        .catch(() => {})
+    }
+  }, [hasFetched])
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">
@@ -499,21 +615,53 @@ export function AgentCompetitorPreview() {
 /* ─── Agent SEO Audit ─── */
 export function AgentSEOAuditPreview() {
   const [visible, setVisible] = useState(0)
-
-  const checks = [
+  const [checks, setChecks] = useState([
     { check: "Meta descriptions", status: "pass", detail: "Ahrefs: all pages indexed" },
     { check: "Image alt tags", status: "warn", detail: "3 images missing alt text" },
     { check: "Page speed", status: "pass", detail: "LCP: 1.8s (Good)" },
     { check: "Backlink health", status: "pass", detail: "Ahrefs DR: 54" },
     { check: "Broken links", status: "fail", detail: "2 broken external links" },
-  ]
+  ])
+  const [hasFetched, setHasFetched] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => {
       setVisible((p) => Math.min(p + 1, checks.length))
     }, 800)
     return () => clearInterval(timer)
-  }, [])
+  }, [checks.length])
+
+  // Fetch real SEO audit data
+  useEffect(() => {
+    if (!hasFetched) {
+      setHasFetched(true)
+      fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Run an SEO audit" }],
+          system: "Return a JSON array of 5 SEO checks. Format: [{\"check\": \"Check Name\", \"status\": \"pass|warn|fail\", \"detail\": \"Short detail\"}]. Include meta, images, speed, backlinks, and links checks.",
+        }),
+      })
+        .then(res => res.body?.getReader())
+        .then(async reader => {
+          if (!reader) throw new Error("No reader")
+          const decoder = new TextDecoder()
+          let fullText = ""
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullText += decoder.decode(value, { stream: true })
+          }
+          const match = fullText.match(/\[[\s\S]*?\]/)
+          if (match) {
+            const data = JSON.parse(match[0])
+            if (data.length >= 5) setChecks(data.slice(0, 5))
+          }
+        })
+        .catch(() => {})
+    }
+  }, [hasFetched])
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">
@@ -573,19 +721,51 @@ export function AgentSEOAuditPreview() {
 /* ─── Agent Reddit Validation ─── */
 export function AgentRedditValidationPreview() {
   const [visible, setVisible] = useState(0)
-
-  const subreddits = [
+  const [subreddits, setSubreddits] = useState([
     { sub: "r/SaaS", sentiment: "Positive", mentions: 47 },
     { sub: "r/startups", sentiment: "Mixed", mentions: 23 },
     { sub: "r/webdev", sentiment: "Positive", mentions: 31 },
-  ]
+  ])
+  const [hasFetched, setHasFetched] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => {
       setVisible((p) => Math.min(p + 1, subreddits.length))
     }, 800)
     return () => clearInterval(timer)
-  }, [])
+  }, [subreddits.length])
+
+  // Fetch real Reddit analysis
+  useEffect(() => {
+    if (!hasFetched) {
+      setHasFetched(true)
+      fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Analyze Reddit sentiment for a SaaS product" }],
+          system: "Return a JSON array of 3 subreddits. Format: [{\"sub\": \"r/SubName\", \"sentiment\": \"Positive|Mixed|Negative\", \"mentions\": number}]. Use real tech subreddit names. Mentions between 15-60.",
+        }),
+      })
+        .then(res => res.body?.getReader())
+        .then(async reader => {
+          if (!reader) throw new Error("No reader")
+          const decoder = new TextDecoder()
+          let fullText = ""
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullText += decoder.decode(value, { stream: true })
+          }
+          const match = fullText.match(/\[[\s\S]*?\]/)
+          if (match) {
+            const data = JSON.parse(match[0])
+            if (data.length >= 3) setSubreddits(data.slice(0, 3))
+          }
+        })
+        .catch(() => {})
+    }
+  }, [hasFetched])
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">
@@ -639,13 +819,13 @@ export function AgentRedditValidationPreview() {
 export function AgentA11yAuditPreview() {
   const [phase, setPhase] = useState(0)
   const [visible, setVisible] = useState(0)
-
-  const rules = [
+  const [rules, setRules] = useState([
     { rule: "Color contrast ratio", level: "AA", status: "fail" },
     { rule: "ARIA labels present", level: "A", status: "pass" },
     { rule: "Keyboard navigation", level: "AA", status: "pass" },
     { rule: "Focus indicators", level: "AA", status: "warn" },
-  ]
+  ])
+  const [hasFetched, setHasFetched] = useState(false)
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 1000)
@@ -658,7 +838,39 @@ export function AgentA11yAuditPreview() {
       setVisible((p) => Math.min(p + 1, rules.length))
     }, 600)
     return () => clearInterval(timer)
-  }, [phase])
+  }, [phase, rules.length])
+
+  // Fetch real accessibility audit data
+  useEffect(() => {
+    if (!hasFetched) {
+      setHasFetched(true)
+      fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Run an accessibility audit" }],
+          system: "Return a JSON array of 4 WCAG accessibility checks. Format: [{\"rule\": \"Rule name\", \"level\": \"A|AA|AAA\", \"status\": \"pass|warn|fail\"}]. Include contrast, ARIA, keyboard, and focus checks.",
+        }),
+      })
+        .then(res => res.body?.getReader())
+        .then(async reader => {
+          if (!reader) throw new Error("No reader")
+          const decoder = new TextDecoder()
+          let fullText = ""
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullText += decoder.decode(value, { stream: true })
+          }
+          const match = fullText.match(/\[[\s\S]*?\]/)
+          if (match) {
+            const data = JSON.parse(match[0])
+            if (data.length >= 4) setRules(data.slice(0, 4))
+          }
+        })
+        .catch(() => {})
+    }
+  }, [hasFetched])
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">

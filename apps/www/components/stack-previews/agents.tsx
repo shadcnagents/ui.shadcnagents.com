@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { AIInput, AIInputTextarea, AIInputFooter, AIInputAction } from "@/components/ui/ai-input"
 import { WaveDotsLoader, CircleSpinner, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
 
 /* ─── Agent Configuration ─── */
 const ROUTING_AGENTS = [
-  { id: "code", name: "Code Expert", model: "gpt-4o" },
-  { id: "writer", name: "Writer", model: "claude-3.5-sonnet" },
-  { id: "analyst", name: "Analyst", model: "gpt-4o-mini" },
+  { id: "code", name: "Code Expert", model: "gpt-4o", systemPrompt: "You are a senior software engineer. Help with code issues, debugging, and programming questions. Be concise but thorough. Use code examples when helpful." },
+  { id: "writer", name: "Writer", model: "claude-3.5-sonnet", systemPrompt: "You are a professional content writer. Help with writing, drafting, and content creation. Structure your responses with clear sections and bullet points when appropriate." },
+  { id: "analyst", name: "Analyst", model: "gpt-4o-mini", systemPrompt: "You are a data analyst. Help with analysis, insights, and recommendations. Use structured summaries with key metrics and actionable recommendations." },
 ]
 
 /* ─── Routing Pattern ─── */
@@ -22,6 +22,7 @@ export function RoutingPatternPreview() {
     confidence?: number
   }>>([])
   const [isProcessing, setIsProcessing] = useState(false)
+  const [streamingContent, setStreamingContent] = useState("")
 
   function classifyQuery(text: string): { agent: string; confidence: number } {
     const lower = text.toLowerCase()
@@ -34,37 +35,67 @@ export function RoutingPatternPreview() {
     return { agent: "analyst", confidence: 87 }
   }
 
-  function handleSubmit() {
+  const handleSubmit = useCallback(async () => {
     if (!input.trim() || isProcessing) return
 
     const userMessage = input.trim()
     setInput("")
     setMessages(prev => [...prev, { role: "user", content: userMessage }])
     setIsProcessing(true)
+    setStreamingContent("")
 
     // Simulate routing decision
-    setTimeout(() => {
-      const { agent, confidence } = classifyQuery(userMessage)
-      const agentInfo = ROUTING_AGENTS.find(a => a.id === agent)!
+    await new Promise(r => setTimeout(r, 600))
+    const { agent, confidence } = classifyQuery(userMessage)
+    const agentInfo = ROUTING_AGENTS.find(a => a.id === agent)!
 
-      setMessages(prev => [
-        ...prev,
-        { role: "routing", content: `Routed to ${agentInfo.name}`, agent, confidence }
-      ])
+    setMessages(prev => [
+      ...prev,
+      { role: "routing", content: `Routed to ${agentInfo.name}`, agent, confidence }
+    ])
 
-      // Simulate agent response
-      setTimeout(() => {
-        const responses: Record<string, string> = {
-          code: "Looking at your code, I found the issue. The type mismatch in your function parameters is causing the error.\n\nHere's the corrected version:\n\nfunction processData(items: string[]) {\n  return items.map(item => item.trim())\n}\n\nThe key change ensures the input type matches what you're passing.",
-          writer: "Here's a draft for your content:\n\nIntroduction\nIn today's rapidly evolving landscape, understanding these key trends is essential.\n\nKey Points\n• The market is shifting toward AI-first solutions\n• Customer expectations continue to rise\n• Personalization drives engagement\n\nWould you like me to expand on any section?",
-          analyst: "Based on my analysis:\n\nSummary\n• Total records: 2,847\n• Key improvement: +23.5%\n• Primary driver: Q3 initiatives\n\nRecommendation\nFocus resources on top-performing segments. The correlation between engagement and conversion is statistically significant (p < 0.01).",
-        }
+    // Stream real AI response
+    try {
+      const response = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: userMessage }],
+          system: agentInfo.systemPrompt + " Keep your response concise (2-3 paragraphs max).",
+        }),
+      })
 
-        setMessages(prev => [...prev, { role: "assistant", content: responses[agent], agent }])
-        setIsProcessing(false)
-      }, 1200)
-    }, 600)
-  }
+      if (!response.ok) throw new Error("Failed")
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No reader")
+
+      const decoder = new TextDecoder()
+      let fullText = ""
+
+      // Add empty assistant message for streaming
+      setMessages(prev => [...prev, { role: "assistant", content: "", agent }])
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        fullText += decoder.decode(value, { stream: true })
+        setStreamingContent(fullText)
+      }
+
+      // Update final message
+      setMessages(prev => {
+        const newMsgs = [...prev]
+        newMsgs[newMsgs.length - 1] = { role: "assistant", content: fullText, agent }
+        return newMsgs
+      })
+      setStreamingContent("")
+    } catch {
+      setMessages(prev => [...prev, { role: "assistant", content: "I apologize, but I encountered an issue processing your request. Please try again.", agent }])
+    }
+
+    setIsProcessing(false)
+  }, [input, isProcessing])
 
   const showOnboarding = messages.length === 0
 
@@ -162,7 +193,10 @@ export function RoutingPatternPreview() {
                     <div className="flex w-full flex-col items-start">
                       <div className="prose prose-sm dark:prose-invert max-w-none">
                         <div className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap">
-                          {msg.content}
+                          {msg.content || streamingContent}
+                          {!msg.content && streamingContent && (
+                            <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-foreground/60" />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -238,6 +272,8 @@ export function RoutingPatternPreview() {
 /* ─── Parallel Processing ─── */
 export function ParallelProcessingPreview() {
   const [progress, setProgress] = useState([0, 0, 0])
+  const [results, setResults] = useState<{ sentiment: string; entities: string; topics: string } | null>(null)
+  const [isLoadingResults, setIsLoadingResults] = useState(false)
 
   const tasks = [
     { name: "Sentiment Analysis", target: 100 },
@@ -260,6 +296,46 @@ export function ParallelProcessingPreview() {
   }, [])
 
   const allDone = progress.every((p, i) => p >= tasks[i].target)
+
+  // Fetch real AI results when all tasks complete
+  useEffect(() => {
+    if (allDone && !results && !isLoadingResults) {
+      setIsLoadingResults(true)
+      fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Analyze a tech news article about AI advancements" }],
+          system: "You are a document analyzer. Return ONLY a JSON object with these exact keys: {\"sentiment\": \"Positive/Negative/Neutral (0.XX)\", \"entities\": \"X orgs, Y people, Z locations\", \"topics\": \"Topic1, Topic2, Topic3\"}. No explanation, just JSON.",
+        }),
+      })
+        .then(res => res.body?.getReader())
+        .then(async reader => {
+          if (!reader) throw new Error("No reader")
+          const decoder = new TextDecoder()
+          let fullText = ""
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullText += decoder.decode(value, { stream: true })
+          }
+          try {
+            const jsonMatch = fullText.match(/\{[^}]+\}/)
+            if (jsonMatch) {
+              const data = JSON.parse(jsonMatch[0])
+              setResults(data)
+            } else {
+              throw new Error("No JSON")
+            }
+          } catch {
+            setResults({ sentiment: "Positive (0.87)", entities: "4 orgs, 2 people, 3 locations", topics: "Technology, AI Research, ML" })
+          }
+        })
+        .catch(() => {
+          setResults({ sentiment: "Positive (0.87)", entities: "4 orgs, 2 people, 3 locations", topics: "Technology, AI Research, ML" })
+        })
+    }
+  }, [allDone, results, isLoadingResults])
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">
@@ -337,11 +413,18 @@ export function ParallelProcessingPreview() {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               LangChain Combined Result
             </p>
-            <div className="mt-2 space-y-1 font-mono text-sm text-muted-foreground">
-              <p>Sentiment: <span className="text-foreground">Positive (0.87)</span></p>
-              <p>Entities: <span className="text-foreground">4 orgs, 2 people, 3 locations</span></p>
-              <p>Topics: <span className="text-foreground">Technology, AI Research, ML</span></p>
-            </div>
+            {results ? (
+              <div className="mt-2 space-y-1 font-mono text-sm text-muted-foreground">
+                <p>Sentiment: <span className="text-foreground">{results.sentiment}</span></p>
+                <p>Entities: <span className="text-foreground">{results.entities}</span></p>
+                <p>Topics: <span className="text-foreground">{results.topics}</span></p>
+              </div>
+            ) : (
+              <div className="mt-2 flex items-center gap-2">
+                <CircleSpinner size={14} className="text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Combining results...</span>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -707,6 +790,8 @@ export function HumanInTheLoopPreview() {
 export function URLAnalysisPreview() {
   const [url, setUrl] = useState("")
   const [step, setStep] = useState(-1)
+  const [analysis, setAnalysis] = useState<{ title: string; words: string; reading: string; summary: string } | null>(null)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
 
   const steps = [
     { name: "Fetching page", detail: "Zapier webhook triggered" },
@@ -715,23 +800,63 @@ export function URLAnalysisPreview() {
     { name: "Generating summary", detail: "Creating Zap output" },
   ]
 
-  function handleAnalyze() {
+  async function handleAnalyze() {
     if (!url.trim()) return
     setStep(0)
-    let s = 0
-    const timer = setInterval(() => {
-      s++
-      if (s < steps.length) {
-        setStep(s)
-      } else {
-        clearInterval(timer)
+    setAnalysis(null)
+    setIsAnalyzing(true)
+
+    // Progress through steps
+    for (let s = 1; s < steps.length; s++) {
+      await new Promise(r => setTimeout(r, 1200))
+      setStep(s)
+    }
+
+    // Fetch real AI analysis
+    try {
+      const response = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: `Analyze this URL: ${url}` }],
+          system: "You are a URL content analyzer. Imagine you've analyzed the webpage. Return ONLY a JSON object: {\"title\": \"Article Title Here\", \"words\": \"X,XXX\", \"reading\": \"X min\", \"summary\": \"Brief 1-sentence summary of what the article might be about based on the URL.\"}. No markdown, just JSON.",
+        }),
+      })
+
+      if (!response.ok) throw new Error("Failed")
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No reader")
+
+      const decoder = new TextDecoder()
+      let fullText = ""
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        fullText += decoder.decode(value, { stream: true })
       }
-    }, 1200)
+
+      try {
+        const jsonMatch = fullText.match(/\{[^}]+\}/)
+        if (jsonMatch) {
+          setAnalysis(JSON.parse(jsonMatch[0]))
+        } else {
+          throw new Error("No JSON")
+        }
+      } catch {
+        setAnalysis({ title: "Example Article", words: "1,247", reading: "5 min", summary: "Covers fundamentals of modern web development and emerging industry trends." })
+      }
+    } catch {
+      setAnalysis({ title: "Example Article", words: "1,247", reading: "5 min", summary: "Covers fundamentals of modern web development and emerging industry trends." })
+    }
+
+    setIsAnalyzing(false)
   }
 
   function reset() {
     setStep(-1)
     setUrl("")
+    setAnalysis(null)
   }
 
   return (
@@ -827,12 +952,19 @@ export function URLAnalysisPreview() {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Zapier Analysis Result
             </p>
-            <div className="mt-2 space-y-1.5 text-sm">
-              <p className="text-muted-foreground">Title: <span className="font-medium text-foreground">Example Article</span></p>
-              <p className="text-muted-foreground">Words: <span className="font-mono text-foreground">1,247</span></p>
-              <p className="text-muted-foreground">Reading: <span className="font-mono text-foreground">5 min</span></p>
-              <p className="text-muted-foreground">Summary: <span className="text-foreground">Covers fundamentals of modern web development and emerging industry trends.</span></p>
-            </div>
+            {analysis ? (
+              <div className="mt-2 space-y-1.5 text-sm">
+                <p className="text-muted-foreground">Title: <span className="font-medium text-foreground">{analysis.title}</span></p>
+                <p className="text-muted-foreground">Words: <span className="font-mono text-foreground">{analysis.words}</span></p>
+                <p className="text-muted-foreground">Reading: <span className="font-mono text-foreground">{analysis.reading}</span></p>
+                <p className="text-muted-foreground">Summary: <span className="text-foreground">{analysis.summary}</span></p>
+              </div>
+            ) : (
+              <div className="mt-2 flex items-center gap-2">
+                <CircleSpinner size={14} className="text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Generating analysis...</span>
+              </div>
+            )}
             <div className="mt-3 border-t border-border pt-2">
               <button
                 onClick={reset}

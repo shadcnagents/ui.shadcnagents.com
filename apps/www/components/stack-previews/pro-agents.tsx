@@ -1,9 +1,50 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
+import Image from "next/image"
 import { AnimatePresence, motion } from "motion/react"
 import { AIInput, AIInputTextarea, AIInputFooter, AIInputAction } from "@/components/ui/ai-input"
 import { WaveDotsLoader, CircleSpinner, WAVE_KEYFRAMES, SPRING, FADE_UP, STAGGER } from "./shared"
+
+/* ─── Shared API Helper ─── */
+async function streamChat(
+  messages: { role: "user" | "assistant"; content: string }[],
+  systemPrompt: string,
+  onChunk: (text: string) => void,
+  onComplete: (fullText: string) => void,
+  onError: (error: string) => void
+) {
+  try {
+    const response = await fetch("/api/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        system: systemPrompt,
+      }),
+    })
+
+    if (!response.ok) throw new Error("Failed to fetch response")
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error("No reader available")
+
+    const decoder = new TextDecoder()
+    let fullText = ""
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      const chunk = decoder.decode(value, { stream: true })
+      fullText += chunk
+      onChunk(fullText)
+    }
+
+    onComplete(fullText)
+  } catch (error) {
+    onError(error instanceof Error ? error.message : "An error occurred")
+  }
+}
 
 /* ─── Orchestrator Pattern ─── */
 export function OrchestratorPatternPreview() {
@@ -29,7 +70,7 @@ export function OrchestratorPatternPreview() {
     "Analyze competitor pricing strategy",
   ]
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!input.trim() || isProcessing) return
     const userMessage = input.trim()
     setInput("")
@@ -37,69 +78,87 @@ export function OrchestratorPatternPreview() {
     setIsProcessing(true)
 
     // Step 1: Thinking
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        role: "thinking",
-        content: "I'll break this into subtasks and delegate to specialized agents:\n1. Research Agent → gather sources\n2. Writer Agent → draft content\n3. Editor Agent → polish output"
-      }])
+    await new Promise(r => setTimeout(r, 600))
+    setMessages(prev => [...prev, {
+      role: "thinking",
+      content: "I'll break this into subtasks and delegate to specialized agents:\n1. Research Agent → gather sources\n2. Writer Agent → draft content\n3. Editor Agent → polish output"
+    }])
 
-      // Step 2: Research tool
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          role: "tool",
-          toolName: "research_agent",
-          content: "query: \"" + userMessage + "\"",
-          toolStatus: "running"
-        }])
+    // Step 2: Research tool
+    await new Promise(r => setTimeout(r, 800))
+    setMessages(prev => [...prev, {
+      role: "tool",
+      toolName: "research_agent",
+      content: "query: \"" + userMessage + "\"",
+      toolStatus: "running"
+    }])
 
-        setTimeout(() => {
-          setMessages(prev => prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Found 3 sources: MIT Tech Review, Anthropic Blog, arXiv paper. Key themes: autonomous agents, tool use, multi-agent systems." } : m
-          ))
+    await new Promise(r => setTimeout(r, 1000))
+    setMessages(prev => prev.map((m, i) =>
+      i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Found 3 sources. Key themes identified and compiled." } : m
+    ))
 
-          // Step 3: Writer tool
-          setTimeout(() => {
-            setMessages(prev => [...prev, {
-              role: "tool",
-              toolName: "writer_agent",
-              content: "sources: [3 articles], target: 800 words",
-              toolStatus: "running"
-            }])
+    // Step 3: Writer tool
+    await new Promise(r => setTimeout(r, 400))
+    setMessages(prev => [...prev, {
+      role: "tool",
+      toolName: "writer_agent",
+      content: "sources: [3 articles], target: concise summary",
+      toolStatus: "running"
+    }])
 
-            setTimeout(() => {
-              setMessages(prev => prev.map((m, i) =>
-                i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Drafted 847 words covering introduction, key trends, challenges, and future outlook." } : m
-              ))
+    await new Promise(r => setTimeout(r, 1200))
+    setMessages(prev => prev.map((m, i) =>
+      i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Draft completed with key insights." } : m
+    ))
 
-              // Step 4: Editor tool
-              setTimeout(() => {
-                setMessages(prev => [...prev, {
-                  role: "tool",
-                  toolName: "editor_agent",
-                  content: "draft: [847 words], check: citations, clarity",
-                  toolStatus: "running"
-                }])
+    // Step 4: Editor tool
+    await new Promise(r => setTimeout(r, 400))
+    setMessages(prev => [...prev, {
+      role: "tool",
+      toolName: "editor_agent",
+      content: "draft: [complete], check: clarity, formatting",
+      toolStatus: "running"
+    }])
 
-                setTimeout(() => {
-                  setMessages(prev => prev.map((m, i) =>
-                    i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Fixed 2 citation formats, improved clarity in section 2, added conclusion paragraph." } : m
-                  ))
+    await new Promise(r => setTimeout(r, 1000))
+    setMessages(prev => prev.map((m, i) =>
+      i === prev.length - 1 ? { ...m, toolStatus: "done" as const, toolResult: "Polished and finalized." } : m
+    ))
 
-                  // Step 5: Final response
-                  setTimeout(() => {
-                    setMessages(prev => [...prev, {
-                      role: "assistant",
-                      content: "I've completed your request by coordinating three specialized agents:\n\nResearch Agent found 3 authoritative sources on AI agents from MIT Tech Review, Anthropic's blog, and a recent arXiv paper.\n\nWriter Agent drafted an 847-word article covering the key themes: autonomous agents, tool use patterns, and multi-agent coordination.\n\nEditor Agent polished the final output, fixing 2 citation formats and improving clarity.\n\nThe final article is ready for review. It covers current trends, implementation challenges, and future directions in AI agent development."
-                    }])
-                    setIsProcessing(false)
-                  }, 600)
-                }, 1000)
-              }, 400)
-            }, 1200)
-          }, 400)
-        }, 1000)
-      }, 800)
-    }, 600)
+    // Step 5: Real AI final response
+    await new Promise(r => setTimeout(r, 600))
+
+    const systemPrompt = `You are an AI orchestrator that coordinates multiple specialized agents. You just completed a task using Research, Writer, and Editor agents.
+
+Provide a brief summary (3-4 sentences) of what was accomplished for this request: "${userMessage}"
+
+Format: Start with "I've completed your request by coordinating three specialized agents:" then briefly describe what each agent contributed.`
+
+    let finalResponse = ""
+    setMessages(prev => [...prev, { role: "assistant", content: "" }])
+
+    await streamChat(
+      [{ role: "user", content: userMessage }],
+      systemPrompt,
+      (text) => {
+        finalResponse = text
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = { role: "assistant", content: text }
+          return newMessages
+        })
+      },
+      () => setIsProcessing(false),
+      () => {
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = { role: "assistant", content: "Task completed successfully. The coordinated agents have processed your request." }
+          return newMessages
+        })
+        setIsProcessing(false)
+      }
+    )
   }
 
   function reset() {
@@ -470,38 +529,58 @@ export function SubAgentOrchestratorPreview() {
     "Evaluate our Q4 sales performance",
   ]
 
-  function handleSubmit() {
+  const [responseContent, setResponseContent] = useState("")
+
+  async function handleSubmit() {
     if (!input.trim() || isProcessing) return
+    const userQuery = input.trim()
     setInput("")
     setPhase("routing")
     setIsProcessing(true)
     setAgents([])
+    setResponseContent("")
 
     // Start routing
-    setTimeout(() => {
-      setAgents([{
-        name: "Analysis Agent",
-        description: "Query requires structured analysis and insights",
-        toolName: "routeToAnalysis",
-        status: "working",
-        input: '{ "query": "microservices analysis", "type": "pros_cons" }',
-      }])
+    await new Promise(r => setTimeout(r, 600))
+    setAgents([{
+      name: "Analysis Agent",
+      description: "Query requires structured analysis and insights",
+      toolName: "routeToAnalysis",
+      status: "working",
+      input: `{ "query": "${userQuery.slice(0, 30)}...", "type": "analysis" }`,
+    }])
 
-      // Complete the agent
-      setTimeout(() => {
-        setAgents(prev => prev.map(a => ({
-          ...a,
-          status: "done" as const,
-          output: "Analysis complete. Generated structured pros/cons with 4 pros and 2 cons identified."
-        })))
+    // Complete the agent
+    await new Promise(r => setTimeout(r, 1500))
+    setAgents(prev => prev.map(a => ({
+      ...a,
+      status: "done" as const,
+      output: "Analysis complete. Generating structured response."
+    })))
 
-        // Show result
-        setTimeout(() => {
-          setPhase("done")
-          setIsProcessing(false)
-        }, 400)
-      }, 1500)
-    }, 600)
+    await new Promise(r => setTimeout(r, 400))
+    setPhase("done")
+
+    // Stream real AI response
+    const systemPrompt = `You are an analysis agent. Provide a concise, structured analysis for the user's query.
+
+Format your response with:
+- A brief intro (1 sentence)
+- "Pros:" section with 3 bullet points
+- "Cons:" section with 2 bullet points
+
+Keep each point to 1 short sentence. Be specific and actionable.`
+
+    await streamChat(
+      [{ role: "user", content: userQuery }],
+      systemPrompt,
+      (text) => setResponseContent(text),
+      () => setIsProcessing(false),
+      () => {
+        setResponseContent("Analysis completed. Please try again for detailed insights.")
+        setIsProcessing(false)
+      }
+    )
   }
 
   function reset() {
@@ -510,6 +589,7 @@ export function SubAgentOrchestratorPreview() {
     setInput("")
     setIsProcessing(false)
     setRoutingExpanded(true)
+    setResponseContent("")
   }
 
   return (
@@ -583,37 +663,14 @@ export function SubAgentOrchestratorPreview() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.25, delay: 0.1 }}
-                    className="mt-6 text-[15px] leading-relaxed text-foreground"
+                    className="mt-6 text-[15px] leading-relaxed text-foreground whitespace-pre-wrap"
                   >
-                    <p className="mb-4">Here is an analysis of the pros and cons of microservices architecture:</p>
-
-                    <p className="font-medium mb-2">Pros:</p>
-                    <ul className="space-y-2 mb-4">
-                      <li className="flex gap-2">
-                        <span className="text-muted-foreground">•</span>
-                        <span><span className="font-medium">Scalability and fault isolation:</span> <span className="text-muted-foreground">Microservices allow independent scaling of components and better containment of failures within individual services.</span></span>
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="text-muted-foreground">•</span>
-                        <span><span className="font-medium">Faster team autonomy:</span> <span className="text-muted-foreground">Teams can own services end-to-end, improving throughput and aligning development with business capabilities.</span></span>
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="text-muted-foreground">•</span>
-                        <span><span className="font-medium">Technology diversity:</span> <span className="text-muted-foreground">Teams can choose the best technology stack for each service, enhancing system resilience.</span></span>
-                      </li>
-                    </ul>
-
-                    <p className="font-medium mb-2">Cons:</p>
-                    <ul className="space-y-2">
-                      <li className="flex gap-2">
-                        <span className="text-muted-foreground">•</span>
-                        <span><span className="font-medium">Operational complexity:</span> <span className="text-muted-foreground">Managing distributed systems requires sophisticated orchestration, monitoring, logging, and tracing.</span></span>
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="text-muted-foreground">•</span>
-                        <span><span className="font-medium">Network overhead:</span> <span className="text-muted-foreground">Inter-service communication adds latency and requires careful API design and versioning.</span></span>
-                      </li>
-                    </ul>
+                    {responseContent || (
+                      <div className="flex items-center gap-2">
+                        <CircleSpinner size={14} className="text-muted-foreground" />
+                        <span className="text-muted-foreground">Generating analysis...</span>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </div>
@@ -652,275 +709,527 @@ export function SubAgentOrchestratorPreview() {
 
 /* ─── Agent Tool Approval ─── */
 
-export function AgentToolApprovalPreview() {
-  const [phase, setPhase] = useState<"idle" | "thinking" | "approval" | "executing" | "done">("idle")
-  const [decision, setDecision] = useState<"approved" | "denied" | null>(null)
+// ─── Types for Tool Approval ───
+interface ToolRequest {
+  id: string
+  name: string
+  description: string
+  status: "pending" | "approved" | "rejected" | "executing" | "done"
+  riskLevel: "low" | "medium" | "high"
+  parameters: Record<string, string | number | boolean | string[]>
+  confidence: number
+  result?: { success: boolean; message: string }
+}
 
-  const toolCall = {
-    name: "delete_user_account",
-    params: {
-      user_id: "usr_2kx8mJ9pL",
-      include_backups: true,
-      notify_user: false,
+interface ToolMessage {
+  id: string
+  role: "user" | "assistant" | "tool"
+  content: string
+  toolRequest?: ToolRequest
+}
+
+export function AgentToolApprovalPreview() {
+  const [input, setInput] = useState("")
+  const [messages, setMessages] = useState<ToolMessage[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [editingTool, setEditingTool] = useState<string | null>(null)
+  const [editedParams, setEditedParams] = useState<Record<string, string | number | boolean | string[]>>({})
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const examplePrompts = [
+    "Schedule a team meeting",
+    "Send project update email",
+    "Delete old user data",
+  ]
+
+  // Example tool scenarios
+  const toolScenarios: Record<string, ToolRequest> = {
+    calendar: {
+      id: "tool_cal_1",
+      name: "create_calendar_event",
+      description: "Create a new calendar event",
+      status: "pending",
+      riskLevel: "low",
+      parameters: {
+        title: "Team Standup",
+        date: "2026-03-31",
+        time: "10:00 AM",
+        attendees: ["team@company.com"]
+      },
+      confidence: 0.92
+    },
+    email: {
+      id: "tool_email_1",
+      name: "send_email",
+      description: "Send an email message",
+      status: "pending",
+      riskLevel: "medium",
+      parameters: {
+        to: "client@example.com",
+        subject: "Project Update",
+        body: "Here's the latest update..."
+      },
+      confidence: 0.85
+    },
+    delete: {
+      id: "tool_del_1",
+      name: "delete_account_data",
+      description: "Permanently delete user data",
+      status: "pending",
+      riskLevel: "high",
+      parameters: {
+        user_id: "usr_2kx8mJ9pL",
+        include_backups: true,
+        notify_user: true
+      },
+      confidence: 0.78
     }
   }
 
-  function handleApprove() {
-    setDecision("approved")
-    setPhase("executing")
-    setTimeout(() => setPhase("done"), 1500)
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
+  // Handle message submission
+  const handleSubmit = async () => {
+    if (!input.trim() || isLoading) return
+
+    const userMessage = input.trim().toLowerCase()
+    setInput("")
+
+    const userMsg: ToolMessage = { id: `user-${Date.now()}`, role: "user", content: input.trim() }
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+
+    await new Promise(r => setTimeout(r, 800))
+
+    let toolKey: string | null = null
+    if (userMessage.includes("meeting") || userMessage.includes("schedule") || userMessage.includes("calendar")) {
+      toolKey = "calendar"
+    } else if (userMessage.includes("email") || userMessage.includes("send") || userMessage.includes("message")) {
+      toolKey = "email"
+    } else if (userMessage.includes("delete") || userMessage.includes("remove") || userMessage.includes("clear")) {
+      toolKey = "delete"
+    }
+
+    if (toolKey) {
+      const tool = { ...toolScenarios[toolKey], id: `tool-${Date.now()}` }
+      const assistantMsg: ToolMessage = {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: `I'll help you with that. I need your approval to execute the following action:`,
+        toolRequest: tool
+      }
+      setMessages(prev => [...prev, assistantMsg])
+    } else {
+      const assistantMsg: ToolMessage = {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: "I can help you schedule meetings, send emails, or manage data. What would you like me to do?"
+      }
+      setMessages(prev => [...prev, assistantMsg])
+    }
+
+    setIsLoading(false)
   }
 
-  function handleDeny() {
-    setDecision("denied")
-    setPhase("done")
+  // Handle tool approval
+  const handleApprove = async (messageId: string) => {
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId && m.toolRequest) {
+        return { ...m, toolRequest: { ...m.toolRequest, status: "executing" as const } }
+      }
+      return m
+    }))
+
+    await new Promise(r => setTimeout(r, 1500))
+
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId && m.toolRequest) {
+        return {
+          ...m,
+          toolRequest: {
+            ...m.toolRequest,
+            status: "done" as const,
+            result: { success: true, message: "Action completed successfully" }
+          }
+        }
+      }
+      return m
+    }))
   }
 
-  function reset() {
-    setPhase("idle")
-    setDecision(null)
+  // Handle tool rejection
+  const handleReject = (messageId: string) => {
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId && m.toolRequest) {
+        return {
+          ...m,
+          toolRequest: {
+            ...m.toolRequest,
+            status: "rejected" as const,
+            result: { success: false, message: "Action was cancelled" }
+          }
+        }
+      }
+      return m
+    }))
   }
 
-  function startDemo() {
-    setPhase("thinking")
-    setTimeout(() => setPhase("approval"), 1000)
+  // Handle edit mode
+  const handleStartEdit = (toolId: string, params: Record<string, string | number | boolean | string[]>) => {
+    setEditingTool(toolId)
+    setEditedParams({ ...params })
   }
+
+  const handleSaveEdit = (messageId: string) => {
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId && m.toolRequest) {
+        return { ...m, toolRequest: { ...m.toolRequest, parameters: editedParams } }
+      }
+      return m
+    }))
+    setEditingTool(null)
+    setEditedParams({})
+  }
+
+  const handleCancelEdit = () => {
+    setEditingTool(null)
+    setEditedParams({})
+  }
+
+  // Reset demo
+  const handleReset = () => {
+    setMessages([])
+    setInput("")
+    setEditingTool(null)
+    setEditedParams({})
+  }
+
+  // Risk badge styles
+  const getRiskStyles = (risk: "low" | "medium" | "high") => {
+    switch (risk) {
+      case "low": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+      case "medium": return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+      case "high": return "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
+    }
+  }
+
+  const showOnboarding = messages.length === 0
 
   return (
-    <div className="flex h-[400px] w-full items-center justify-center p-6">
+    <div className="relative flex h-[540px] w-full max-w-3xl mx-auto flex-col">
       <style dangerouslySetInnerHTML={{ __html: WAVE_KEYFRAMES }} />
 
-      <div className="w-full max-w-md">
-        <AnimatePresence mode="wait">
-          {/* Idle State */}
-          {phase === "idle" && (
+      {/* Conversation area */}
+      <div className="relative flex flex-1 flex-col overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
+          {showOnboarding ? (
             <motion.div
-              key="idle"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="text-center"
+              key="onboarding"
+              className="absolute inset-0 flex flex-col items-center justify-center px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <motion.button
-                onClick={startDemo}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-card px-8 py-6 text-left shadow-sm transition-all hover:border-foreground/20 hover:shadow-md"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/10">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-orange-500">
-                      <path d="M12 9v4M12 17h.01" />
-                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Trigger Tool Approval</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Click to simulate an agent requesting permission to execute a destructive action
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute bottom-0 left-0 h-0.5 w-full bg-gradient-to-r from-orange-500/0 via-orange-500/50 to-orange-500/0 opacity-0 transition-opacity group-hover:opacity-100" />
-              </motion.button>
-            </motion.div>
-          )}
-
-          {/* Thinking State */}
-          {phase === "thinking" && (
-            <motion.div
-              key="thinking"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center justify-center gap-3 py-12"
-            >
-              <WaveDotsLoader />
-              <span className="text-sm text-muted-foreground">Agent is processing...</span>
-            </motion.div>
-          )}
-
-          {/* Approval State */}
-          {phase === "approval" && (
-            <motion.div
-              key="approval"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            >
-              <div className="overflow-hidden rounded-2xl border border-orange-500/20 bg-card shadow-lg shadow-orange-500/5">
-                {/* Header */}
-                <div className="border-b border-border bg-orange-500/5 px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-orange-500/10">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-orange-500">
-                        <path d="M12 9v4M12 17h.01" />
-                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Approval Required</p>
-                      <p className="text-xs text-muted-foreground">Agent wants to execute a tool</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tool details */}
-                <div className="px-5 py-4">
-                  <div className="rounded-xl bg-muted/50 p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="flex size-6 items-center justify-center rounded-md bg-foreground/10">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-foreground">
-                          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                        </svg>
-                      </div>
-                      <code className="text-sm font-semibold text-foreground">{toolCall.name}</code>
-                    </div>
-                    <pre className="text-xs leading-relaxed">
-                      <code className="text-muted-foreground">
-                        {JSON.stringify(toolCall.params, null, 2).split('\n').map((line, i) => (
-                          <span key={i} className="block">
-                            {line.includes(':') ? (
-                              <>
-                                <span className="text-muted-foreground">{line.split(':')[0]}:</span>
-                                <span className="text-foreground">{line.split(':').slice(1).join(':')}</span>
-                              </>
-                            ) : (
-                              <span className="text-muted-foreground">{line}</span>
-                            )}
-                          </span>
-                        ))}
-                      </code>
-                    </pre>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-3 border-t border-border bg-muted/30 px-5 py-4">
-                  <motion.button
-                    onClick={handleDeny}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    className="flex-1 rounded-xl border border-border bg-background py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-                  >
-                    Deny
-                  </motion.button>
-                  <motion.button
-                    onClick={handleApprove}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    className="flex-1 rounded-xl bg-foreground py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
-                  >
-                    Allow
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Executing State */}
-          {phase === "executing" && (
-            <motion.div
-              key="executing"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-                <div className="px-5 py-6">
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <CircleSpinner size={24} className="text-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Executing tool...</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        <code className="text-xs">{toolCall.name}</code>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="h-1 bg-muted overflow-hidden">
-                  <motion.div
-                    className="h-full bg-foreground"
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 1.5, ease: "easeInOut" }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Done State */}
-          {phase === "done" && (
-            <motion.div
-              key="done"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            >
-              <div className={`overflow-hidden rounded-2xl border shadow-sm ${
-                decision === "approved"
-                  ? "border-emerald-500/20 bg-emerald-500/5"
-                  : "border-border bg-card"
-              }`}>
-                <div className="px-5 py-6">
-                  <div className="flex items-center gap-4">
-                    {decision === "approved" ? (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                        className="flex size-10 items-center justify-center rounded-full bg-emerald-500/10"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-500">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                        className="flex size-10 items-center justify-center rounded-full bg-muted"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      </motion.div>
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {decision === "approved" ? "Tool executed successfully" : "Tool execution denied"}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {decision === "approved"
-                          ? "The action was completed as requested"
-                          : "The agent will proceed without this action"
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="border-t border-border/50 bg-muted/20 px-5 py-3">
+              <h1 className="mb-2 text-2xl font-medium text-foreground">Tool Approval Flow</h1>
+              <p className="mb-6 text-sm text-muted-foreground text-center max-w-md">
+                AI requests permission before executing actions. Review parameters, edit if needed, then approve or reject.
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {examplePrompts.map((prompt) => (
                   <button
-                    onClick={reset}
-                    className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    key={prompt}
+                    onClick={() => setInput(prompt)}
+                    className="rounded-2xl border border-border bg-background px-4 py-2.5 text-sm text-muted-foreground hover:border-foreground/20 hover:text-foreground transition-all"
                   >
-                    Reset demo
+                    {prompt}
                   </button>
-                </div>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="conversation"
+              className="flex h-full w-full flex-col overflow-y-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {/* Clear button */}
+              <div className="sticky top-0 z-10 flex w-full justify-end bg-gradient-to-b from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 px-6 pt-3 pb-2">
+                <button
+                  onClick={handleReset}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
+
+              {/* Messages */}
+              <div className="flex flex-col gap-4 px-6 pb-4">
+                {messages.map((msg) => (
+                  <motion.div
+                    key={msg.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {/* User message */}
+                    {msg.role === "user" && (
+                      <div className="flex justify-end">
+                        <div className="bg-accent max-w-[80%] rounded-3xl px-5 py-3">
+                          <p className="text-[15px] text-foreground">{msg.content}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Assistant message */}
+                    {msg.role === "assistant" && (
+                      <div className="flex flex-col gap-3">
+                        <p className="text-[15px] leading-relaxed text-foreground">{msg.content}</p>
+
+                        {/* Tool Request Card */}
+                        {msg.toolRequest && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className={`overflow-hidden rounded-xl border ${getRiskStyles(msg.toolRequest.riskLevel).split(" ")[2]} bg-card shadow-sm`}
+                          >
+                            {/* Tool Header */}
+                            <div className="border-b border-border/50 px-4 py-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2.5">
+                                  <div className={`size-7 rounded-lg ${getRiskStyles(msg.toolRequest.riskLevel).split(" ")[0]} flex items-center justify-center`}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={getRiskStyles(msg.toolRequest.riskLevel).split(" ")[1]}>
+                                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                    </svg>
+                                  </div>
+                                  <div>
+                                    <code className="text-sm font-semibold text-foreground">{msg.toolRequest.name}</code>
+                                    <p className="text-[11px] text-muted-foreground">{msg.toolRequest.description}</p>
+                                  </div>
+                                </div>
+                                <span className={`rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide ${getRiskStyles(msg.toolRequest.riskLevel)}`}>
+                                  {msg.toolRequest.riskLevel}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Tool Parameters */}
+                            <div className="px-4 py-3 bg-muted/20">
+                              {editingTool === msg.toolRequest.id ? (
+                                <div className="space-y-2">
+                                  {Object.entries(editedParams).map(([key, value]) => (
+                                    <div key={key} className="flex items-center gap-3">
+                                      <span className="text-xs text-muted-foreground w-24 shrink-0 font-medium">{key}</span>
+                                      <input
+                                        type="text"
+                                        value={Array.isArray(value) ? value.join(", ") : String(value)}
+                                        onChange={(e) => setEditedParams(prev => ({ ...prev, [key]: e.target.value }))}
+                                        className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground outline-none focus:border-foreground/30 transition-colors"
+                                      />
+                                    </div>
+                                  ))}
+                                  <div className="flex gap-2 pt-2">
+                                    <button
+                                      onClick={() => handleSaveEdit(msg.id)}
+                                      className="flex-1 rounded-lg bg-foreground py-2 text-xs font-medium text-background transition-colors hover:bg-foreground/90"
+                                    >
+                                      Save Changes
+                                    </button>
+                                    <button
+                                      onClick={handleCancelEdit}
+                                      className="flex-1 rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="space-y-1.5">
+                                  {Object.entries(msg.toolRequest.parameters).map(([key, value]) => (
+                                    <div key={key} className="flex items-start gap-3">
+                                      <span className="text-xs text-muted-foreground w-24 shrink-0 font-medium">{key}</span>
+                                      <span className="text-xs text-foreground">
+                                        {Array.isArray(value) ? value.join(", ") : String(value)}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Confidence */}
+                            {msg.toolRequest.status === "pending" && !editingTool && (
+                              <div className="border-t border-border/50 px-4 py-2.5 bg-muted/10">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] text-muted-foreground font-medium">Confidence</span>
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-1.5 w-20 rounded-full bg-muted overflow-hidden">
+                                      <motion.div
+                                        className="h-full bg-foreground/60 rounded-full"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${msg.toolRequest.confidence * 100}%` }}
+                                        transition={{ duration: 0.5 }}
+                                      />
+                                    </div>
+                                    <span className="text-[11px] text-muted-foreground font-medium">{Math.round(msg.toolRequest.confidence * 100)}%</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Actions */}
+                            {msg.toolRequest.status === "pending" && !editingTool && (
+                              <div className="flex gap-2 border-t border-border/50 p-3 bg-muted/5">
+                                <motion.button
+                                  onClick={() => handleApprove(msg.id)}
+                                  whileHover={{ scale: 1.01 }}
+                                  whileTap={{ scale: 0.99 }}
+                                  className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+                                >
+                                  Approve
+                                </motion.button>
+                                <motion.button
+                                  onClick={() => handleStartEdit(msg.toolRequest!.id, msg.toolRequest!.parameters)}
+                                  whileHover={{ scale: 1.01 }}
+                                  whileTap={{ scale: 0.99 }}
+                                  className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                >
+                                  Edit
+                                </motion.button>
+                                <motion.button
+                                  onClick={() => handleReject(msg.id)}
+                                  whileHover={{ scale: 1.01 }}
+                                  whileTap={{ scale: 0.99 }}
+                                  className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 transition-colors hover:bg-red-500/20"
+                                >
+                                  Reject
+                                </motion.button>
+                              </div>
+                            )}
+
+                            {/* Executing State */}
+                            {msg.toolRequest.status === "executing" && (
+                              <div className="border-t border-border/50 p-4">
+                                <div className="flex items-center gap-3">
+                                  <CircleSpinner size={16} className="text-foreground" />
+                                  <span className="text-sm text-muted-foreground">Executing action...</span>
+                                </div>
+                                <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
+                                  <motion.div
+                                    className="h-full bg-foreground"
+                                    initial={{ width: "0%" }}
+                                    animate={{ width: "100%" }}
+                                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Result State */}
+                            {msg.toolRequest.status === "done" && msg.toolRequest.result && (
+                              <div className={`border-t p-4 ${msg.toolRequest.result.success ? "border-emerald-500/20 bg-emerald-500/5" : "border-border/50 bg-muted/20"}`}>
+                                <div className="flex items-center gap-3">
+                                  {msg.toolRequest.result.success ? (
+                                    <motion.div
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      className="size-6 rounded-full bg-emerald-500/20 flex items-center justify-center"
+                                    >
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-emerald-500">
+                                        <polyline points="20 6 9 17 4 12" />
+                                      </svg>
+                                    </motion.div>
+                                  ) : (
+                                    <div className="size-6 rounded-full bg-muted flex items-center justify-center">
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                      </svg>
+                                    </div>
+                                  )}
+                                  <span className={`text-sm ${msg.toolRequest.result.success ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}>
+                                    {msg.toolRequest.result.message}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Rejected State */}
+                            {msg.toolRequest.status === "rejected" && (
+                              <div className="border-t border-border/50 bg-muted/20 p-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="size-6 rounded-full bg-muted flex items-center justify-center">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+                                      <line x1="18" y1="6" x2="6" y2="18" />
+                                      <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-sm text-muted-foreground">Action cancelled by user</span>
+                                </div>
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+
+                {/* Loading indicator */}
+                {isLoading && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-2 py-2"
+                  >
+                    <CircleSpinner size={16} className="text-muted-foreground" />
+                  </motion.div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* Input */}
+      <div className="shrink-0 px-4 pb-4">
+        <div
+          className="rounded-3xl border border-border bg-popover p-1 shadow-sm"
+          onClick={() => document.getElementById("tool-approval-input")?.focus()}
+        >
+          <textarea
+            id="tool-approval-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault()
+                handleSubmit()
+              }
+            }}
+            placeholder="Try scheduling a meeting, sending an email, or deleting data..."
+            disabled={isLoading}
+            className="w-full resize-none bg-transparent px-4 py-3 text-[15px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none disabled:opacity-50"
+            rows={1}
+          />
+          <div className="flex items-center justify-between px-3 pb-2">
+            <span className="text-[10px] text-muted-foreground">AI will request approval before actions</span>
+            <button
+              onClick={handleSubmit}
+              disabled={!input.trim() || isLoading}
+              className="flex size-8 items-center justify-center rounded-full bg-foreground text-background transition-opacity disabled:opacity-30"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m5 12 7-7 7 7M12 19V5" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -1088,323 +1397,467 @@ export function MultiStepToolPreview() {
 
 /* ─── Agentic Context Builder ─── */
 
-type ACBMessage = {
+// Task status type
+type TaskStatus = "pending" | "running" | "completed"
+
+// Message types for the context builder
+interface CopilotMessage {
   id: string
-  role: "ai" | "user"
-  content: string
-  type: "text" | "options" | "input"
+  type: "text" | "task" | "file" | "tasks-list" | "working" | "context-question" | "context-gathering" | "context-files" | "context-summary"
+  content?: string
+  taskNumber?: number
+  totalTasks?: number
+  taskLabel?: string
+  filename?: string
+  additions?: number
+  deletions?: number
+  tasks?: Array<{ label: string; status: TaskStatus; isNew?: boolean }>
   options?: string[]
-  inputPlaceholder?: string
-  answered?: boolean
-  answer?: string
+  items?: Array<{ label: string; status: TaskStatus }>
+  files?: string[]
+  summary?: { project: string; focus: string; files: number; ready: boolean }
+}
+
+// Check circle icon
+function CheckCircleIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="9 12 12 15 16 10" />
+    </svg>
+  )
+}
+
+// Empty circle icon
+function CircleOutlineIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+    </svg>
+  )
+}
+
+// File change component
+function FileChange({ filename, additions, deletions }: { filename: string; additions: number; deletions: number }) {
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2">
+      <span className="font-mono text-xs text-foreground">{filename}</span>
+      <div className="flex items-center gap-2 text-xs">
+        <span className="text-emerald-500">+{additions}</span>
+        <span className="text-rose-500">-{deletions}</span>
+        <button className="rounded border border-border bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-muted">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+        </button>
+        <button className="rounded border border-border bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-muted">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// Task progress component
+function TaskProgress({ taskNumber, totalTasks, taskLabel }: { taskNumber: number; totalTasks: number; taskLabel: string }) {
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          Task {taskNumber} of {totalTasks} Complete
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18" />
+        </svg>
+      </div>
+      <div className="mt-1.5 flex items-center gap-2">
+        <CheckCircleIcon className="size-4 text-emerald-500" />
+        <span className="text-xs text-foreground">{taskLabel}</span>
+      </div>
+    </div>
+  )
+}
+
+// Tasks list component
+function TasksList({ tasks }: { tasks: Array<{ label: string; status: TaskStatus; isNew?: boolean }> }) {
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Tasks Updated</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18" />
+        </svg>
+      </div>
+      <div className="mt-2 space-y-1.5">
+        {tasks.map((task, i) => (
+          <div key={i} className="flex items-center gap-2">
+            {task.status === "completed" ? (
+              <CheckCircleIcon className="size-3.5 text-emerald-500" />
+            ) : (
+              <CircleOutlineIcon className="size-3.5 text-muted-foreground" />
+            )}
+            <span className={`text-xs ${task.status === "completed" ? "text-muted-foreground" : "text-foreground"}`}>
+              {task.label}
+            </span>
+            {task.isNew && (
+              <span className="rounded bg-blue-500/20 px-1 py-0.5 text-[9px] font-medium text-blue-500">NEW</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Working indicator
+function WorkingIndicator() {
+  return (
+    <div className="flex items-center gap-2">
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        className="size-4 rounded-full border-2 border-blue-500 border-t-transparent"
+      />
+      <span className="text-xs text-muted-foreground">Working...</span>
+    </div>
+  )
+}
+
+// Files updated summary
+function FilesUpdated({ count }: { count: number }) {
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2">
+      <div className="flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+        <span className="text-xs text-muted-foreground">{count} files updated</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <button className="rounded bg-emerald-500 px-2 py-0.5 text-[10px] font-medium text-white">Keep</button>
+        <button className="rounded border border-border bg-card px-2 py-0.5 text-[10px] text-muted-foreground">Undo</button>
+      </div>
+    </div>
+  )
+}
+
+
+interface ChatMessage {
+  id: string
+  role: "user" | "assistant"
+  content: string
 }
 
 export function AgenticContextBuilderPreview() {
-  const [messages, setMessages] = useState<ACBMessage[]>([])
-  const [currentInput, setCurrentInput] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const [contextComplete, setContextComplete] = useState(false)
-  const [questionIndex, setQuestionIndex] = useState(0)
-
-  const questions: Omit<ACBMessage, "id" | "answered" | "answer">[] = [
+  const [buildStatus, setBuildStatus] = useState<"building" | "approved">("building")
+  const [context, setContext] = useState<Record<string, string>>({})
+  const [input, setInput] = useState("")
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      role: "ai",
-      content: "Hi! I'm here to help you find the perfect candidates. Let me gather some context first. What role are you hiring for?",
-      type: "input",
-      inputPlaceholder: "e.g. Product Designer, Software Engineer..."
-    },
-    {
-      role: "ai",
-      content: "What skills are most important for this role?",
-      type: "options",
-      options: ["React", "TypeScript", "Python", "Figma", "Node.js", "SQL"]
-    },
-    {
-      role: "ai",
-      content: "How many years of experience should candidates have?",
-      type: "options",
-      options: ["0-2 years", "3-5 years", "5-10 years", "10+ years"]
-    },
-    {
-      role: "ai",
-      content: "What's the preferred work arrangement?",
-      type: "options",
-      options: ["Remote", "Hybrid", "On-site"]
+      id: "system-1",
+      role: "assistant",
+      content: "Hi! I'm here to help you create something. What would you like me to help you create today?"
     }
-  ]
+  ])
+  const [isLoading, setIsLoading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  // Collected context
-  const [context, setContext] = useState<{
-    role?: string
-    skills?: string[]
-    experience?: string
-    location?: string
-  }>({})
+  const contextFields = ["goal", "audience", "tone"]
+  const filledCount = Object.keys(context).length
 
-  // Start conversation
-  useEffect(() => {
-    if (messages.length === 0) {
-      startConversation()
+  // Stream response from AI
+  const streamResponse = useCallback(async (userMessage: string, allMessages: ChatMessage[], currentContext: Record<string, string>) => {
+    setIsLoading(true)
+
+    const systemPrompt = `You are an AI context builder. Your job is to gather information before generating content.
+
+RULES:
+1. Ask ONE question at a time to gather context
+2. Questions should be about: goal (what to create), audience (who it's for), tone (how it should sound)
+3. After getting 3 answers, generate the requested content
+4. Keep questions short and friendly
+5. Keep generated content concise (2-3 sentences max)
+
+Current context gathered: ${JSON.stringify(currentContext)}
+Questions asked: ${Object.keys(currentContext).length}
+
+If you have received 3 answers, generate the content. Otherwise, ask the next logical question.`
+
+    try {
+      const response = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: allMessages.map(m => ({ role: m.role, content: m.content })),
+          system: systemPrompt
+        })
+      })
+
+      if (!response.ok) throw new Error("Failed to fetch")
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No reader")
+
+      const assistantId = `assistant-${Date.now()}`
+      let assistantContent = ""
+
+      // Add empty assistant message
+      setMessages(prev => [...prev, { id: assistantId, role: "assistant", content: "" }])
+
+      const decoder = new TextDecoder()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const text = decoder.decode(value)
+        assistantContent += text
+
+        setMessages(prev =>
+          prev.map(m => m.id === assistantId ? { ...m, content: assistantContent } : m)
+        )
+      }
+
+      // Check if content was generated
+      const lower = assistantContent.toLowerCase()
+      if (lower.includes("generated") || lower.includes("here's") || lower.includes("here is") || Object.keys(currentContext).length >= 3) {
+        setBuildStatus("approved")
+      }
+    } catch (error) {
+      console.error("Stream error:", error)
+      setMessages(prev => [...prev, {
+        id: `error-${Date.now()}`,
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again."
+      }])
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 
-  function startConversation() {
-    setIsTyping(true)
-    setTimeout(() => {
-      setMessages([{
-        ...questions[0],
-        id: "q0",
-        answered: false
-      }])
-      setIsTyping(false)
-      setQuestionIndex(0)
-    }, 800)
-  }
+  // Handle form submission
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!input.trim() || isLoading) return
 
-  function handleAnswer(answer: string, isMultiSelect = false) {
-    if (contextComplete) return
+    const userMessage = input.trim()
+    setInput("")
 
-    // Update current message as answered
-    setMessages(prev => prev.map((msg, i) =>
-      i === prev.length - 1 ? { ...msg, answered: true, answer } : msg
-    ))
-
-    // Add user response
-    const userMsg: ACBMessage = {
-      id: `user-${questionIndex}`,
-      role: "user",
-      content: answer,
-      type: "text",
-      answered: true
+    // Track context based on message count
+    const userMsgCount = messages.filter(m => m.role === "user").length
+    let newContext = { ...context }
+    if (userMsgCount === 0) {
+      newContext = { ...newContext, goal: userMessage }
+    } else if (userMsgCount === 1) {
+      newContext = { ...newContext, audience: userMessage }
+    } else if (userMsgCount === 2) {
+      newContext = { ...newContext, tone: userMessage }
     }
-    setMessages(prev => [...prev, userMsg])
-
-    // Update context
-    const newContext = { ...context }
-    if (questionIndex === 0) newContext.role = answer
-    if (questionIndex === 1) newContext.skills = answer.split(", ")
-    if (questionIndex === 2) newContext.experience = answer
-    if (questionIndex === 3) newContext.location = answer
     setContext(newContext)
 
-    // Next question or complete
-    const nextIndex = questionIndex + 1
-    if (nextIndex < questions.length) {
-      setIsTyping(true)
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          ...questions[nextIndex],
-          id: `q${nextIndex}`,
-          answered: false
-        }])
-        setIsTyping(false)
-        setQuestionIndex(nextIndex)
-      }, 600)
-    } else {
-      // Context complete
-      setIsTyping(true)
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: "complete",
-          role: "ai",
-          content: `I now have enough context. You're looking for a **${newContext.role}** with expertise in **${newContext.skills?.join(", ")}**, having **${newContext.experience}** of experience, preferring **${newContext.location}** work. I found **127 candidates** matching your criteria.`,
-          type: "text",
-          answered: true
-        }])
-        setIsTyping(false)
-        setContextComplete(true)
-      }, 800)
-    }
+    // Add user message
+    const userMsg: ChatMessage = { id: `user-${Date.now()}`, role: "user", content: userMessage }
+    const newMessages = [...messages, userMsg]
+    setMessages(newMessages)
+
+    // Stream AI response
+    await streamResponse(userMessage, newMessages, newContext)
   }
 
-  function handleInputSubmit() {
-    if (!currentInput.trim()) return
-    handleAnswer(currentInput.trim())
-    setCurrentInput("")
-  }
-
-  function reset() {
-    setMessages([])
+  // Reset
+  const handleReset = () => {
+    setBuildStatus("building")
     setContext({})
-    setContextComplete(false)
-    setQuestionIndex(0)
-    setCurrentInput("")
-    setTimeout(() => startConversation(), 100)
+    setInput("")
+    setMessages([
+      {
+        id: "system-1",
+        role: "assistant",
+        content: "Hi! I'm here to help you create something. What would you like me to help you create today?"
+      }
+    ])
   }
 
-  // Calculate progress
-  const progress = Math.min((questionIndex + (messages.some(m => m.id === "complete") ? 1 : 0)) / questions.length * 100, 100)
+  // Auto-focus input
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [messages])
 
   return (
-    <div className="mx-auto flex h-[540px] w-full max-w-2xl flex-col rounded-xl border border-border bg-card overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-border">
-        <div>
-          <h3 className="text-sm font-semibold text-foreground">Context Builder</h3>
-          <p className="text-xs text-muted-foreground">AI is gathering information to help you</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {contextComplete && (
-            <span className="flex items-center gap-1.5 text-xs text-blue-600 font-medium">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Context Ready
+    <div className="mx-auto flex h-[600px] w-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
+      {/* Window Header */}
+      <div className="flex items-center gap-2 px-5 py-3.5 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="size-2.5 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+        <div className="size-2.5 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+        <div className="size-2.5 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+        <span className="ml-3 text-xs text-neutral-500 dark:text-neutral-400">Agentic Context Builder</span>
+        <div className="ml-auto flex items-center gap-2">
+          {isLoading && (
+            <span className="flex items-center gap-1.5 text-[10px] text-neutral-500 dark:text-neutral-400">
+              <span className="flex gap-0.5">
+                <span className="size-1 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="size-1 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="size-1 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+              </span>
+              AI thinking...
             </span>
           )}
-          <button
-            onClick={reset}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Reset
-          </button>
+          {!isLoading && buildStatus === "building" && (
+            <span className="flex items-center gap-1.5 text-[10px] text-neutral-400">
+              <span className="size-1.5 rounded-full bg-emerald-400" />
+              Live AI
+            </span>
+          )}
+          {buildStatus === "approved" && (
+            <span className="flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400">
+              <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              Complete
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-1 bg-border">
-        <motion.div
-          className="h-full bg-blue-500"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.3 }}
-        />
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
-        <AnimatePresence mode="popLayout">
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              {msg.role === "ai" ? (
-                <div className="max-w-[85%] space-y-3">
-                  {/* AI message */}
-                  <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center size-8 rounded-full bg-blue-500/10 shrink-0">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-500">
-                        <path d="M12 2L13.09 8.26L18 6L15.74 10.91L22 12L15.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L8.26 13.09L2 12L8.26 10.91L6 6L10.91 8.26L12 2Z" />
-                      </svg>
-                    </div>
-                    <div className="pt-1">
-                      <p className="text-sm text-foreground leading-relaxed">
-                        {msg.content.split("**").map((part, i) =>
-                          i % 2 === 1 ? <span key={i} className="font-semibold text-blue-600">{part}</span> : part
-                        )}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Options */}
-                  {msg.type === "options" && !msg.answered && msg.options && (
-                    <div className="ml-11 flex flex-wrap gap-2">
-                      {msg.options.map((opt) => (
-                        <button
-                          key={opt}
-                          onClick={() => handleAnswer(opt)}
-                          className="px-4 py-2 rounded-full border border-border text-sm text-muted-foreground hover:border-blue-500 hover:text-blue-600 hover:bg-blue-500/5 transition-all"
-                        >
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Text input */}
-                  {msg.type === "input" && !msg.answered && (
-                    <div className="ml-11">
-                      <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2">
-                        <input
-                          type="text"
-                          value={currentInput}
-                          onChange={(e) => setCurrentInput(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleInputSubmit()}
-                          placeholder={msg.inputPlaceholder}
-                          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                          autoFocus
-                        />
-                        <button
-                          onClick={handleInputSubmit}
-                          disabled={!currentInput.trim()}
-                          className="flex items-center justify-center size-7 rounded-lg bg-blue-500 text-white disabled:opacity-40 transition-opacity"
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="max-w-[70%]">
-                  <div className="rounded-2xl bg-foreground text-background px-4 py-2.5">
-                    <p className="text-sm">{msg.content}</p>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          ))}
-
-          {/* Typing indicator */}
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-3"
-            >
-              <div className="flex items-center justify-center size-8 rounded-full bg-blue-500/10">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-500">
-                  <path d="M12 2L13.09 8.26L18 6L15.74 10.91L22 12L15.74 13.09L18 18L13.09 15.74L12 22L10.91 15.74L6 18L8.26 13.09L2 12L8.26 10.91L6 6L10.91 8.26L12 2Z" />
-                </svg>
-              </div>
-              <div className="flex gap-1">
-                <span className="size-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="size-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="size-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Context summary footer */}
-      {contextComplete && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border-t border-border bg-muted/30 px-5 py-4"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-muted-foreground">COLLECTED CONTEXT</p>
-            <span className="text-xs text-blue-600">4/4 questions</span>
+      {/* Two Panel Layout */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left: Context Status */}
+        <div className="w-[30%] border-r border-neutral-200 dark:border-neutral-800 flex flex-col">
+          <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
+            <div className="flex items-center gap-2">
+              <Image src="/logo/logo.png" alt="agent" width={16} height={16} className="size-4" />
+              <span className="text-xs font-medium text-neutral-900 dark:text-neutral-100">Context</span>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {context.role && (
-              <span className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 text-xs font-medium">{context.role}</span>
-            )}
-            {context.skills?.map(skill => (
-              <span key={skill} className="px-3 py-1.5 rounded-lg bg-foreground/5 text-foreground text-xs">{skill}</span>
+
+          <div className="flex-1 px-4 py-3 space-y-3 overflow-y-auto">
+            {contextFields.map((field) => (
+              <div key={field} className="space-y-1">
+                <span className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">{field}</span>
+                <p className={`text-sm ${context[field] ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-300 dark:text-neutral-600"}`}>
+                  {context[field] || "Waiting..."}
+                </p>
+              </div>
             ))}
-            {context.experience && (
-              <span className="px-3 py-1.5 rounded-lg bg-foreground/5 text-foreground text-xs">{context.experience}</span>
-            )}
-            {context.location && (
-              <span className="px-3 py-1.5 rounded-lg bg-foreground/5 text-foreground text-xs">{context.location}</span>
+          </div>
+
+          {/* Context Progress */}
+          <div className="px-4 py-3 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">Progress</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">{filledCount}/{contextFields.length}</span>
+            </div>
+            <div className="flex gap-1">
+              {contextFields.map((field, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 flex-1 rounded-full transition-colors ${context[field] ? "bg-emerald-400" : "bg-neutral-200 dark:bg-neutral-700"}`}
+                />
+              ))}
+            </div>
+            {buildStatus === "approved" && (
+              <button
+                onClick={handleReset}
+                className="mt-3 w-full rounded-lg border border-neutral-200 dark:border-neutral-700 py-1.5 text-xs text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              >
+                Start over
+              </button>
             )}
           </div>
-          <button className="w-full h-10 mt-4 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors">
-            Search with this context
-          </button>
-        </motion.div>
-      )}
+        </div>
+
+        {/* Right: Chat */}
+        <div className="flex-1 flex flex-col">
+          <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
+            <span className="text-xs font-medium text-neutral-900 dark:text-neutral-100">Conversation</span>
+          </div>
+
+          <div className="flex-1 px-4 py-3 overflow-y-auto space-y-3">
+            <AnimatePresence mode="popLayout">
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex ${message.role === "user" ? "justify-end" : "gap-2"}`}
+                >
+                  {message.role === "assistant" && (
+                    <div className="size-5 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 mt-0.5">
+                      <Image src="/logo/logo.png" alt="ai" width={12} height={12} className="size-3" />
+                    </div>
+                  )}
+                  <div className={`rounded-xl px-3 py-2 max-w-[85%] ${
+                    message.role === "user"
+                      ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
+                      : "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+                  }`}>
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex gap-2"
+                >
+                  <div className="size-5 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 mt-0.5">
+                    <Image src="/logo/logo.png" alt="ai" width={12} height={12} className="size-3" />
+                  </div>
+                  <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl px-3 py-2">
+                    <span className="flex gap-1">
+                      <span className="size-1.5 rounded-full bg-neutral-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="size-1.5 rounded-full bg-neutral-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="size-1.5 rounded-full bg-neutral-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Real Input */}
+          <form onSubmit={onSubmit} className="px-4 py-3 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="flex items-center gap-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 focus-within:border-neutral-400 dark:focus-within:border-neutral-500 transition-colors">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={buildStatus === "approved" ? "Conversation complete" : "Type your response..."}
+                disabled={buildStatus === "approved" || isLoading}
+                className="flex-1 bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 outline-none disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || buildStatus === "approved" || isLoading}
+                className={`size-7 rounded-lg flex items-center justify-center transition-colors ${
+                  input.trim() && buildStatus !== "approved" && !isLoading
+                    ? "bg-neutral-900 dark:bg-white"
+                    : "bg-neutral-100 dark:bg-neutral-700"
+                }`}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  className={input.trim() && buildStatus !== "approved" && !isLoading ? "text-white dark:text-neutral-900" : "text-neutral-400"}
+                >
+                  <path d="m5 12 7-7 7 7M12 19V5" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }

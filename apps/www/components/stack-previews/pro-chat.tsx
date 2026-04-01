@@ -1,14 +1,53 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { AnimatePresence, motion } from "motion/react"
 import { WaveDotsLoader, SuggestionPills, WAVE_KEYFRAMES, SPRING } from "./shared"
 import { BrandOpenAI, BrandAnthropic, BrandXAI } from "@/components/brand-icons"
 
-/* ─── ChatGPT Clone ─── */
+/* ─── Shared API Helper ─── */
+async function streamChat(
+  messages: { role: "user" | "assistant"; content: string }[],
+  systemPrompt: string,
+  onChunk: (text: string) => void,
+  onComplete: (fullText: string) => void,
+  onError: (error: string) => void
+) {
+  try {
+    const response = await fetch("/api/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+        system: systemPrompt,
+      }),
+    })
 
-const CHATGPT_RESPONSE =
-  "Quantum computing uses qubits that can exist in superposition — representing both 0 and 1 simultaneously. This enables parallel processing of complex calculations that classical computers handle sequentially. Combined with entanglement, quantum computers can solve certain problems exponentially faster than classical machines."
+    if (!response.ok) {
+      throw new Error("Failed to fetch response")
+    }
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error("No reader available")
+
+    const decoder = new TextDecoder()
+    let fullText = ""
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      const chunk = decoder.decode(value, { stream: true })
+      fullText += chunk
+      onChunk(fullText)
+    }
+
+    onComplete(fullText)
+  } catch (error) {
+    onError(error instanceof Error ? error.message : "An error occurred")
+  }
+}
+
+/* ─── ChatGPT Clone ─── */
 
 const CHATGPT_SUGGESTIONS = [
   "Explain quantum computing",
@@ -16,6 +55,8 @@ const CHATGPT_SUGGESTIONS = [
   "Debug my React code",
   "Compare GPT models",
 ]
+
+const CHATGPT_SYSTEM = "You are ChatGPT, a helpful AI assistant created by OpenAI. Keep responses concise and informative, around 2-3 sentences."
 
 export function ChatGPTPreview() {
   const [messages, setMessages] = useState<
@@ -25,41 +66,43 @@ export function ChatGPTPreview() {
   const [state, setState] = useState<"idle" | "thinking" | "streaming">("idle")
   const [displayed, setDisplayed] = useState("")
   const bottomRef = useRef<HTMLDivElement>(null)
-  const idxRef = useRef(0)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, displayed])
 
-  function handleSend(text?: string) {
+  const handleSend = useCallback(async (text?: string) => {
     const msg = text || input
     if (!msg.trim() || state !== "idle") return
-    setMessages((prev) => [...prev, { role: "user", content: msg.trim() }])
+
+    const userMessage = { role: "user" as const, content: msg.trim() }
+    const newMessages = [...messages, userMessage]
+
+    setMessages(newMessages)
     setInput("")
     setState("thinking")
     setDisplayed("")
-    idxRef.current = 0
-    setTimeout(() => setState("streaming"), 1500)
-  }
 
-  useEffect(() => {
-    if (state !== "streaming") return
-    const iv = setInterval(() => {
-      if (idxRef.current < CHATGPT_RESPONSE.length) {
-        idxRef.current += 1
-        setDisplayed(CHATGPT_RESPONSE.slice(0, idxRef.current))
-      } else {
-        clearInterval(iv)
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: CHATGPT_RESPONSE },
-        ])
+    // Small delay before streaming starts for UX
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setState("streaming")
+
+    await streamChat(
+      newMessages,
+      CHATGPT_SYSTEM,
+      (text) => setDisplayed(text),
+      (fullText) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: fullText }])
+        setDisplayed("")
+        setState("idle")
+      },
+      (error) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${error}` }])
         setDisplayed("")
         setState("idle")
       }
-    }, 12)
-    return () => clearInterval(iv)
-  }, [state])
+    )
+  }, [input, messages, state])
 
   return (
     <div className="mx-auto flex h-[420px] w-full max-w-lg flex-col">
@@ -171,15 +214,14 @@ export function ChatGPTPreview() {
 
 /* ─── Claude Chat ─── */
 
-const CLAUDE_RESPONSE =
-  "I aim to be helpful, harmless, and honest. I think carefully about nuance, acknowledge uncertainty, and try to give balanced perspectives rather than oversimplified answers. What sets me apart is my focus on being genuinely useful while being transparent about my limitations."
-
 const CLAUDE_SUGGESTIONS = [
   "What makes you different?",
   "Explain attention mechanisms",
   "Review my TypeScript code",
   "Compare Claude models",
 ]
+
+const CLAUDE_SYSTEM = "You are Claude, an AI assistant created by Anthropic. You aim to be helpful, harmless, and honest. Think carefully about nuance and give balanced perspectives. Keep responses concise, around 2-3 sentences."
 
 export function ChatClaudePreview() {
   const [messages, setMessages] = useState<
@@ -189,41 +231,42 @@ export function ChatClaudePreview() {
   const [state, setState] = useState<"idle" | "thinking" | "streaming">("idle")
   const [displayed, setDisplayed] = useState("")
   const bottomRef = useRef<HTMLDivElement>(null)
-  const idxRef = useRef(0)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, displayed])
 
-  function handleSend(text?: string) {
+  const handleSend = useCallback(async (text?: string) => {
     const msg = text || input
     if (!msg.trim() || state !== "idle") return
-    setMessages((prev) => [...prev, { role: "user", content: msg.trim() }])
+
+    const userMessage = { role: "user" as const, content: msg.trim() }
+    const newMessages = [...messages, userMessage]
+
+    setMessages(newMessages)
     setInput("")
     setState("thinking")
     setDisplayed("")
-    idxRef.current = 0
-    setTimeout(() => setState("streaming"), 1500)
-  }
 
-  useEffect(() => {
-    if (state !== "streaming") return
-    const iv = setInterval(() => {
-      if (idxRef.current < CLAUDE_RESPONSE.length) {
-        idxRef.current += 1
-        setDisplayed(CLAUDE_RESPONSE.slice(0, idxRef.current))
-      } else {
-        clearInterval(iv)
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: CLAUDE_RESPONSE },
-        ])
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setState("streaming")
+
+    await streamChat(
+      newMessages,
+      CLAUDE_SYSTEM,
+      (text) => setDisplayed(text),
+      (fullText) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: fullText }])
+        setDisplayed("")
+        setState("idle")
+      },
+      (error) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${error}` }])
         setDisplayed("")
         setState("idle")
       }
-    }, 12)
-    return () => clearInterval(iv)
-  }, [state])
+    )
+  }, [input, messages, state])
 
   return (
     <div className="mx-auto flex h-[420px] w-full max-w-lg flex-col">
@@ -335,15 +378,14 @@ export function ChatClaudePreview() {
 
 /* ─── Grok Chat ─── */
 
-const GROK_RESPONSE =
-  "A day on Venus is longer than a year on Venus. It takes 243 Earth days to rotate once but only 225 Earth days to orbit the Sun. Time is weird. And if you think that's wild, Venus also rotates backwards compared to most planets."
-
 const GROK_SUGGESTIONS = [
   "Tell me something interesting",
   "Roast my code style",
   "Explain black holes",
   "What's trending on X?",
 ]
+
+const GROK_SYSTEM = "You are Grok, a witty and slightly irreverent AI assistant created by xAI. You have a playful personality and like to share interesting facts with a touch of humor. Keep responses concise, around 2-3 sentences."
 
 export function ChatGrokPreview() {
   const [messages, setMessages] = useState<
@@ -353,41 +395,42 @@ export function ChatGrokPreview() {
   const [state, setState] = useState<"idle" | "thinking" | "streaming">("idle")
   const [displayed, setDisplayed] = useState("")
   const bottomRef = useRef<HTMLDivElement>(null)
-  const idxRef = useRef(0)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, displayed])
 
-  function handleSend(text?: string) {
+  const handleSend = useCallback(async (text?: string) => {
     const msg = text || input
     if (!msg.trim() || state !== "idle") return
-    setMessages((prev) => [...prev, { role: "user", content: msg.trim() }])
+
+    const userMessage = { role: "user" as const, content: msg.trim() }
+    const newMessages = [...messages, userMessage]
+
+    setMessages(newMessages)
     setInput("")
     setState("thinking")
     setDisplayed("")
-    idxRef.current = 0
-    setTimeout(() => setState("streaming"), 1200)
-  }
 
-  useEffect(() => {
-    if (state !== "streaming") return
-    const iv = setInterval(() => {
-      if (idxRef.current < GROK_RESPONSE.length) {
-        idxRef.current += 1
-        setDisplayed(GROK_RESPONSE.slice(0, idxRef.current))
-      } else {
-        clearInterval(iv)
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: GROK_RESPONSE },
-        ])
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setState("streaming")
+
+    await streamChat(
+      newMessages,
+      GROK_SYSTEM,
+      (text) => setDisplayed(text),
+      (fullText) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: fullText }])
+        setDisplayed("")
+        setState("idle")
+      },
+      (error) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${error}` }])
         setDisplayed("")
         setState("idle")
       }
-    }, 12)
-    return () => clearInterval(iv)
-  }, [state])
+    )
+  }, [input, messages, state])
 
   return (
     <div className="mx-auto flex h-[420px] w-full max-w-lg flex-col">
@@ -772,11 +815,44 @@ export function ConversationHistorySidebarPreview() {
 /* ─── Message Branch Navigator (ChatGPT) ─── */
 export function MessageBranchNavigatorPreview() {
   const [branch, setBranch] = useState(0)
-  const branches = [
+  const [branches, setBranches] = useState([
     "Quantum computing uses qubits that exist in superposition, allowing parallel computation.",
     "Quantum computing harnesses quantum mechanics to process information in fundamentally new ways.",
     "At its core, quantum computing leverages entanglement and superposition for exponential speedups.",
-  ]
+  ])
+  const [hasFetched, setHasFetched] = useState(false)
+
+  // Fetch 3 different AI-generated responses
+  useEffect(() => {
+    if (!hasFetched) {
+      setHasFetched(true)
+      fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: "Explain quantum computing simply" }],
+          system: "Generate 3 different ways to explain quantum computing simply. Return a JSON array of 3 short explanations (1 sentence each, under 20 words). Format: [\"explanation1\", \"explanation2\", \"explanation3\"]. Each should have a different angle/focus.",
+        }),
+      })
+        .then(res => res.body?.getReader())
+        .then(async reader => {
+          if (!reader) throw new Error("No reader")
+          const decoder = new TextDecoder()
+          let fullText = ""
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            fullText += decoder.decode(value, { stream: true })
+          }
+          const match = fullText.match(/\[[\s\S]*?\]/)
+          if (match) {
+            const data = JSON.parse(match[0])
+            if (data.length >= 3) setBranches(data.slice(0, 3))
+          }
+        })
+        .catch(() => {})
+    }
+  }, [hasFetched])
 
   return (
     <div className="mx-auto w-full max-w-lg p-6">

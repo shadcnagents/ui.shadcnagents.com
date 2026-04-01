@@ -335,17 +335,49 @@ export function WebPreviewSandboxPreview() {
 export function ExaWebSearch2Preview() {
   const [query, setQuery] = useState("")
   const [phase, setPhase] = useState<"idle" | "searching" | "done">("idle")
-
-  const results = [
+  const [results, setResults] = useState([
     { title: "Building AI-powered apps with Next.js", url: "exa.ai/docs", score: 0.95 },
     { title: "Exa neural search for semantic retrieval", url: "exa.ai/blog", score: 0.89 },
     { title: "RAG patterns with Exa embeddings", url: "exa.ai/examples", score: 0.84 },
-  ]
+  ])
 
-  function handleSearch() {
+  async function handleSearch() {
     if (!query.trim() || phase === "searching") return
     setPhase("searching")
-    setTimeout(() => setPhase("done"), 1500)
+
+    try {
+      const response = await fetch("/api/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: `Search for: ${query}` }],
+          system: "You simulate search results. Return a JSON array of 3 search results. Format: [{\"title\": \"Article Title\", \"url\": \"domain.com/path\", \"score\": 0.XX}]. Make titles relevant to the query. Scores between 0.80-0.98.",
+        }),
+      })
+
+      if (!response.ok) throw new Error("Failed")
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error("No reader")
+
+      const decoder = new TextDecoder()
+      let fullText = ""
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        fullText += decoder.decode(value, { stream: true })
+      }
+
+      const match = fullText.match(/\[[\s\S]*?\]/)
+      if (match) {
+        const data = JSON.parse(match[0])
+        if (data.length >= 3) setResults(data.slice(0, 3))
+      }
+    } catch {
+      // Keep default results on error
+    }
+
+    setPhase("done")
   }
 
   return (
@@ -730,22 +762,55 @@ export function ParallelWorkflowPreview() {
 
       <AnimatePresence>
         {allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...SPRING }}
-            className="mt-5 rounded-xl border border-border bg-card p-4"
-          >
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Combined Result</p>
-            <div className="mt-2 space-y-1 font-mono text-sm text-muted-foreground">
-              <p>Search: <span className="text-foreground">12 sources found</span></p>
-              <p>Analysis: <span className="text-foreground">3 key insights</span></p>
-              <p>Summary: <span className="text-foreground">Generated (342 words)</span></p>
-            </div>
-          </motion.div>
+          <ParallelWorkflowResults />
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+function ParallelWorkflowResults() {
+  const [results, setResults] = useState({ search: "12 sources found", analysis: "3 key insights", summary: "Generated (342 words)" })
+
+  useEffect(() => {
+    fetch("/api/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "user", content: "Generate parallel workflow results" }],
+        system: "Return a JSON object with workflow results. Format: {\"search\": \"X sources found\", \"analysis\": \"X key insights\", \"summary\": \"Generated (XXX words)\"}. Use realistic numbers.",
+      }),
+    })
+      .then(res => res.body?.getReader())
+      .then(async reader => {
+        if (!reader) return
+        const decoder = new TextDecoder()
+        let fullText = ""
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          fullText += decoder.decode(value, { stream: true })
+        }
+        const match = fullText.match(/\{[^}]+\}/)
+        if (match) setResults(JSON.parse(match[0]))
+      })
+      .catch(() => {})
+  }, [])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...SPRING }}
+      className="mt-5 rounded-xl border border-border bg-card p-4"
+    >
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Combined Result</p>
+      <div className="mt-2 space-y-1 font-mono text-sm text-muted-foreground">
+        <p>Search: <span className="text-foreground">{results.search}</span></p>
+        <p>Analysis: <span className="text-foreground">{results.analysis}</span></p>
+        <p>Summary: <span className="text-foreground">{results.summary}</span></p>
+      </div>
+    </motion.div>
   )
 }
 
@@ -818,10 +883,37 @@ export function RoutingWorkflowPreview() {
 /* ─── Few-Shot Prompt ─── */
 export function FewShotPromptPreview() {
   const [classified, setClassified] = useState(false)
+  const [result, setResult] = useState("positive")
 
   useEffect(() => {
-    const timer = setTimeout(() => setClassified(true), 2000)
-    return () => clearTimeout(timer)
+    // Fetch real classification from AI
+    fetch("/api/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "user", content: "Classify this sentiment: \"I absolutely love this product\"" }],
+        system: "You are a sentiment classifier. Respond with ONLY one word: positive, negative, or neutral. Nothing else.",
+      }),
+    })
+      .then(res => res.body?.getReader())
+      .then(async reader => {
+        if (!reader) throw new Error("No reader")
+        const decoder = new TextDecoder()
+        let fullText = ""
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          fullText += decoder.decode(value, { stream: true })
+        }
+        const clean = fullText.trim().toLowerCase()
+        if (["positive", "negative", "neutral"].includes(clean)) {
+          setResult(clean)
+        }
+        setClassified(true)
+      })
+      .catch(() => {
+        setClassified(true)
+      })
   }, [])
 
   const examples = [
@@ -874,7 +966,7 @@ export function FewShotPromptPreview() {
                   transition={{ ...SPRING }}
                   className="rounded-lg bg-primary/10 px-1.5 py-0.5 font-mono text-xs text-primary"
                 >
-                  positive
+                  {result}
                 </motion.span>
               ) : (
                 <motion.span key="loading" className="font-mono text-foreground/70">
@@ -1242,7 +1334,7 @@ export function AIPromptInputPreview() {
               <button
                 key={suggestion}
                 onClick={() => setValue(suggestion)}
-                className="rounded-full border border-border bg-background px-4 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                className="rounded-full border border-border/60 bg-card/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-150 hover:border-foreground/20 hover:bg-card hover:text-foreground"
               >
                 {suggestion}
               </button>
@@ -1271,7 +1363,7 @@ export function AIPromptInputPreview() {
                 <span className="text-xs text-muted-foreground">12 KB</span>
                 <button
                   onClick={() => setHasAttachment(false)}
-                  className="ml-auto rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  className="ml-auto rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M18 6L6 18M6 6l12 12" />
@@ -1301,7 +1393,7 @@ export function AIPromptInputPreview() {
                 "flex size-9 items-center justify-center rounded-full border transition-colors",
                 hasAttachment
                   ? "border-foreground/20 bg-foreground/5 text-foreground"
-                  : "border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+                  : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
