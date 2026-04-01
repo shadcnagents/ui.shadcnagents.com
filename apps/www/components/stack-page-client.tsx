@@ -868,46 +868,23 @@ export function StackPageClient({ slug, registrySource, devMode = false }: Stack
         <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-white dark:bg-zinc-950 shadow-sm">
           {activeTab === "preview" && (
             <div className="h-full overflow-y-scroll scrollbar-hide">
-              {isPro && !userIsPro ? (
-                <div className="flex min-h-full items-center justify-center p-8">
-                  <div className="text-center">
-                    <Lock className="mx-auto mb-3 size-5 text-blue-500/70" />
-                    <p className="text-sm font-medium text-foreground">Pro Stack</p>
-                    <p className="mt-1 text-xs text-muted-foreground/50">
-                      {session?.user
-                        ? "Upgrade to Pro to unlock full preview and source code"
-                        : "Sign in or upgrade to Pro to access this stack"}
-                    </p>
-                    <div className="mt-4 flex items-center justify-center gap-2">
-                      {!session?.user && (
-                        <Button asChild variant="outline" size="sm">
-                          <Link href="/auth/login">Sign In</Link>
-                        </Button>
-                      )}
-                      <Button asChild size="sm">
-                        <Link href="/pricing">Unlock with Pro</Link>
-                      </Button>
-                    </div>
+              {/* Preview is always shown - no paywall */}
+              <div
+                ref={previewRef}
+                className={cn(
+                  "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
+                  deviceWidthClass
+                )}
+                style={previewThemeVars as React.CSSProperties}
+              >
+                {PreviewComponent ? (
+                  <div className="w-full" key={previewKey}>
+                    <PreviewComponent />
                   </div>
-                </div>
-              ) : (
-                <div
-                  ref={previewRef}
-                  className={cn(
-                    "mx-auto flex min-h-full items-center justify-center p-8 transition-all duration-300",
-                    deviceWidthClass
-                  )}
-                  style={previewThemeVars as React.CSSProperties}
-                >
-                  {PreviewComponent ? (
-                    <div className="w-full" key={previewKey}>
-                      <PreviewComponent />
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">Preview coming soon</p>
-                  )}
-                </div>
-              )}
+                ) : (
+                  <p className="text-sm text-muted-foreground">Preview coming soon</p>
+                )}
+              </div>
             </div>
           )}
 
@@ -979,29 +956,57 @@ export function StackPageClient({ slug, registrySource, devMode = false }: Stack
                   </div>
                 )}
                 {isPro && !userIsPro && (
-                  <div className="absolute inset-0 top-[140px]">
-                    <div className="h-16 bg-gradient-to-b from-transparent to-background/80" />
-                    <div className="flex h-full flex-col items-center bg-background/80 pt-8 backdrop-blur-sm">
+                  <div className="absolute inset-0 top-[100px]">
+                    <div className="h-12 bg-gradient-to-b from-transparent to-background" />
+                    <div className="flex h-full flex-col items-center bg-background px-6 pt-6">
                       {proLoading ? (
                         <p className="text-xs text-muted-foreground animate-pulse">Loading source…</p>
                       ) : (
-                        <>
-                          <Lock className="mb-3 size-5 text-blue-500/70" />
-                          <p className="text-sm font-medium">Pro Stack</p>
-                          <p className="mt-1 text-xs text-muted-foreground/50">
-                            {session?.user ? "Upgrade to Pro" : "Sign in or upgrade to Pro"}
-                          </p>
-                          <div className="mt-4 flex gap-2">
-                            {!session?.user && (
-                              <Button asChild variant="outline" size="sm">
-                                <Link href="/auth/login">Sign In</Link>
-                              </Button>
-                            )}
-                            <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                              <Link href="/pricing">Unlock with Pro</Link>
-                            </Button>
+                        <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-lg">
+                          <div className="mb-4 text-center">
+                            <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 mb-3">
+                              <Lock className="size-3" />
+                              Pro Stack
+                            </div>
+                            <h3 className="text-lg font-semibold">Unlock Source Code</h3>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              Get lifetime access to all pro stacks
+                            </p>
                           </div>
-                        </>
+
+                          <div className="mb-5 text-center">
+                            <div className="flex items-baseline justify-center gap-1">
+                              <span className="text-3xl font-bold">$79</span>
+                              <span className="text-sm text-muted-foreground line-through">$149</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">One-time payment • Lifetime access</p>
+                          </div>
+
+                          <ul className="mb-5 space-y-2 text-sm">
+                            <li className="flex items-center gap-2">
+                              <svg className="size-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span>Full source code access</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <svg className="size-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span>All current & future stacks</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <svg className="size-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span>CLI installation support</span>
+                            </li>
+                          </ul>
+
+                          <Button asChild className="w-full" size="lg">
+                            <Link href="/pricing">Get Pro Access</Link>
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>
